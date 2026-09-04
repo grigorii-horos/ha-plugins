@@ -38,6 +38,13 @@
 | `horos-energy-tile` | кто в доме ест электричество |
 | `horos-presence-tile` | в каких зонах есть кто-то |
 
+## Установка
+
+Репозиторий готов к установке через HACS как кастомный: HACS → Frontend → ⋮ → Custom
+repositories → адрес этого репозитория, категория Lovelace. Собранный
+`dist/ha-plugins-cards.js` лежит в репозитории, поэтому доступ к файловой системе
+Home Assistant не нужен.
+
 ## Разработка
 
 ```sh
@@ -45,7 +52,7 @@ cd cards
 npm install
 npm run dev     # http://<этот-хост>:5188
 npm test
-npm run build   # dist/ha-plugins-cards.js
+npm run build   # ../dist/ha-plugins-cards.js — его и ставит HACS
 ```
 
 В dev-режиме дашборд грузит карточки прямо с этой машины: в ресурсы дашборда

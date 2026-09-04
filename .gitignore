@@ -5,4 +5,5 @@ frontend/
 .superpowers/
 
 node_modules/
-dist/
+
+# dist/ не игнорируется намеренно: HACS ставит собранный файл из репозитория.

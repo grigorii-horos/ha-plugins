@@ -16,6 +16,10 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
+    // Собранный файл лежит в dist/ корня репозитория и версионируется: HACS
+    // ставит плагины прямо из репозитория и ищет файл именно там.
+    outDir: "../dist",
+    emptyOutDir: true,
     lib: {
       entry: "src/main.ts",
       formats: ["es"],
