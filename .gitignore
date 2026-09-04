@@ -1,0 +1,8 @@
+# Клон исходников home-assistant/frontend: справочник, а не наш код.
+frontend/
+
+# Черновики визуального companion из сессий brainstorming.
+.superpowers/
+
+node_modules/
+dist/
