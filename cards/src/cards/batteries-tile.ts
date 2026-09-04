@@ -2,7 +2,7 @@ import { nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { composeSegments, numericState, resolveRole } from "../core/format";
-import { batteryColor } from "../core/labels";
+import { batteryColor, stripBatterySuffix } from "../core/labels";
 import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
 import type { LovelaceCardEditor } from "../core/types";
 
@@ -72,7 +72,7 @@ export class HorosBatteriesTile extends BaseTileCard {
         entityId: battery.entity,
         name:
           battery.name ??
-          role?.stateObj?.attributes.friendly_name ??
+          stripBatterySuffix(role?.stateObj?.attributes.friendly_name) ??
           battery.entity,
         level,
       });
@@ -101,7 +101,14 @@ export class HorosBatteriesTile extends BaseTileCard {
           : [{ text: `Все заряжены, ${entries.length} шт.` }]
       ),
       values: worst
-        ? [{ value: String(worst.level), unit: "%", entityId: worst.entityId }]
+        ? [
+            {
+              value: String(worst.level),
+              unit: "%",
+              entityId: worst.entityId,
+              icon: "mdi:battery",
+            },
+          ]
         : [],
     });
   }

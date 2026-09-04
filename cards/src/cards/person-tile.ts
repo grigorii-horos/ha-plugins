@@ -11,7 +11,11 @@ import {
   roleSegment,
   unavailableSegment,
 } from "../core/format";
-import { levelColor, stripDeviceName } from "../core/labels";
+import {
+  levelColor,
+  stripBatterySuffix,
+  stripDeviceName,
+} from "../core/labels";
 import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
 import type { LovelaceCardEditor } from "../core/types";
 
@@ -78,9 +82,11 @@ export class HorosPersonTile extends BaseTileCard {
         const level = numericState(role);
         const name =
           item.name ??
-          stripDeviceName(
-            role?.stateObj?.attributes.friendly_name,
-            config.name
+          stripBatterySuffix(
+            stripDeviceName(
+              role?.stateObj?.attributes.friendly_name,
+              config.name
+            )
           ) ??
           item.entity;
         return {

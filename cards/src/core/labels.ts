@@ -20,6 +20,19 @@ export function stripDeviceName(
 }
 
 /**
+ * Убирает хвост «Battery level» из имени сенсора заряда. Строка «Phone Olga
+ * Battery level» в карточке, которая вся про заряд, повторяет очевидное —
+ * достаточно «Phone Olga».
+ */
+export function stripBatterySuffix(
+  name: string | undefined
+): string | undefined {
+  if (!name) return undefined;
+  const stripped = name.replace(/[\s—-]*(battery(\s+level)?|заряд)\s*$/i, "").trim();
+  return stripped || name;
+}
+
+/**
  * Цвет уровня — по тем же ступеням, что HA красит батарейки: 70 и 30
  * процентов. Годится и для расходников: вопрос у них тот же, «скоро ли
  * кончится».

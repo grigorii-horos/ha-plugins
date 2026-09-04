@@ -83,6 +83,28 @@ export const tileStyles = css`
     gap: 2px;
   }
 
+  /* Иконка называет величину; число остаётся главным, иконка приглушена. */
+  .values .clickable,
+  .values > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .value-icon {
+    flex: none;
+    color: var(--secondary-text-color);
+    --mdc-icon-size: 17px;
+  }
+
+  .values.of-2 .value-icon {
+    --mdc-icon-size: 15px;
+  }
+
+  .values.of-3 .value-icon {
+    --mdc-icon-size: 14px;
+  }
+
   .values-separator {
     color: var(--secondary-text-color);
   }

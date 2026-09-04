@@ -23,12 +23,18 @@ import {
   type ActionType,
 } from "./actions";
 import { ensureTileInternals } from "./ha-internals";
+import { ROLE_ICONS } from "./role-icons";
 
 export interface FormattedValue {
   value: string;
   unit?: string;
   /** Чья это величина: тап по ней открывает more-info именно этой сущности. */
   entityId?: string;
+  /**
+   * Иконка величины. «63%» само по себе может быть влажностью, зарядом или
+   * местом на диске — иконка называет её, не занимая места под слово.
+   */
+  icon?: string;
 }
 
 export type FeaturesPosition = "bottom" | "inline";
@@ -281,7 +287,12 @@ export abstract class BaseTileCard extends LitElement {
                         ? html`<span class="values-separator">/</span>`
                         : nothing}
                       ${this.renderClickable(
-                        html`${item.value}${item.unit
+                        html`${item.icon
+                          ? html`<ha-icon
+                              class="value-icon"
+                              .icon=${item.icon}
+                            ></ha-icon>`
+                          : nothing}${item.value}${item.unit
                           ? html`<span class="unit"> ${item.unit}</span>`
                           : nothing}`,
                         item.entityId
@@ -311,12 +322,23 @@ export abstract class BaseTileCard extends LitElement {
     `;
   }
 
-  protected bigValues(big: KeyedRole[]): FormattedValue[] {
+  /**
+   * Значения правой колонки. `icons` называет величину по ключу роли: без неё
+   * два процента подряд неотличимы друг от друга.
+   */
+  protected bigValues(
+    big: KeyedRole[],
+    icons: Record<string, string> = ROLE_ICONS
+  ): FormattedValue[] {
     return big
       .map((item): FormattedValue | undefined => {
         const formatted = this.formatted(item.role?.stateObj);
         return formatted
-          ? { ...formatted, entityId: item.role?.entityId }
+          ? {
+              ...formatted,
+              entityId: item.role?.entityId,
+              icon: icons[item.key],
+            }
           : undefined;
       })
       .filter((value): value is FormattedValue => !!value);

@@ -89,7 +89,11 @@ export class HorosPresenceTile extends BaseTileCard {
         offline ? { text: `${offline} без связи` } : undefined,
       ]),
       values: [
-        { value: String(occupied.length), entityId: occupied[0]?.entityId },
+        {
+          value: String(occupied.length),
+          entityId: occupied[0]?.entityId,
+          icon: "mdi:home-account",
+        },
       ],
     });
   }

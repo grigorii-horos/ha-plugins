@@ -156,6 +156,7 @@ export class HorosPrinterTile extends BaseTileCard {
               value: String(Math.round(worst.marker!.fill)),
               unit: "%",
               entityId: worst.entityId,
+              icon: "mdi:water",
             },
           ]
         : [],

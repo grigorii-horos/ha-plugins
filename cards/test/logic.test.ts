@@ -19,7 +19,12 @@ import {
 } from "../src/core/printer";
 import { buttonLabel } from "../src/core/buttons";
 import { mergeEntityList } from "../src/core/entity-lists";
-import { levelColor, loadColor, stripDeviceName } from "../src/core/labels";
+import {
+  levelColor,
+  loadColor,
+  stripBatterySuffix,
+  stripDeviceName,
+} from "../src/core/labels";
 import { pickExtreme } from "../src/core/reduce";
 import { stateActive, tileColor } from "../src/core/state-color";
 import {
@@ -618,5 +623,27 @@ describe("свободное место и занятое — разные ро�
   it("занятое красится обратно: много — тревожно", () => {
     expect(loadColor(32)).toContain("state-icon-color");
     expect(loadColor(95)).toContain("error");
+  });
+});
+
+describe("хвост «Battery level» в имени", () => {
+  it("убирается: карточка и так вся про заряд", () => {
+    expect(stripBatterySuffix("Phone Olga Battery level")).toBe("Phone Olga");
+    expect(stripBatterySuffix("Sensor Motion Detector Kitchen Battery")).toBe(
+      "Sensor Motion Detector Kitchen"
+    );
+  });
+
+  it("русский вариант тоже", () => {
+    expect(stripBatterySuffix("Датчик кухня заряд")).toBe("Датчик кухня");
+  });
+
+  it("имя не срезается под ноль", () => {
+    expect(stripBatterySuffix("Battery")).toBe("Battery");
+  });
+
+  it("посторонние имена не трогает", () => {
+    expect(stripBatterySuffix("Часы")).toBe("Часы");
+    expect(stripBatterySuffix(undefined)).toBeUndefined();
   });
 });
