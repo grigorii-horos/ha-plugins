@@ -24,6 +24,8 @@ interface PrinterTank {
 }
 import type { HassEntity, LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { devicePool, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
 export interface PrinterTileConfig extends TileBaseConfig {
@@ -189,6 +191,25 @@ registerCard("horos-printer-tile", HorosPrinterTile, {
     en: "Ink levels and printer status in a single tile",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const pool = devicePool(hass, entityId);
+    // A printer marker announces itself: IPP puts marker_type in the attributes.
+    const cartridges = pool.filter(
+      (id) => hass.states[id]?.attributes.marker_type !== undefined
+    );
+    if (!cartridges.length) return null;
+    const status = pool.find(
+      (id) =>
+        computeDomain(id) === "sensor" &&
+        !cartridges.includes(id) &&
+        Number.isNaN(Number(hass.states[id]?.state))
+    );
+    return suggestion(
+      "custom:horos-printer-tile",
+      { status },
+      { cartridges }
+    );
+  },
 });
 
 declare global {

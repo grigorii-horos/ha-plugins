@@ -5,6 +5,8 @@ import { composeSegments, resolveRole, type Segment } from "../core/format";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { allOfClass, deviceClassOf, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
 export interface SafetyTileConfig extends TileBaseConfig {
@@ -108,6 +110,20 @@ registerCard("horos-safety-tile", HorosSafetyTile, {
     en: "Leak, smoke, gas — and sensors that lost connection",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const classes = ["moisture", "gas", "smoke", "carbon_monoxide", "safety"];
+    if (
+      computeDomain(entityId) !== "binary_sensor" ||
+      !classes.includes(deviceClassOf(hass, entityId) ?? "")
+    ) {
+      return null;
+    }
+    return suggestion(
+      "custom:horos-safety-tile",
+      {},
+      { sensors: allOfClass(hass, entityId, "binary_sensor", classes) }
+    );
+  },
 });
 
 declare global {

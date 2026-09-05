@@ -6,6 +6,8 @@ import { batteryColor, stripBatterySuffix } from "../core/labels";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { allOfClass, deviceClassOf, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
 export interface BatteriesTileConfig extends TileBaseConfig {
@@ -131,6 +133,19 @@ registerCard("horos-batteries-tile", HorosBatteriesTile, {
     en: "Only the batteries that are running down, emptiest first",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    if (
+      computeDomain(entityId) !== "sensor" ||
+      deviceClassOf(hass, entityId) !== "battery"
+    ) {
+      return null;
+    }
+    return suggestion(
+      "custom:horos-batteries-tile",
+      {},
+      { batteries: allOfClass(hass, entityId, "sensor", ["battery"]) }
+    );
+  },
 });
 
 declare global {

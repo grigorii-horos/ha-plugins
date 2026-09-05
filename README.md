@@ -54,6 +54,25 @@ Settings → Dashboards → ⋮ → Resources as a JavaScript module `/local/ha-
 Every card shows up in the card picker, and each one has its own visual editor — writing
 YAML is optional.
 
+## Suggestions when adding a card
+
+![Suggestion in the add-card dialog](docs/images/suggestion.png)
+
+In edit mode, "Add card → By entity" asks every installed card what it would build
+for the entity you picked, and the answers show up under "Community". These cards
+answer, and the suggestion arrives already filled in: pick the bedroom temperature
+sensor and you get a room card that has found the humidity on the same device; pick one
+cartridge and you get the printer with all of its ink; pick any battery and you get the
+card holding every battery in the house.
+
+That is not the auto-detection the cards refuse to do. A suggestion is a draft rendered
+in front of you and editable before it is added, and the rules behind it are objective —
+domain, `device_class`, entity attributes, belonging to one device. Nothing is guessed
+from names.
+
+A card stays quiet when it would not say more than the stock tile: a lone temperature
+sensor with nothing else on its device suggests nothing.
+
 ## Cards
 
 The fields shared by every card (except `horos-buttons-tile`) are the stock tile's own:

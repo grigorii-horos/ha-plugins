@@ -14,6 +14,7 @@ import { stripDeviceName } from "../core/labels";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, byDomain, devicePool, filled, suggestion } from "../core/suggest";
 import { t } from "../core/i18n";
 
 /** The order of roles in the secondary line. */
@@ -141,6 +142,18 @@ registerCard("horos-air-tile", HorosAirTile, {
     en: "Purifier, recuperator, humidifier — the appliance and the air",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const pool = devicePool(hass, entityId);
+    const roles = {
+      appliance: byDomain(pool, "fan", "humidifier"),
+      pm25: byClass(hass, pool, "sensor", "pm25"),
+      humidity: byClass(hass, pool, "sensor", "humidity"),
+      temperature: byClass(hass, pool, "sensor", "temperature"),
+      power: byClass(hass, pool, "sensor", "power"),
+    };
+    if (!roles.appliance || filled(roles) < 2) return null;
+    return suggestion("custom:horos-air-tile", roles);
+  },
 });
 
 declare global {

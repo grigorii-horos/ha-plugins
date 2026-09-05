@@ -448,6 +448,47 @@ Whether they are home, where exactly, how much charge. The person's portrait is 
 default — it says more than a faceless icon. The other devices' batteries use the same
 level rows.
 
+## Suggestions in the add-card dialog
+
+HA's "Add to dashboard → By entity" dialog asks every entry in `window.customCards` for
+a `getEntitySuggestion(hass, entityId)` and renders what comes back under "Community",
+as a live preview next to the core suggestions. `registerCard` takes a `suggest`
+function per card and passes it through; the rules live next to each card, the helpers
+in `core/suggest.ts`.
+
+This is the one bounded exception to "no auto-detection". It holds because a suggestion
+is not a card: it is a draft the user sees rendered and edits before adding. The rules
+still use nothing but objective facts:
+
+| what is picked | what is suggested | how it is found |
+|---|---|---|
+| a room sensor | room climate | `device_class` of the temperature, humidity, illuminance and PM2.5 entities of the same device |
+| a plug or its meter | plug | the `switch` of that device plus its power and energy |
+| soil moisture | plant | `device_class: moisture` on a sensor, plus soil temperature and battery |
+| a cover or its battery | cover | the `cover` of that device plus illuminance and battery |
+| a purifier or its sensor | air | a `fan`/`humidifier` plus what that device measures |
+| anything on a printer | printer | siblings carrying a `marker_type` attribute |
+| a vacuum | vacuum | the `vacuum` plus the battery of that device |
+| a person | person | the person's `device_trackers`, then the battery on the tracker's device |
+| a battery | batteries | every `device_class: battery` sensor in the house |
+| a leak/smoke/gas sensor | safety | every alarm binary sensor in the house |
+| an occupancy sensor | presence | every occupancy/presence/motion binary sensor |
+| a power sensor | energy | every `device_class: power` sensor |
+
+Two rules shape the answers. A card **stays quiet when it would say no more than the
+stock tile**: a lone temperature sensor whose device carries nothing else suggests
+nothing, and so does a plug with no meter. And the list cards arrive **filled with the
+whole set** rather than with the single entity that was clicked — a batteries card
+holding one battery is worth less than a tile, while one holding all forty-three is the
+card itself.
+
+The computer, server, buttons and offline cards suggest nothing: there is no objective
+signal to start them from, only names.
+
+Verified in the live dialog: picking the bedroom temperature sensor shows "Room climate"
+under Community, previewing 28.1 °C with the humidity of the same device already in the
+secondary line.
+
 ## Level rows
 
 The device invented for ink turned out to be a general one: several homogeneous levels

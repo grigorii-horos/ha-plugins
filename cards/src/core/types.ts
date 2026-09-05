@@ -49,12 +49,25 @@ export interface LovelaceCardEditor extends HTMLElement {
   setConfig(config: Record<string, unknown>): void;
 }
 
+/**
+ * What a card offers for an entity in the "Add to dashboard" dialog. HA renders
+ * `config` as a live preview and adds it as it is when the user picks it.
+ */
+export interface CardSuggestion {
+  label?: string;
+  config: Record<string, unknown> & { type: string };
+}
+
 export interface CustomCardEntry {
   type: string;
   name: string;
   description: string;
   preview?: boolean;
   documentationURL?: string;
+  getEntitySuggestion?: (
+    hass: HomeAssistant,
+    entityId: string
+  ) => CardSuggestion | CardSuggestion[] | null;
 }
 
 declare global {

@@ -15,6 +15,7 @@ import { levelColor } from "../core/labels";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, byDomain, devicePool, filled, suggestion } from "../core/suggest";
 import { t } from "../core/i18n";
 
 /** The order of roles in the secondary line. */
@@ -164,6 +165,16 @@ registerCard("horos-cover-tile", HorosCoverTile, {
     en: "How far open, how bright outside, and battery",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const pool = devicePool(hass, entityId);
+    const roles = {
+      cover: byDomain(pool, "cover"),
+      illuminance: byClass(hass, pool, "sensor", "illuminance"),
+      battery: byClass(hass, pool, "sensor", "battery"),
+    };
+    if (!roles.cover || filled(roles) < 2) return null;
+    return suggestion("custom:horos-cover-tile", roles);
+  },
 });
 
 declare global {

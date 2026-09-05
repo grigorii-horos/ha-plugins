@@ -13,6 +13,7 @@ import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, byDomain, devicePool, filled, suggestion } from "../core/suggest";
 
 /** The order of roles in the secondary line. The switch goes first. */
 export const PLUG_ROLES = ["switch", "power", "energy"] as const;
@@ -106,6 +107,17 @@ registerCard("horos-plug-tile", HorosPlugTile, {
     en: "Switch, current power draw and accumulated energy in a single tile",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const pool = devicePool(hass, entityId);
+    const roles = {
+      switch: byDomain(pool, "switch"),
+      power: byClass(hass, pool, "sensor", "power"),
+      energy: byClass(hass, pool, "sensor", "energy"),
+    };
+    // A plug with no metering is no different from a tile with a toggle.
+    if (!roles.switch || filled(roles) < 2) return null;
+    return suggestion("custom:horos-plug-tile", roles);
+  },
 });
 
 declare global {

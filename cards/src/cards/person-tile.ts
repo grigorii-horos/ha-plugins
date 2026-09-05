@@ -19,6 +19,8 @@ import {
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, devicePool, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
 export interface PersonTileConfig extends TileBaseConfig {
@@ -134,6 +136,21 @@ registerCard("horos-person-tile", HorosPersonTile, {
     en: "Whether they are home, where exactly, and their devices' battery",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    if (computeDomain(entityId) !== "person") return null;
+    // The phone is reached through the person's device_tracker: the battery sits
+    // on the same device as the tracker. No names are parsed on the way.
+    const trackers = (hass.states[entityId]?.attributes.device_trackers ??
+      []) as string[];
+    const battery = trackers
+      .map((tracker) => byClass(hass, devicePool(hass, tracker), "sensor", "battery"))
+      .find(Boolean);
+    if (!battery) return null;
+    return suggestion("custom:horos-person-tile", {
+      person: entityId,
+      battery,
+    });
+  },
 });
 
 declare global {

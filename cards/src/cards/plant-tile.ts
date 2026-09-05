@@ -12,6 +12,8 @@ import {
 import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, deviceClassOf, devicePool, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import {
   DEFAULT_DRY_BELOW,
   DEFAULT_WET_ABOVE,
@@ -122,6 +124,21 @@ registerCard("horos-plant-tile", HorosPlantTile, {
     en: "Soil moisture with dryness thresholds, soil temperature and sensor battery",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    // Soil moisture has a device class of its own in HA: no name guessing needed.
+    if (
+      computeDomain(entityId) !== "sensor" ||
+      deviceClassOf(hass, entityId) !== "moisture"
+    ) {
+      return null;
+    }
+    const pool = devicePool(hass, entityId);
+    return suggestion("custom:horos-plant-tile", {
+      moisture: entityId,
+      temperature: byClass(hass, pool, "sensor", "temperature"),
+      battery: byClass(hass, pool, "sensor", "battery"),
+    });
+  },
 });
 
 declare global {

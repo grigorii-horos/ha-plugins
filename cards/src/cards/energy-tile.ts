@@ -14,6 +14,8 @@ import { stripDeviceName } from "../core/labels";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { allOfClass, deviceClassOf, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
 export interface EnergyTileConfig extends TileBaseConfig {
@@ -151,6 +153,22 @@ registerCard("horos-energy-tile", HorosEnergyTile, {
     en: "Who in the house draws power, hungriest first",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    if (
+      computeDomain(entityId) !== "sensor" ||
+      deviceClassOf(hass, entityId) !== "power"
+    ) {
+      return null;
+    }
+    return suggestion(
+      "custom:horos-energy-tile",
+      {},
+      {
+        consumers: allOfClass(hass, entityId, "sensor", ["power"], 12),
+        limit: 6,
+      }
+    );
+  },
 });
 
 declare global {

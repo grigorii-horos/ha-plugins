@@ -13,6 +13,8 @@ import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, devicePool, filled, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 
 /** The order of roles in the secondary line is fixed and not configurable. */
 export const CLIMATE_ROLES = [
@@ -106,6 +108,20 @@ registerCard("horos-climate-tile", HorosClimateTile, {
     en: "Temperature, humidity, illuminance and PM2.5 of one room in a single tile",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    if (computeDomain(entityId) !== "sensor") return null;
+    const pool = devicePool(hass, entityId);
+    const roles = {
+      temperature: byClass(hass, pool, "sensor", "temperature"),
+      humidity: byClass(hass, pool, "sensor", "humidity"),
+      illuminance: byClass(hass, pool, "sensor", "illuminance"),
+      pm25: byClass(hass, pool, "sensor", "pm25"),
+    };
+    // One temperature is what the stock tile is for; this card starts at the
+    // second role.
+    if (!roles.temperature || filled(roles) < 2) return null;
+    return suggestion("custom:horos-climate-tile", roles);
+  },
 });
 
 declare global {

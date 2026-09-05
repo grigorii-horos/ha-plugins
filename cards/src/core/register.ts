@@ -1,4 +1,4 @@
-import type { CustomCardEntry, HomeAssistant } from "./types";
+import type { CardSuggestion, CustomCardEntry, HomeAssistant } from "./types";
 import { languageOf } from "./i18n";
 
 /**
@@ -52,6 +52,14 @@ export function registerCard(
     name: CardTexts;
     description: CardTexts;
     preview?: boolean;
+    /**
+     * What to offer for an entity the user picked in the "Add to dashboard"
+     * dialog. Returning null means this card has nothing to say about it.
+     */
+    suggest?: (
+      hass: HomeAssistant,
+      entityId: string
+    ) => CardSuggestion | CardSuggestion[] | null;
   }
 ): void {
   if (customElements.get(tag)) {
@@ -69,6 +77,7 @@ export function registerCard(
     get description() {
       return entry.description[currentLanguage() === "ru" ? "ru" : "en"];
     },
+    getEntitySuggestion: entry.suggest,
   } as CustomCardEntry);
 }
 

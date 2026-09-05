@@ -15,6 +15,7 @@ import { levelColor, stripDeviceName } from "../core/labels";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { byClass, byDomain, devicePool, suggestion } from "../core/suggest";
 import { t } from "../core/i18n";
 
 export interface VacuumTileConfig extends TileBaseConfig {
@@ -130,6 +131,15 @@ registerCard("horos-vacuum-tile", HorosVacuumTile, {
     en: "Robot status, battery and consumable life in a single tile",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const pool = devicePool(hass, entityId);
+    const vacuum = byDomain(pool, "vacuum");
+    const battery = byClass(hass, pool, "sensor", "battery");
+    // Consumable life has no device class to recognise it by, and without the
+    // battery this card is a stock tile: a human adds them in the editor.
+    if (!vacuum || !battery) return null;
+    return suggestion("custom:horos-vacuum-tile", { vacuum, battery });
+  },
 });
 
 declare global {

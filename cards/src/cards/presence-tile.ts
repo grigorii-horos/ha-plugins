@@ -5,6 +5,8 @@ import { composeSegments, resolveRole, type Segment } from "../core/format";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
+import { allOfClass, deviceClassOf, suggestion } from "../core/suggest";
+import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
 export interface PresenceTileConfig extends TileBaseConfig {
@@ -109,6 +111,20 @@ registerCard("horos-presence-tile", HorosPresenceTile, {
     en: "Which areas have someone in them right now",
   },
   preview: true,
+  suggest: (hass, entityId) => {
+    const classes = ["occupancy", "presence", "motion"];
+    if (
+      computeDomain(entityId) !== "binary_sensor" ||
+      !classes.includes(deviceClassOf(hass, entityId) ?? "")
+    ) {
+      return null;
+    }
+    return suggestion(
+      "custom:horos-presence-tile",
+      {},
+      { areas: allOfClass(hass, entityId, "binary_sensor", classes, 12) }
+    );
+  },
 });
 
 declare global {

@@ -24,6 +24,12 @@ The second rule: **a card is not a generic builder**. The config says which enti
 which role (`temperature`, `battery`, `cartridges`), and the card picks the layout
 itself. No guessing entities by name or device_class — a human assigns the roles.
 
+The one bounded exception is `core/suggest.ts`: what a card offers in HA's "Add card →
+By entity" dialog. That is a draft the user sees rendered and edits before adding, and
+it is built only from objective facts — domain, `device_class`, entity attributes,
+membership of one device. Never from names. A card suggests itself only when it would
+say more than the stock tile.
+
 ## Commands
 
 ```sh
@@ -59,7 +65,8 @@ npm run build   # tsc --noEmit && vite build → ../dist/ha-plugins-cards.js
   included.
 - Colours and sizes only through HA design tokens with a fallback:
   `var(--ha-font-size-m, 14px)`. Don't invent pixel numbers.
-- A new card means card + editor + a row in the README + a screenshot.
+- A new card means card + editor + a row in the README + a screenshot, plus a
+  `suggest` rule when the entity it starts from can be recognised objectively.
 - The shared config fields (`name`, `icon`, `state_content`, `features`, the six actions)
   live in `TileBaseConfig`; a subclass's `setConfig` must put them into `this.base`.
 
