@@ -1,7 +1,7 @@
 # Horos cards for Home Assistant
 
-Lovelace cards that pack several entities into a single tile — grouped by device or
-by meaning.
+Twenty-one Lovelace cards that pack several entities into a single tile — grouped by
+device or by meaning.
 
 ![Cards](docs/images/hero.png)
 
@@ -102,6 +102,24 @@ pm25: sensor.bedroom_pm25
 big_values: [temperature]
 ```
 
+### Lights — `horos-light-tile`
+
+![Lights](docs/images/light.png)
+
+A room's lights in one tile: which of them are on and how bright. Every light is a row
+whose bar is its brightness; a light that is off keeps its row, because the question is
+what is on.
+
+```yaml
+type: custom:horos-light-tile
+group: light.kitchen           # optional: a light group owns the line and the slider
+lights:
+  - entity: light.kitchen_strip
+    name: Strip
+  - light.kitchen_lamp
+  - light.kitchen_spots
+```
+
 ### Plug — `horos-plug-tile`
 
 ![Plug](docs/images/plug.png)
@@ -157,6 +175,40 @@ appliance: fan.purifier_living_room
 pm25: sensor.purifier_pm25
 humidity: sensor.purifier_humidity
 power: sensor.purifier_power
+```
+
+### Media — `horos-media-tile`
+
+![Media](docs/images/media.png)
+
+What is playing in the house, where, and how loud. Whoever is playing takes the line and
+the playback buttons; every player is a row with its volume as the bar and its state at
+the end.
+
+```yaml
+type: custom:horos-media-tile
+controls: true
+players:
+  - media_player.living_room_tv
+  - media_player.kitchen_speaker
+  - media_player.bedroom_kodi
+```
+
+### Air conditioner — `horos-ac-tile`
+
+![Air conditioner](docs/images/ac.png)
+
+A climate unit — air conditioner, heat pump, radiator valve — with the modes and the
+target as stock features. The room's own temperature and humidity are separate roles: a
+unit measures the air at its intake, which is not the room.
+
+```yaml
+type: custom:horos-ac-tile
+climate: climate.living_room_ac
+temperature: sensor.living_room_temperature
+humidity: sensor.living_room_humidity
+power: sensor.ac_plug_power
+controls: true
 ```
 
 ### Printer — `horos-printer-tile`
@@ -303,6 +355,37 @@ type: custom:horos-offline-tile
 limit: 6
 ignore: [sensor.flaky_one]
 ignore_domains: [update]
+```
+
+### Updates — `horos-updates-tile`
+
+![Updates](docs/images/updates.png)
+
+What in the house asks to be updated, one tile instead of thirty. Nothing is listed in
+the config — the rule is an `update` entity that is on. Versions the owner has skipped
+stay out unless `include_skipped` asks for them.
+
+```yaml
+type: custom:horos-updates-tile
+limit: 4
+ignore: [update.that_one_never]
+include_skipped: false
+```
+
+### Tasks — `horos-tasks-tile`
+
+![Tasks](docs/images/tasks.png)
+
+How much is left on each to-do list and what is coming up in the calendar. The bars are
+shares of the longest list, so the row length answers "which list is the heavy one".
+
+```yaml
+type: custom:horos-tasks-tile
+calendar: calendar.family
+lists:
+  - entity: todo.shopping_list
+    name: Shopping
+  - todo.chores
 ```
 
 ### Buttons — `horos-buttons-tile`

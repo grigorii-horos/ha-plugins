@@ -47,6 +47,30 @@ const RU: Dict = {
   "list.missing.few": "{count} не найдены",
   "list.missing.many": "{count} не найдено",
 
+  "light.title": "Свет",
+  "light.count": "Горит {count} из {total}",
+  "light.allOff": "Все выключены",
+  "light.on": "вкл",
+  "light.off": "выкл",
+
+  "media.title": "Медиа",
+  "media.idle": "Ничего не играет",
+  "media.playing.one": "{count} играет",
+  "media.playing.few": "{count} играют",
+  "media.playing.many": "{count} играют",
+
+  "ac.title": "Кондиционер",
+
+  "updates.title": "Обновления",
+  "updates.upToDate": "Всё обновлено",
+  "updates.count.one": "{count} обновление",
+  "updates.count.few": "{count} обновления",
+  "updates.count.many": "{count} обновлений",
+
+  "tasks.title": "Задачи",
+  "tasks.none": "Дел нет",
+  "tasks.noEvents": "Событий впереди нет",
+
   "server.title": "Домашний сервер",
   "vacuum.title": "Пылесос",
   "printer.title": "Принтер",
@@ -92,6 +116,28 @@ const EN: Dict = {
   "offline.more.many": "and {count} more",
   "list.missing.one": "{count} not found",
   "list.missing.many": "{count} not found",
+
+  "light.title": "Lights",
+  "light.count": "{count} of {total} on",
+  "light.allOff": "All off",
+  "light.on": "on",
+  "light.off": "off",
+
+  "media.title": "Media",
+  "media.idle": "Nothing playing",
+  "media.playing.one": "{count} playing",
+  "media.playing.many": "{count} playing",
+
+  "ac.title": "Air conditioner",
+
+  "updates.title": "Updates",
+  "updates.upToDate": "Everything up to date",
+  "updates.count.one": "{count} update",
+  "updates.count.many": "{count} updates",
+
+  "tasks.title": "Tasks",
+  "tasks.none": "Nothing to do",
+  "tasks.noEvents": "Nothing coming up",
 
   "server.title": "Home server",
   "vacuum.title": "Vacuum",

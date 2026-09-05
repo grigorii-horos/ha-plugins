@@ -18,10 +18,15 @@ import "./cards/cover-tile";
 import "./cards/offline-tile";
 import "./cards/energy-tile";
 import "./cards/presence-tile";
+import "./cards/light-tile";
+import "./cards/media-tile";
+import "./cards/ac-tile";
+import "./cards/updates-tile";
+import "./cards/tasks-tile";
 
 // eslint-disable-next-line no-console
 console.info(
-  "%c HOROS-CARDS %c 0.1.0 ",
+  "%c HOROS-CARDS %c 0.2.0 ",
   "background:#03a9f4;color:#fff;border-radius:3px 0 0 3px;padding:2px 4px",
   "background:#555;color:#fff;border-radius:0 3px 3px 0;padding:2px 4px"
 );

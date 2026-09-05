@@ -21,4 +21,8 @@ export const ROLE_ICONS: Record<string, string> = {
   download: "mdi:download",
   upload: "mdi:upload",
   total: "mdi:flash",
+  brightness: "mdi:brightness-6",
+  volume: "mdi:volume-high",
+  tasks: "mdi:check-circle-outline",
+  updates: "mdi:package-up",
 };

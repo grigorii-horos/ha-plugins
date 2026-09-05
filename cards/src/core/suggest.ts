@@ -122,6 +122,34 @@ export function areaOf(
 }
 
 /**
+ * Every entity of that domain sitting in the same area as the picked one.
+ *
+ * What makes five lamps "the lights of the living room" is the area, not their
+ * names. The picked entity comes first; entities with no area are not part of a
+ * room and stay out.
+ */
+export function sameArea(
+  hass: HomeAssistant,
+  entityId: string,
+  domain: string,
+  cap: number = LIST_CAP
+): string[] {
+  const area = areaOf(hass, entityId);
+  if (!area) return [];
+  const rest = Object.keys(hass.states)
+    .filter(
+      (id) =>
+        id !== entityId &&
+        computeDomain(id) === domain &&
+        !hidden(hass, id) &&
+        areaOf(hass, id) === area
+    )
+    .sort();
+  const picked = computeDomain(entityId) === domain ? [entityId] : [];
+  return [...picked, ...rest].slice(0, cap);
+}
+
+/**
  * One entity per area, classes tried in the order given.
  *
  * A house has several sensors watching the same room — a motion detector, a

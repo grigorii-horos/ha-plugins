@@ -50,8 +50,11 @@ same way, through the stock tile's `getConfigElement()`.
 
 ## Scope
 
-Sixteen cards. Fifteen are tiles: one line, roles, a right-hand column of values. Script
-buttons are a grid: a heading and a lattice of ready-made HA cards.
+Twenty-one cards. Twenty are tiles: one line, roles, a right-hand column of values.
+Script buttons are a grid: a heading and a lattice of ready-made HA cards.
+
+Five of them came later, once the first sixteen had been living on a real dashboard:
+lights, media, a climate unit, updates and to-do lists.
 
 A thermostatic valve card was considered and dropped — not needed.
 
@@ -488,6 +491,88 @@ signal to start them from, only names.
 Verified in the live dialog: picking the bedroom temperature sensor shows "Room climate"
 under Community, previewing 28.1 °C with the humidity of the same device already in the
 secondary line.
+
+### Lights
+
+```yaml
+type: custom:horos-light-tile
+group: light.kitchen
+lights: [light.kitchen_strip, light.kitchen_lamp, light.kitchen_spots]
+```
+
+A single light is what the stock tile is for. What it cannot answer is the room: which
+of the five are on and how bright. So every light is a level row and the bar is its
+brightness, in the light's own colour.
+
+**A light that is off keeps its row.** Dropping it would leave the card answering "what
+is on" with a list that has no "off" in it, and the reader has no way to tell an empty
+row from a light nobody listed.
+
+The brightness slider is offered only when a `group` is set: one slider cannot mean five
+different lights.
+
+### Media
+
+```yaml
+type: custom:horos-media-tile
+players: [media_player.tv, media_player.kitchen_speaker, media_player.kodi]
+```
+
+The stock media-control card is one player and half a screen. The question here is
+smaller: is anything playing in the house, what, and how loud. Whoever is playing owns
+the line and the playback buttons — that is the player one reaches for.
+
+Volume fills the bars, and the row ends with the player's state. The first version put
+the track title there, and a title is a sentence: it pushed the volume bar off the card.
+The title is named once, in the line above.
+
+### Air conditioner
+
+```yaml
+type: custom:horos-ac-tile
+climate: climate.living_room_ac
+temperature: sensor.living_room_temperature
+humidity: sensor.living_room_humidity
+power: sensor.ac_plug_power
+```
+
+**The unit and the room are different things.** A climate entity reports the air at its
+own intake, which is warmer or colder than where anyone sits, so the room's temperature
+and humidity are roles of their own, filled from the room's sensors. The unit's target
+stays where the stock `target-temperature` feature draws it.
+
+Power is here for the same reason the plug card has it: the honest answer to "should I
+leave it running" is a number in watts.
+
+### Updates
+
+```yaml
+type: custom:horos-updates-tile
+limit: 4
+```
+
+The second card that walks the states itself, on the same grounds as the offline one:
+the rule is objective — an `update` entity that is `on` — and Home Assistant scatters
+those across every integration and add-on it has.
+
+**A skipped version is not news.** HA keeps such an entity `on` for ever, and a card that
+keeps shouting about an update its owner has already waved away is a card one learns to
+ignore. Skipped ones are counted apart and stay out unless `include_skipped` asks.
+
+### Tasks
+
+```yaml
+type: custom:horos-tasks-tile
+calendar: calendar.family
+lists: [todo.shopping_list, todo.chores]
+```
+
+A `todo` entity's state is how much is left on it, which is the one number a dashboard
+can use; the items themselves are for the to-do card. The bars are shares of the longest
+list — the same relative scale the energy card uses, and for the same reason: the
+question is which list is the heavy one.
+
+The calendar fills the line with what is coming up next.
 
 ## Level rows
 

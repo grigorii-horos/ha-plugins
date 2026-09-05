@@ -33,11 +33,21 @@ const STATES: HassEntity[] = [
   entity("binary_sensor.hall_smoke", "off", { device_class: "smoke" }),
   entity("sensor.watch_battery", "57", { device_class: "battery" }),
   entity("sensor.hidden_battery", "10", { device_class: "battery" }),
+  entity("sensor.kitchen_temperature", "23", { device_class: "temperature" }),
   entity("binary_sensor.kitchen_area", "on", { device_class: "occupancy" }),
   entity("binary_sensor.kitchen_motion", "on", { device_class: "motion" }),
   entity("binary_sensor.bedroom_area", "off", { device_class: "occupancy" }),
   entity("binary_sensor.homeless_presence", "on", { device_class: "presence" }),
   entity("sensor.house_power", "430", { device_class: "power" }),
+  entity("light.kitchen_strip", "on", { brightness: 128 }),
+  entity("light.kitchen_lamp", "off"),
+  entity("light.lonely_lamp", "on"),
+  entity("media_player.kitchen_speaker", "playing", { volume_level: 0.4 }),
+  entity("media_player.kitchen_tv", "idle"),
+  entity("climate.kitchen_ac", "cool"),
+  entity("update.core", "on", { latest_version: "2026.9.1" }),
+  entity("todo.shopping", "3"),
+  entity("todo.chores", "1"),
 ];
 
 const DEVICES: Record<string, string> = {
@@ -59,6 +69,12 @@ const AREAS: Record<string, string> = {
   "binary_sensor.kitchen_area": "kitchen",
   "binary_sensor.kitchen_motion": "kitchen",
   "binary_sensor.bedroom_area": "bedroom",
+  "light.kitchen_strip": "kitchen",
+  "light.kitchen_lamp": "kitchen",
+  "media_player.kitchen_speaker": "kitchen",
+  "media_player.kitchen_tv": "kitchen",
+  "climate.kitchen_ac": "kitchen",
+  "sensor.kitchen_temperature": "kitchen",
 };
 
 const hass = {
@@ -204,6 +220,45 @@ describe("entity suggestions", () => {
       total: "sensor.house_power",
       consumers: ["sensor.boiler_power"],
       limit: 6,
+    });
+  });
+
+  it("a light suggests the lights of its area, not of the house", () => {
+    expect(config("horos-light-tile", "light.kitchen_strip")).toEqual({
+      type: "custom:horos-light-tile",
+      lights: ["light.kitchen_strip", "light.kitchen_lamp"],
+    });
+  });
+
+  it("a light with no area suggests nothing — a room is what makes a set", () => {
+    expect(suggest("horos-light-tile", "light.lonely_lamp")).toEqual([]);
+  });
+
+  it("a speaker suggests the players of its area", () => {
+    expect(config("horos-media-tile", "media_player.kitchen_speaker")).toEqual({
+      type: "custom:horos-media-tile",
+      players: ["media_player.kitchen_speaker", "media_player.kitchen_tv"],
+    });
+  });
+
+  it("a climate entity is paired with the room's own sensors", () => {
+    expect(config("horos-ac-tile", "climate.kitchen_ac")).toEqual({
+      type: "custom:horos-ac-tile",
+      climate: "climate.kitchen_ac",
+      temperature: "sensor.kitchen_temperature",
+    });
+  });
+
+  it("any update entity leads to the card that speaks for all of them", () => {
+    expect(config("horos-updates-tile", "update.core")).toEqual({
+      type: "custom:horos-updates-tile",
+    });
+  });
+
+  it("a to-do list suggests the card holding every list", () => {
+    expect(config("horos-tasks-tile", "todo.chores")).toEqual({
+      type: "custom:horos-tasks-tile",
+      lists: ["todo.chores", "todo.shopping"],
     });
   });
 

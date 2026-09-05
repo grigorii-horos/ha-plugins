@@ -21,6 +21,7 @@ import { buttonLabel } from "../src/core/buttons";
 import { mergeEntityList } from "../src/core/entity-lists";
 import { languageOf, t } from "../src/core/i18n";
 import { findOffline } from "../src/core/offline";
+import { findUpdates } from "../src/core/updates";
 import {
   levelColor,
   loadColor,
@@ -765,5 +766,72 @@ describe("finding what is not responding", () => {
 
   it("without hass — an empty list, not a crash", () => {
     expect(findOffline(undefined)).toEqual([]);
+  });
+});
+
+describe("finding what asks to be updated", () => {
+  const hass = {
+    ...fakeHass([
+      entity("update.core", "on", {
+        friendly_name: "Core Update",
+        title: "Home Assistant Core",
+        latest_version: "2026.9.1",
+      }),
+      entity("update.addon", "on", {
+        friendly_name: "Add-on Update",
+        latest_version: "3.0.0",
+        skipped_version: "3.0.0",
+      }),
+      entity("update.router", "on", { friendly_name: "Router firmware" }),
+      entity("update.quiet", "off", { friendly_name: "Nothing to do here" }),
+      entity("update.hidden_one", "on", { friendly_name: "Hidden" }),
+      entity("sensor.not_an_update", "on"),
+    ]),
+    entities: {
+      "update.router": { device_id: "router" },
+      "update.hidden_one": { hidden: true },
+    },
+    devices: { router: { name: "TP-Link", name_by_user: "Router" } },
+  };
+
+  it("counts the update entities that are on", () => {
+    expect(findUpdates(hass).map((u) => u.entityId)).toEqual([
+      "update.addon",
+      "update.core",
+      "update.router",
+    ]);
+  });
+
+  it("marks a version the owner has skipped instead of hiding it", () => {
+    const skipped = findUpdates(hass).filter((u) => u.skipped);
+    expect(skipped.map((u) => u.entityId)).toEqual(["update.addon"]);
+  });
+
+  it("names the device where there is one, the title otherwise", () => {
+    const byId = Object.fromEntries(findUpdates(hass).map((u) => [u.entityId, u.name]));
+    expect(byId["update.router"]).toBe("Router");
+    expect(byId["update.core"]).toBe("Home Assistant Core");
+  });
+
+  it("carries the offered version when the entity says", () => {
+    expect(findUpdates(hass)[1].version).toBe("2026.9.1");
+    expect(findUpdates(hass)[2].version).toBeUndefined();
+  });
+
+  it("skips hidden entities and everything outside the domain", () => {
+    const ids = findUpdates(hass).map((u) => u.entityId);
+    expect(ids).not.toContain("update.hidden_one");
+    expect(ids).not.toContain("sensor.not_an_update");
+    expect(ids).not.toContain("update.quiet");
+  });
+
+  it("ignores what it was told to ignore", () => {
+    expect(
+      findUpdates(hass, { ignore: ["update.core"] }).map((u) => u.entityId)
+    ).not.toContain("update.core");
+  });
+
+  it("without hass — an empty list, not a crash", () => {
+    expect(findUpdates(undefined)).toEqual([]);
   });
 });
