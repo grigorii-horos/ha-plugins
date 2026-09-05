@@ -88,7 +88,8 @@ export function allOfClass(
   entityId: string,
   domain: string,
   classes: string[],
-  cap: number = LIST_CAP
+  cap: number = LIST_CAP,
+  keep: (id: string) => boolean = () => true
 ): string[] {
   const rest = Object.keys(hass.states)
     .filter(
@@ -96,9 +97,69 @@ export function allOfClass(
         id !== entityId &&
         computeDomain(id) === domain &&
         classes.includes(deviceClassOf(hass, id) ?? "") &&
-        !hidden(hass, id)
+        !hidden(hass, id) &&
+        keep(id)
     )
     .sort();
+  const picked = keep(entityId) ? [entityId] : [];
+  return [...picked, ...rest].slice(0, cap);
+}
+
+/** Whether the entity belongs to a device at all. */
+export function hasDevice(hass: HomeAssistant, entityId: string): boolean {
+  return hass.entities?.[entityId]?.device_id !== undefined;
+}
+
+/** The area an entity sits in, its own or the one its device is placed in. */
+export function areaOf(
+  hass: HomeAssistant,
+  entityId: string
+): string | undefined {
+  const entry = hass.entities?.[entityId];
+  if (!entry) return undefined;
+  if (entry.area_id) return entry.area_id;
+  return entry.device_id ? hass.devices?.[entry.device_id]?.area_id : undefined;
+}
+
+/**
+ * One entity per area, classes tried in the order given.
+ *
+ * A house has several sensors watching the same room — a motion detector, a
+ * presence radar, the aggregate an integration derives from them — and listing
+ * all of them says "kitchen" three times. The registry knows which area each
+ * one is in, so the card takes the best one per area: whoever is first in
+ * `classes` wins, and the entity the user picked always keeps its area.
+ *
+ * Entities with no area are left out. They are not about a room.
+ */
+export function onePerArea(
+  hass: HomeAssistant,
+  entityId: string,
+  domain: string,
+  classes: string[],
+  cap: number = LIST_CAP
+): string[] {
+  const rank = (id: string) => classes.indexOf(deviceClassOf(hass, id) ?? "");
+  const candidates = Object.keys(hass.states)
+    .filter(
+      (id) =>
+        id !== entityId &&
+        computeDomain(id) === domain &&
+        rank(id) >= 0 &&
+        !hidden(hass, id) &&
+        areaOf(hass, id) !== undefined
+    )
+    .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+
+  const perArea = new Map<string, string>();
+  const pickedArea = areaOf(hass, entityId);
+  if (pickedArea) perArea.set(pickedArea, entityId);
+  for (const id of candidates) {
+    const area = areaOf(hass, id)!;
+    if (!perArea.has(area)) perArea.set(area, id);
+  }
+  const chosen = [...perArea.values()];
+  const rest = chosen.filter((id) => id !== entityId);
   return [entityId, ...rest].slice(0, cap);
 }
 

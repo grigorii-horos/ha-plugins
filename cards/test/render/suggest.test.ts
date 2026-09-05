@@ -33,6 +33,11 @@ const STATES: HassEntity[] = [
   entity("binary_sensor.hall_smoke", "off", { device_class: "smoke" }),
   entity("sensor.watch_battery", "57", { device_class: "battery" }),
   entity("sensor.hidden_battery", "10", { device_class: "battery" }),
+  entity("binary_sensor.kitchen_area", "on", { device_class: "occupancy" }),
+  entity("binary_sensor.kitchen_motion", "on", { device_class: "motion" }),
+  entity("binary_sensor.bedroom_area", "off", { device_class: "occupancy" }),
+  entity("binary_sensor.homeless_presence", "on", { device_class: "presence" }),
+  entity("sensor.house_power", "430", { device_class: "power" }),
 ];
 
 const DEVICES: Record<string, string> = {
@@ -50,11 +55,20 @@ const DEVICES: Record<string, string> = {
   "sensor.printer_uptime": "printer",
 };
 
+const AREAS: Record<string, string> = {
+  "binary_sensor.kitchen_area": "kitchen",
+  "binary_sensor.kitchen_motion": "kitchen",
+  "binary_sensor.bedroom_area": "bedroom",
+};
+
 const hass = {
   states: Object.fromEntries(STATES.map((e) => [e.entity_id, e])),
   entities: {
     ...Object.fromEntries(
       Object.entries(DEVICES).map(([id, device_id]) => [id, { device_id }])
+    ),
+    ...Object.fromEntries(
+      Object.entries(AREAS).map(([id, area_id]) => [id, { area_id }])
     ),
     "sensor.hidden_battery": { hidden: true },
   },
@@ -160,6 +174,36 @@ describe("entity suggestions", () => {
     // counter: the whole device is one card here.
     expect(config("horos-printer-tile", "sensor.printer_uptime")).toMatchObject({
       cartridges: ["sensor.printer_black", "sensor.printer_cyan"],
+    });
+  });
+
+  it("presence takes one sensor per area, the area aggregate winning", () => {
+    expect(config("horos-presence-tile", "binary_sensor.bedroom_area")).toEqual({
+      type: "custom:horos-presence-tile",
+      areas: ["binary_sensor.bedroom_area", "binary_sensor.kitchen_area"],
+    });
+  });
+
+  it("a presence sensor with no area is not about a room, so it is left out", () => {
+    const areas = config("horos-presence-tile", "binary_sensor.bedroom_area")
+      ?.areas as string[];
+    expect(areas).not.toContain("binary_sensor.homeless_presence");
+  });
+
+  it("energy keeps the metered plugs and leaves the house total out of them", () => {
+    expect(config("horos-energy-tile", "sensor.boiler_power")).toEqual({
+      type: "custom:horos-energy-tile",
+      consumers: ["sensor.boiler_power"],
+      limit: 6,
+    });
+  });
+
+  it("a device-less power sensor becomes the total instead of a consumer", () => {
+    expect(config("horos-energy-tile", "sensor.house_power")).toEqual({
+      type: "custom:horos-energy-tile",
+      total: "sensor.house_power",
+      consumers: ["sensor.boiler_power"],
+      limit: 6,
     });
   });
 

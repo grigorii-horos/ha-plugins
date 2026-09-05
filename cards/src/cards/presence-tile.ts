@@ -5,7 +5,7 @@ import { composeSegments, resolveRole, type Segment } from "../core/format";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
-import { allOfClass, deviceClassOf, suggestion } from "../core/suggest";
+import { deviceClassOf, onePerArea, suggestion } from "../core/suggest";
 import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
@@ -112,6 +112,7 @@ registerCard("horos-presence-tile", HorosPresenceTile, {
   },
   preview: true,
   suggest: (hass, entityId) => {
+    // The order is the priority: an area aggregate beats a motion detector.
     const classes = ["occupancy", "presence", "motion"];
     if (
       computeDomain(entityId) !== "binary_sensor" ||
@@ -122,7 +123,8 @@ registerCard("horos-presence-tile", HorosPresenceTile, {
     return suggestion(
       "custom:horos-presence-tile",
       {},
-      { areas: allOfClass(hass, entityId, "binary_sensor", classes, 12) }
+      // One entity per area: otherwise the kitchen gets named three times.
+      { areas: onePerArea(hass, entityId, "binary_sensor", classes, 12) }
     );
   },
 });

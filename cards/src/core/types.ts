@@ -23,9 +23,15 @@ export interface HomeAssistant {
   /** An absolute URL from an HA relative path — needed for entity pictures. */
   hassUrl: (path?: string) => string;
   /** The entity registry: needed to tell which device an entity belongs to. */
-  entities?: Record<string, { device_id?: string; hidden?: boolean }>;
-  /** The device registry: names for grouping. */
-  devices?: Record<string, { name?: string; name_by_user?: string }>;
+  entities?: Record<
+    string,
+    { device_id?: string; area_id?: string; hidden?: boolean }
+  >;
+  /** The device registry: names for grouping, areas for placing. */
+  devices?: Record<
+    string,
+    { name?: string; name_by_user?: string; area_id?: string }
+  >;
   /** The user's interface language. */
   language?: string;
   locale?: { language?: string };

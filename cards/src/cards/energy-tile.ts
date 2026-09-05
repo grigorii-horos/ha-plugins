@@ -14,7 +14,7 @@ import { stripDeviceName } from "../core/labels";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
-import { allOfClass, deviceClassOf, suggestion } from "../core/suggest";
+import { allOfClass, deviceClassOf, hasDevice, suggestion } from "../core/suggest";
 import { computeDomain } from "../core/state-color";
 import { t } from "../core/i18n";
 
@@ -160,13 +160,16 @@ registerCard("horos-energy-tile", HorosEnergyTile, {
     ) {
       return null;
     }
+    // A power sensor with no device is a template summing the house up into one
+    // number: its place is the total role, not a row among the consumers.
+    const consumers = allOfClass(hass, entityId, "sensor", ["power"], 12, (id) =>
+      hasDevice(hass, id)
+    );
+    if (!consumers.length) return null;
     return suggestion(
       "custom:horos-energy-tile",
-      {},
-      {
-        consumers: allOfClass(hass, entityId, "sensor", ["power"], 12),
-        limit: 6,
-      }
+      { total: hasDevice(hass, entityId) ? undefined : entityId },
+      { consumers, limit: 6 }
     );
   },
 });
