@@ -114,13 +114,16 @@ export class HorosLampTile extends BaseTileCard {
       }
 
       /*
-       * 42px is the height a stock feature gives its selector, and it is meant
-       * for bare icons: the climate modes hide their labels to fit. With names
-       * under the icons the option needs the icon, the line of text and the
-       * padding around both, so the row grows instead of clipping them.
+       * The row keeps the height a stock feature gives its selector; what
+       * shrinks is what goes inside it. At full size an icon over a line of
+       * text is 53px of content in a 42px row and the names get clipped, so
+       * both are taken down a notch. Size and font are inherited properties,
+       * which is why they reach into the selector's shadow from out here.
        */
       .lamp-controls.labelled ha-control-select {
-        --control-select-thickness: 56px;
+        --mdc-icon-size: 16px;
+        font-size: var(--ha-font-size-xs, 11px);
+        line-height: 1.1;
       }
     `,
   ];
@@ -140,15 +143,11 @@ export class HorosLampTile extends BaseTileCard {
   protected override contentRows(): number {
     const config = this._config;
     if (!config) return 0;
-    // A row of controls is about half a grid row; the presets take more when
-    // they carry names, because the option is then an icon above a line.
-    const steps = STEPS.some(({ key }) => config[key]) ? 0.5 : 0;
-    const presets = config.presets?.length
-      ? config.preset_labels === false
-        ? 0.5
-        : 0.75
-      : 0;
-    return Math.ceil(steps + presets);
+    // Every row of controls is about half a grid row tall.
+    const rows =
+      (STEPS.some(({ key }) => config[key]) ? 1 : 0) +
+      (config.presets?.length ? 1 : 0);
+    return Math.ceil(rows / 2);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
