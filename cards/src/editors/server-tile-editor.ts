@@ -1,24 +1,32 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   entitySelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosServerTileEditor extends FormCardEditor {
+export class HorosServerTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "status";
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       { name: "status", selector: { entity: {} } },
       { name: "disk", selector: entitySelector("sensor", "data_size") },
       { name: "download", selector: entitySelector("sensor", "data_rate") },
       { name: "upload", selector: entitySelector("sensor", "data_rate") },
       { name: "services", selector: { entity: { multiple: true } } },
+      contentSection("status", lang),
+      interactionsSection("status", "none"),
     ];
   }
 

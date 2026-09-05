@@ -1,18 +1,24 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
-  textSelector,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosPresenceTileEditor extends FormCardEditor {
+export class HorosPresenceTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return undefined;
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       {
         name: "areas",
         required: true,
@@ -27,6 +33,8 @@ export class HorosPresenceTileEditor extends FormCardEditor {
           },
         },
       },
+      contentSection(undefined, lang),
+      interactionsSection(undefined, "none"),
     ];
   }
 

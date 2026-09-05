@@ -1,10 +1,11 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   bigValuesSelector,
   entitySelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
@@ -12,11 +13,14 @@ import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosAirTileEditor extends FormCardEditor {
+export class HorosAirTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "appliance";
+  }
+
   protected get schema(): SchemaItem[] {
     const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       {
         name: "appliance",
         required: true,
@@ -39,15 +43,18 @@ export class HorosAirTileEditor extends FormCardEditor {
         name: "alerts",
         selector: { entity: { multiple: true, filter: [{ domain: "binary_sensor" }] } },
       },
-      {
-        name: "big_values",
-        selector: bigValuesSelector([
-          { value: "pm25", label: "PM2.5" },
-          { value: "humidity", label: lang === "ru" ? "Влажность" : "Humidity" },
-          { value: "temperature", label: lang === "ru" ? "Температура" : "Temperature" },
-          { value: "power", label: lang === "ru" ? "Мощность" : "Power" },
-        ]),
-      },
+      contentSection("appliance", lang, [
+        {
+          name: "big_values",
+          selector: bigValuesSelector([
+            { value: "pm25", label: "PM2.5" },
+            { value: "humidity", label: lang === "ru" ? "Влажность" : "Humidity" },
+            { value: "temperature", label: lang === "ru" ? "Температура" : "Temperature" },
+            { value: "power", label: lang === "ru" ? "Мощность" : "Power" },
+          ]),
+        },
+      ]),
+      interactionsSection("appliance", "toggle"),
     ];
   }
 

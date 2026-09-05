@@ -126,8 +126,12 @@ export abstract class FormCardEditor
 export abstract class BaseCardEditor extends FormCardEditor {
   @state() private _featuresEditorReady = false;
 
-  /** Имя поля конфига с главной сущностью — для контекста features. */
-  protected abstract get entityField(): string;
+  /**
+   * Имя поля конфига с главной сущностью. У карточек, собранных из списка
+   * равноправных сущностей, её нет — тогда features не предлагаются: их
+   * нечему адресовать.
+   */
+  protected abstract get entityField(): string | undefined;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -172,6 +176,11 @@ export abstract class BaseCardEditor extends FormCardEditor {
 
   /** Раздел features повторяет разметку редактора штатной плитки. */
   private _renderFeatures() {
+    const entityId = this.entityField
+      ? (this._config?.[this.entityField] as string | undefined)
+      : undefined;
+    if (!entityId) return nothing;
+
     const features = (this._config?.features ?? []) as unknown[];
     const labels = this.pick({ ru: COMMON_LABELS_RU, en: COMMON_LABELS_EN });
     const positions = this.pick({
@@ -186,7 +195,7 @@ export abstract class BaseCardEditor extends FormCardEditor {
         <div class="content">
           <hui-card-features-editor
             .hass=${this.hass}
-            .context=${{ entity_id: this._config?.[this.entityField] }}
+            .context=${{ entity_id: entityId }}
             .features=${features}
             @features-changed=${this._featuresChanged}
           ></hui-card-features-editor>
@@ -237,7 +246,12 @@ export abstract class BaseCardEditor extends FormCardEditor {
  * плитки это всегда `entity`, у нас — роль: `switch`, `temperature`, `moisture`.
  */
 export const contentSection = (
-  entityField: string,
+  /**
+   * Поле с главной сущностью. У части карточек её нет вовсе — батарейки,
+   * присутствие, безопасность собраны из списка равноправных сущностей, —
+   * и тогда имя вводится обычным текстом, а иконке нечего подсказывать.
+   */
+  entityField: string | undefined,
   language: string,
   /** Наше расширение раздела: что вынести крупно вправо. */
   extra: SchemaItem[] = []
@@ -247,11 +261,13 @@ export const contentSection = (
   flatten: true,
   icon: "mdi:text-short",
   schema: [
-    {
-      name: "name",
-      selector: { entity_name: {} },
-      context: { entity: entityField },
-    },
+    entityField
+      ? {
+          name: "name",
+          selector: { entity_name: {} },
+          context: { entity: entityField },
+        }
+      : { name: "name", selector: { text: {} } },
     {
       name: "",
       type: "grid",
@@ -259,7 +275,7 @@ export const contentSection = (
         {
           name: "icon",
           selector: { icon: {} },
-          context: { icon_entity: entityField },
+          ...(entityField ? { context: { icon_entity: entityField } } : {}),
         },
         {
           name: "color",
@@ -306,13 +322,11 @@ export const contentSection = (
   ],
 });
 
-const actionContext = (entityField: string) => ({
-  entity_id: entityField,
-  area_id: "area",
-});
+const actionContext = (entityField: string | undefined) =>
+  entityField ? { entity_id: entityField, area_id: "area" } : undefined;
 
 export const interactionsSection = (
-  entityField: string,
+  entityField: string | undefined,
   defaultIconAction: string
 ): SchemaItem => ({
   name: "interactions",

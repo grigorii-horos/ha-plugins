@@ -1,20 +1,26 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   entitySelector,
   numberSelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosEnergyTileEditor extends FormCardEditor {
+export class HorosEnergyTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "total";
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       { name: "total", selector: entitySelector("sensor", "power") },
       {
         name: "consumers",
@@ -27,6 +33,8 @@ export class HorosEnergyTileEditor extends FormCardEditor {
         },
       },
       { name: "limit", selector: numberSelector(1, 12) },
+      contentSection("total", lang),
+      interactionsSection("total", "none"),
     ];
   }
 

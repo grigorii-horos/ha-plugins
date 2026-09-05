@@ -1,19 +1,25 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   entitySelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosPrinterTileEditor extends FormCardEditor {
+export class HorosPrinterTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "status";
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       { name: "icon", selector: { icon: {} } },
       { name: "status", selector: entitySelector("sensor") },
       {
@@ -29,6 +35,8 @@ export class HorosPrinterTileEditor extends FormCardEditor {
         name: "sensors",
         selector: { entity: { multiple: true } },
       },
+      contentSection("status", lang),
+      interactionsSection("status", "none"),
     ];
   }
 

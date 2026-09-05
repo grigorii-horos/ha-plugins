@@ -1,10 +1,11 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   bigValuesSelector,
   entitySelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
@@ -12,11 +13,14 @@ import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosComputerTileEditor extends FormCardEditor {
+export class HorosComputerTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "status";
+  }
+
   protected get schema(): SchemaItem[] {
     const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       { name: "status", selector: { entity: {} } },
       { name: "cpu", selector: entitySelector("sensor") },
       { name: "memory", selector: entitySelector("sensor") },
@@ -37,16 +41,19 @@ export class HorosComputerTileEditor extends FormCardEditor {
         name: "alerts",
         selector: { entity: { multiple: true, filter: [{ domain: "binary_sensor" }] } },
       },
-      {
-        name: "big_values",
-        selector: bigValuesSelector([
-          { value: "temperature", label: lang === "ru" ? "Самая горячая точка" : "Hottest spot" },
-          { value: "cpu", label: lang === "ru" ? "Процессор" : "CPU" },
-          { value: "memory", label: lang === "ru" ? "Память" : "Memory" },
-          { value: "gpu", label: lang === "ru" ? "Видеокарта" : "GPU" },
-          { value: "disk", label: lang === "ru" ? "Самый полный диск" : "Fullest disk" },
-        ]),
-      },
+      contentSection("status", lang, [
+        {
+          name: "big_values",
+          selector: bigValuesSelector([
+            { value: "temperature", label: lang === "ru" ? "Самая горячая точка" : "Hottest spot" },
+            { value: "cpu", label: lang === "ru" ? "Процессор" : "CPU" },
+            { value: "memory", label: lang === "ru" ? "Память" : "Memory" },
+            { value: "gpu", label: lang === "ru" ? "Видеокарта" : "GPU" },
+            { value: "disk", label: lang === "ru" ? "Самый полный диск" : "Fullest disk" },
+          ]),
+        },
+      ]),
+      interactionsSection("status", "none"),
     ];
   }
 

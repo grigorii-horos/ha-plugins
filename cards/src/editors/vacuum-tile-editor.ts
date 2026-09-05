@@ -1,25 +1,33 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   entitySelector,
   numberSelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosVacuumTileEditor extends FormCardEditor {
+export class HorosVacuumTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "vacuum";
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       { name: "vacuum", required: true, selector: entitySelector("vacuum") },
       { name: "battery", selector: entitySelector("sensor", "battery") },
       { name: "sensors", selector: { entity: { multiple: true } } },
       { name: "consumables", selector: { entity: { multiple: true } } },
       { name: "low_below", selector: numberSelector(0, 100, "%") },
+      contentSection("vacuum", lang),
+      interactionsSection("vacuum", "none"),
     ];
   }
 

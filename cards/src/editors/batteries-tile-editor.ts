@@ -1,19 +1,25 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   numberSelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosBatteriesTileEditor extends FormCardEditor {
+export class HorosBatteriesTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return undefined;
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       {
         name: "batteries",
         required: true,
@@ -25,6 +31,8 @@ export class HorosBatteriesTileEditor extends FormCardEditor {
         },
       },
       { name: "low_below", selector: numberSelector(0, 100, "%") },
+      contentSection(undefined, lang),
+      interactionsSection(undefined, "none"),
     ];
   }
 

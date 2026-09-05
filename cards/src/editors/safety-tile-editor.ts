@@ -1,23 +1,31 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
-  textSelector,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosSafetyTileEditor extends FormCardEditor {
+export class HorosSafetyTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return undefined;
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       {
         name: "sensors",
         required: true,
         selector: { entity: { multiple: true, filter: [{ domain: "binary_sensor" }] } },
       },
+      contentSection(undefined, lang),
+      interactionsSection(undefined, "none"),
     ];
   }
 

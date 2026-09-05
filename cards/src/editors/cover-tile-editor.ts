@@ -1,32 +1,39 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   bigValuesSelector,
   entitySelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 
-export class HorosCoverTileEditor extends FormCardEditor {
+export class HorosCoverTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "cover";
+  }
+
   protected get schema(): SchemaItem[] {
     const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       { name: "cover", required: true, selector: entitySelector("cover") },
       { name: "position", selector: entitySelector("sensor") },
       { name: "illuminance", selector: entitySelector("sensor", "illuminance") },
       { name: "battery", selector: entitySelector("sensor", "battery") },
       { name: "controls", selector: { boolean: {} } },
-      {
-        name: "big_values",
-        selector: bigValuesSelector([
-          { value: "illuminance", label: lang === "ru" ? "Освещённость" : "Illuminance" },
-          { value: "battery", label: lang === "ru" ? "Заряд" : "Battery" },
-        ]),
-      },
+      contentSection("cover", lang, [
+        {
+          name: "big_values",
+          selector: bigValuesSelector([
+            { value: "illuminance", label: lang === "ru" ? "Освещённость" : "Illuminance" },
+            { value: "battery", label: lang === "ru" ? "Заряд" : "Battery" },
+          ]),
+        },
+      ]),
+      interactionsSection("cover", "none"),
     ];
   }
 

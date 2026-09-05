@@ -1,19 +1,25 @@
 import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
-  FormCardEditor,
+  BaseCardEditor,
+  contentSection,
+  interactionsSection,
   entitySelector,
-  textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
-export class HorosPersonTileEditor extends FormCardEditor {
+export class HorosPersonTileEditor extends BaseCardEditor {
+  protected get entityField(): string | undefined {
+    return "person";
+  }
+
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      { name: "name", selector: textSelector },
       {
         name: "person",
         required: true,
@@ -34,6 +40,8 @@ export class HorosPersonTileEditor extends FormCardEditor {
           },
         },
       },
+      contentSection("person", lang),
+      interactionsSection("person", "none"),
     ];
   }
 
