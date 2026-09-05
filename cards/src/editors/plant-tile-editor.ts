@@ -1,12 +1,13 @@
 import {
   BaseCardEditor,
-  appearanceSection,
+  contentSection,
   bigValuesSelector,
   entitySelector,
   numberSelector,
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 
 export class HorosPlantTileEditor extends BaseCardEditor {
@@ -15,12 +16,8 @@ export class HorosPlantTileEditor extends BaseCardEditor {
   }
 
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      {
-        name: "name",
-        selector: { entity_name: {} },
-        context: { entity: "moisture" },
-      },
       {
         name: "moisture",
         required: true,
@@ -33,15 +30,16 @@ export class HorosPlantTileEditor extends BaseCardEditor {
       { name: "battery", selector: entitySelector("sensor", "battery") },
       { name: "dry_below", selector: numberSelector(0, 100, "%") },
       { name: "wet_above", selector: numberSelector(0, 100, "%") },
-      {
-        name: "big_values",
-        selector: bigValuesSelector([
-          { value: "moisture", label: "Влажность почвы" },
-          { value: "temperature", label: "Температура почвы" },
-          { value: "battery", label: "Заряд датчика" },
-        ]),
-      },
-      appearanceSection("moisture"),
+      contentSection("moisture", lang, [
+        {
+          name: "big_values",
+          selector: bigValuesSelector([
+            { value: "moisture", label: lang === "ru" ? "Влажность почвы" : "Soil moisture" },
+            { value: "temperature", label: lang === "ru" ? "Температура почвы" : "Soil temperature" },
+            { value: "battery", label: lang === "ru" ? "Заряд датчика" : "Sensor battery" },
+          ]),
+        },
+      ]),
       interactionsSection("moisture", "none"),
     ];
   }

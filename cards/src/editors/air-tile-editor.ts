@@ -7,12 +7,14 @@ import {
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
 export class HorosAirTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
       { name: "name", selector: textSelector },
       {
@@ -41,9 +43,9 @@ export class HorosAirTileEditor extends FormCardEditor {
         name: "big_values",
         selector: bigValuesSelector([
           { value: "pm25", label: "PM2.5" },
-          { value: "humidity", label: "Влажность" },
-          { value: "temperature", label: "Температура" },
-          { value: "power", label: "Мощность" },
+          { value: "humidity", label: lang === "ru" ? "Влажность" : "Humidity" },
+          { value: "temperature", label: lang === "ru" ? "Температура" : "Temperature" },
+          { value: "power", label: lang === "ru" ? "Мощность" : "Power" },
         ]),
       },
     ];

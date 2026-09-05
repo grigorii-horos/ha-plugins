@@ -7,12 +7,14 @@ import {
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
 export class HorosComputerTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
       { name: "name", selector: textSelector },
       { name: "status", selector: { entity: {} } },
@@ -38,11 +40,11 @@ export class HorosComputerTileEditor extends FormCardEditor {
       {
         name: "big_values",
         selector: bigValuesSelector([
-          { value: "temperature", label: "Самая горячая точка" },
-          { value: "cpu", label: "Процессор" },
-          { value: "memory", label: "Память" },
-          { value: "gpu", label: "Видеокарта" },
-          { value: "disk", label: "Самый полный диск" },
+          { value: "temperature", label: lang === "ru" ? "Самая горячая точка" : "Hottest spot" },
+          { value: "cpu", label: lang === "ru" ? "Процессор" : "CPU" },
+          { value: "memory", label: lang === "ru" ? "Память" : "Memory" },
+          { value: "gpu", label: lang === "ru" ? "Видеокарта" : "GPU" },
+          { value: "disk", label: lang === "ru" ? "Самый полный диск" : "Fullest disk" },
         ]),
       },
     ];

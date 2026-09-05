@@ -1,12 +1,13 @@
 import {
   BaseCardEditor,
-  appearanceSection,
+  contentSection,
   bigValuesSelector,
   booleanSelector,
   entitySelector,
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 
 export class HorosPlugTileEditor extends BaseCardEditor {
@@ -15,25 +16,22 @@ export class HorosPlugTileEditor extends BaseCardEditor {
   }
 
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      {
-        name: "name",
-        selector: { entity_name: {} },
-        context: { entity: "switch" },
-      },
       { name: "switch", required: true, selector: entitySelector("switch") },
       { name: "power", selector: entitySelector("sensor", "power") },
       { name: "energy", selector: entitySelector("sensor", "energy") },
-      {
-        name: "big_values",
-        selector: bigValuesSelector([
-          { value: "power", label: "Мощность" },
-          { value: "energy", label: "Энергия" },
-          { value: "switch", label: "Состояние" },
-        ]),
-      },
       { name: "toggle_button", selector: booleanSelector },
-      appearanceSection("switch"),
+      contentSection("switch", lang, [
+        {
+          name: "big_values",
+          selector: bigValuesSelector([
+            { value: "power", label: lang === "ru" ? "Мощность" : "Power" },
+            { value: "energy", label: lang === "ru" ? "Энергия" : "Energy" },
+            { value: "switch", label: lang === "ru" ? "Состояние" : "State" },
+          ]),
+        },
+      ]),
       interactionsSection("switch", "toggle"),
     ];
   }

@@ -1,11 +1,12 @@
 import {
   BaseCardEditor,
-  appearanceSection,
+  contentSection,
   bigValuesSelector,
   entitySelector,
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 
 export class HorosClimateTileEditor extends BaseCardEditor {
@@ -14,12 +15,8 @@ export class HorosClimateTileEditor extends BaseCardEditor {
   }
 
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
-      {
-        name: "name",
-        selector: { entity_name: {} },
-        context: { entity: "temperature" },
-      },
       {
         name: "temperature",
         required: true,
@@ -31,16 +28,17 @@ export class HorosClimateTileEditor extends BaseCardEditor {
         selector: entitySelector("sensor", "illuminance"),
       },
       { name: "pm25", selector: entitySelector("sensor", "pm25") },
-      {
-        name: "big_values",
-        selector: bigValuesSelector([
-          { value: "temperature", label: "Температура" },
-          { value: "humidity", label: "Влажность" },
-          { value: "illuminance", label: "Освещённость" },
-          { value: "pm25", label: "PM2.5" },
-        ]),
-      },
-      appearanceSection("temperature"),
+      contentSection("temperature", lang, [
+        {
+          name: "big_values",
+          selector: bigValuesSelector([
+            { value: "temperature", label: lang === "ru" ? "Температура" : "Temperature" },
+            { value: "humidity", label: lang === "ru" ? "Влажность" : "Humidity" },
+            { value: "illuminance", label: lang === "ru" ? "Освещённость" : "Illuminance" },
+            { value: "pm25", label: "PM2.5" },
+          ]),
+        },
+      ]),
       interactionsSection("temperature", "none"),
     ];
   }

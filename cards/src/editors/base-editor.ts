@@ -67,8 +67,25 @@ export abstract class FormCardEditor
     return languageOf(this.hass) === "ru" ? dicts.ru : dicts.en;
   }
 
-  private _computeLabel = (item: SchemaItem): string =>
-    this.labels[item.name] ?? item.name;
+  /** Подсказки под полями. У штатной плитки такая есть под цветом. */
+  protected _computeHelper = (item: SchemaItem): string | undefined =>
+    item.name === "color"
+      ? this.pick({
+          ru: {
+            color:
+              "Неактивное состояние (например, off или closed) окрашено не будет.",
+          },
+          en: {
+            color:
+              "Inactive state (for example, off or closed) will not be coloured.",
+          },
+        }).color
+      : undefined;
+
+  protected _computeLabel = (item: SchemaItem): string =>
+    this.labels[item.name] ??
+    this.pick({ ru: COMMON_LABELS_RU, en: COMMON_LABELS_EN })[item.name] ??
+    item.name;
 
   protected fireConfigChanged(config: Record<string, unknown>): void {
     this.dispatchEvent(
@@ -80,7 +97,7 @@ export abstract class FormCardEditor
     );
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  protected _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     this.fireConfigChanged(
       this.fromForm(ev.detail.value as Record<string, unknown>)
@@ -95,6 +112,7 @@ export abstract class FormCardEditor
         .data=${this.formData}
         .schema=${this.schema}
         .computeLabel=${this._computeLabel}
+        .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -152,23 +170,61 @@ export abstract class BaseCardEditor extends FormCardEditor {
     return config;
   }
 
+  /** Раздел features повторяет разметку редактора штатной плитки. */
+  private _renderFeatures() {
+    const features = (this._config?.features ?? []) as unknown[];
+    const labels = this.pick({ ru: COMMON_LABELS_RU, en: COMMON_LABELS_EN });
+    const positions = this.pick({
+      ru: { bottom: "Снизу", inline: "В строке" },
+      en: { bottom: "Bottom", inline: "Inline" },
+    });
+
+    return html`
+      <ha-expansion-panel outlined>
+        <ha-icon slot="leading-icon" icon="mdi:list-box"></ha-icon>
+        <h3 slot="header">${labels.features}</h3>
+        <div class="content">
+          <hui-card-features-editor
+            .hass=${this.hass}
+            .context=${{ entity_id: this._config?.[this.entityField] }}
+            .features=${features}
+            @features-changed=${this._featuresChanged}
+          ></hui-card-features-editor>
+          ${features.length
+            ? html`
+                <ha-form
+                  .hass=${this.hass}
+                  .data=${this._config}
+                  .schema=${[
+                    {
+                      name: "features_position",
+                      required: true,
+                      selector: {
+                        select: {
+                          mode: "box",
+                          options: [
+                            { value: "bottom", label: positions.bottom },
+                            { value: "inline", label: positions.inline },
+                          ],
+                        },
+                      },
+                    },
+                  ]}
+                  .computeLabel=${this._computeLabel}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `
+            : nothing}
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
   protected override render() {
     if (!this.hass || !this._config) return nothing;
     return html`
       ${this.renderForm()}
-      ${this._featuresEditorReady
-        ? html`
-            <hui-card-features-editor
-              .hass=${this.hass}
-              .context=${{
-                entity_id: this._config[this.entityField] as string,
-              }}
-              .features=${(this._config.features ?? []) as unknown[]}
-              label="Features"
-              @features-changed=${this._featuresChanged}
-            ></hui-card-features-editor>
-          `
-        : nothing}
+      ${this._featuresEditorReady ? this._renderFeatures() : nothing}
     `;
   }
 }
@@ -180,12 +236,22 @@ export abstract class BaseCardEditor extends FormCardEditor {
  * `entityField` — имя поля конфига с главной сущностью карточки. У штатной
  * плитки это всегда `entity`, у нас — роль: `switch`, `temperature`, `moisture`.
  */
-export const appearanceSection = (entityField: string): SchemaItem => ({
-  name: "appearance",
+export const contentSection = (
+  entityField: string,
+  language: string,
+  /** Наше расширение раздела: что вынести крупно вправо. */
+  extra: SchemaItem[] = []
+): SchemaItem => ({
+  name: "content",
   type: "expandable",
   flatten: true,
   icon: "mdi:text-short",
   schema: [
+    {
+      name: "name",
+      selector: { entity_name: {} },
+      context: { entity: entityField },
+    },
     {
       name: "",
       type: "grid",
@@ -214,7 +280,7 @@ export const appearanceSection = (entityField: string): SchemaItem => ({
           options: [
             {
               value: "horizontal",
-              label: "Горизонтальная",
+              label: language === "ru" ? "Горизонтальная" : "Horizontal",
               image: {
                 src: "/static/images/form/tile_content_layout_horizontal.svg",
                 src_dark:
@@ -224,7 +290,7 @@ export const appearanceSection = (entityField: string): SchemaItem => ({
             },
             {
               value: "vertical",
-              label: "Вертикальная",
+              label: language === "ru" ? "Вертикальная" : "Vertical",
               image: {
                 src: "/static/images/form/tile_content_layout_vertical.svg",
                 src_dark:
@@ -236,6 +302,7 @@ export const appearanceSection = (entityField: string): SchemaItem => ({
         },
       },
     },
+    ...extra,
   ],
 });
 
@@ -283,13 +350,15 @@ export const interactionsSection = (
 });
 
 export const COMMON_LABELS_RU: Record<string, string> = {
-  appearance: "Внешний вид",
+  content: "Содержимое",
   interactions: "Взаимодействия",
   icon: "Иконка",
   color: "Цвет",
   content_layout: "Раскладка",
-  show_entity_picture: "Картинка сущности",
-  hide_state: "Скрыть вторичную строку",
+  show_entity_picture: "Показывать картинку сущности",
+  hide_state: "Скрыть состояние",
+  features: "Features",
+  features_position: "Расположение features",
   tap_action: "Тап по карточке",
   hold_action: "Долгое нажатие на карточку",
   double_tap_action: "Двойной тап по карточке",
@@ -299,13 +368,15 @@ export const COMMON_LABELS_RU: Record<string, string> = {
 };
 
 export const COMMON_LABELS_EN: Record<string, string> = {
-  appearance: "Appearance",
+  content: "Content",
   interactions: "Interactions",
   icon: "Icon",
   color: "Colour",
   content_layout: "Layout",
-  show_entity_picture: "Entity picture",
-  hide_state: "Hide secondary line",
+  show_entity_picture: "Show entity picture",
+  hide_state: "Hide state",
+  features: "Features",
+  features_position: "Features position",
   tap_action: "Tap on card",
   hold_action: "Hold on card",
   double_tap_action: "Double tap on card",
@@ -337,7 +408,10 @@ export const numberSelector = (
 
 export const textSelector: Record<string, unknown> = { text: {} };
 
-/** Выбор ролей для правой колонки: не больше двух, иначе строка разваливается. */
+/**
+ * Выбор ролей для правой колонки. Варианты приходят парой языков: подписи
+ * внутри селектора HA не переводит, это наши строки.
+ */
 export const bigValuesSelector = (
   options: { value: string; label: string }[]
 ): Record<string, unknown> => ({

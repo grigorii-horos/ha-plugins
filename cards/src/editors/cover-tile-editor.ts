@@ -7,10 +7,12 @@ import {
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
 
 export class HorosCoverTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
+    const lang = languageOf(this.hass);
     return [
       { name: "name", selector: textSelector },
       { name: "cover", required: true, selector: entitySelector("cover") },
@@ -21,8 +23,8 @@ export class HorosCoverTileEditor extends FormCardEditor {
       {
         name: "big_values",
         selector: bigValuesSelector([
-          { value: "illuminance", label: "Освещённость" },
-          { value: "battery", label: "Заряд" },
+          { value: "illuminance", label: lang === "ru" ? "Освещённость" : "Illuminance" },
+          { value: "battery", label: lang === "ru" ? "Заряд" : "Battery" },
         ]),
       },
     ];
