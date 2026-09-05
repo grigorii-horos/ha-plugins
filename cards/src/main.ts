@@ -23,6 +23,8 @@ import "./cards/media-tile";
 import "./cards/ac-tile";
 import "./cards/updates-tile";
 import "./cards/tasks-tile";
+import "./cards/alerts-tile";
+import "./cards/lamp-tile";
 
 // eslint-disable-next-line no-console
 console.info(

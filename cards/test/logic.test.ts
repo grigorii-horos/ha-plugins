@@ -22,6 +22,7 @@ import { mergeEntityList } from "../src/core/entity-lists";
 import { languageOf, t } from "../src/core/i18n";
 import { findOffline } from "../src/core/offline";
 import { findUpdates } from "../src/core/updates";
+import { firingStates, isFiring } from "../src/core/alerts";
 import {
   levelColor,
   loadColor,
@@ -833,5 +834,32 @@ describe("finding what asks to be updated", () => {
 
   it("without hass — an empty list, not a crash", () => {
     expect(findUpdates(undefined)).toEqual([]);
+  });
+});
+
+describe("when an alert counts as fired", () => {
+  it("a binary sensor needs no configuration", () => {
+    expect(firingStates({ entity: "binary_sensor.a" })).toEqual(["on"]);
+    expect(isFiring({ entity: "binary_sensor.a" }, "on")).toBe(true);
+    expect(isFiring({ entity: "binary_sensor.a" }, "off")).toBe(false);
+  });
+
+  it("anything else says which states count", () => {
+    const printer = { entity: "sensor.printer", alert_when: ["jam", "error"] };
+    expect(isFiring(printer, "jam")).toBe(true);
+    expect(isFiring(printer, "error")).toBe(true);
+    expect(isFiring(printer, "idle")).toBe(false);
+  });
+
+  it("one state can be given without a list", () => {
+    expect(isFiring({ entity: "cover.door", alert_when: "open" }, "open")).toBe(true);
+  });
+
+  it("no data is never a firing: the card says that separately", () => {
+    const item = { entity: "binary_sensor.a", alert_when: ["unavailable", "on"] };
+    expect(isFiring(item, "unavailable")).toBe(false);
+    expect(isFiring(item, "unknown")).toBe(false);
+    expect(isFiring(item, undefined)).toBe(false);
+    expect(isFiring(item, "on")).toBe(true);
   });
 });

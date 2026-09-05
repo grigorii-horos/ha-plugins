@@ -47,6 +47,15 @@ const RU: Dict = {
   "list.missing.few": "{count} не найдены",
   "list.missing.many": "{count} не найдено",
 
+  "alerts.title": "Оповещения",
+  "alerts.calm": "Всё тихо, {count} под присмотром",
+  "alerts.offline": "{name}: нет связи",
+
+  "lamp.title": "Лампа",
+  "lamp.bright": "Ярче",
+  "lamp.dim": "Тусклее",
+  "lamp.warm": "Теплее",
+  "lamp.cold": "Холоднее",
   "light.title": "Свет",
   "light.count": "Горит {count} из {total}",
   "light.allOff": "Все выключены",
@@ -117,6 +126,15 @@ const EN: Dict = {
   "list.missing.one": "{count} not found",
   "list.missing.many": "{count} not found",
 
+  "alerts.title": "Alerts",
+  "alerts.calm": "All quiet, {count} watched",
+  "alerts.offline": "{name}: no connection",
+
+  "lamp.title": "Lamp",
+  "lamp.bright": "Brighter",
+  "lamp.dim": "Dimmer",
+  "lamp.warm": "Warmer",
+  "lamp.cold": "Colder",
   "light.title": "Lights",
   "light.count": "{count} of {total} on",
   "light.allOff": "All off",

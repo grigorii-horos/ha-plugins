@@ -1,6 +1,6 @@
 # Horos cards for Home Assistant
 
-Twenty-one Lovelace cards that pack several entities into a single tile — grouped by
+Twenty-three Lovelace cards that pack several entities into a single tile — grouped by
 device or by meaning.
 
 ![Cards](docs/images/hero.png)
@@ -357,6 +357,31 @@ ignore: [sensor.flaky_one]
 ignore_domains: [update]
 ```
 
+### Alerts — `horos-alerts-tile`
+
+![Alerts](docs/images/alerts.png)
+
+Everything worth mentioning only once it happens: a filter that wants changing, a
+computer asking to reboot, a pump reporting a problem. Quiet by design — while nothing
+has fired it is one line saying how many things it watches.
+
+An alert that lost connection counts as a problem of its own: a sensor that is
+`unavailable` will not fire when the thing it watches happens, and its silence looks
+exactly like good news.
+
+```yaml
+type: custom:horos-alerts-tile
+limit: 4
+watch_offline: true
+alerts:
+  - entity: binary_sensor.purifier_replace_filter
+    name: Filter
+  - binary_sensor.desktop_required_restart
+  - entity: sensor.printer_status      # anything else says what counts as fired
+    name: Printer
+    alert_when: [jam, error]
+```
+
 ### Updates — `horos-updates-tile`
 
 ![Updates](docs/images/updates.png)
@@ -386,6 +411,39 @@ lists:
   - entity: todo.shopping_list
     name: Shopping
   - todo.chores
+```
+
+### Script lamp — `horos-lamp-tile`
+
+![Script lamp](docs/images/lamp.png)
+
+Infrared lamps and cheap strips have nothing to switch: they are a remote control, and
+Home Assistant reaches them through one script per press. This card takes those scripts
+as roles — `bright` and `dim` are two halves of one control, `warm` and `cold` of
+another, presets are the looks the lamp can take — and draws them in Home Assistant's
+own control language, the button group its cover feature uses and the segmented selector
+its climate modes use.
+
+The state is a separate, optional role: with an infrared lamp nobody knows whether it is
+on, and the card does not pretend otherwise. Point it at an `input_boolean` (or a real
+light) and the line, the colour and the icon start telling the truth.
+
+```yaml
+type: custom:horos-lamp-tile
+name: Bedroom lamp
+state: input_boolean.bedroom_lamp     # optional
+power: script.lamp_on_off             # what the icon runs
+bright: script.lamp_brighter
+dim: script.lamp_dimmer
+warm: script.lamp_warmer
+cold: script.lamp_colder
+presets:
+  - entity: script.lamp_full
+    name: 100%
+    icon: mdi:white-balance-sunny
+  - entity: script.lamp_night
+    name: Night
+    icon: mdi:weather-night
 ```
 
 ### Buttons — `horos-buttons-tile`

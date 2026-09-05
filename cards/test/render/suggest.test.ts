@@ -48,6 +48,8 @@ const STATES: HassEntity[] = [
   entity("update.core", "on", { latest_version: "2026.9.1" }),
   entity("todo.shopping", "3"),
   entity("todo.chores", "1"),
+  entity("binary_sensor.pump_problem", "on", { device_class: "problem" }),
+  entity("binary_sensor.box_tamper", "off", { device_class: "tamper" }),
 ];
 
 const DEVICES: Record<string, string> = {
@@ -259,6 +261,13 @@ describe("entity suggestions", () => {
     expect(config("horos-tasks-tile", "todo.chores")).toEqual({
       type: "custom:horos-tasks-tile",
       lists: ["todo.chores", "todo.shopping"],
+    });
+  });
+
+  it("a problem sensor suggests the alerts card with the quiet ones too", () => {
+    expect(config("horos-alerts-tile", "binary_sensor.pump_problem")).toEqual({
+      type: "custom:horos-alerts-tile",
+      alerts: ["binary_sensor.pump_problem", "binary_sensor.box_tamper"],
     });
   });
 

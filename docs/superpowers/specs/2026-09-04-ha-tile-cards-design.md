@@ -50,11 +50,11 @@ same way, through the stock tile's `getConfigElement()`.
 
 ## Scope
 
-Twenty-one cards. Twenty are tiles: one line, roles, a right-hand column of values.
-Script buttons are a grid: a heading and a lattice of ready-made HA cards.
+Twenty-three cards. Twenty-two are tiles: one line, roles, a right-hand column of
+values. Script buttons are a grid: a heading and a lattice of ready-made HA cards.
 
-Five of them came later, once the first sixteen had been living on a real dashboard:
-lights, media, a climate unit, updates and to-do lists.
+Seven of them came later, once the first sixteen had been living on a real dashboard:
+lights, media, a climate unit, updates, to-do lists, alerts and a script-driven lamp.
 
 A thermostatic valve card was considered and dropped — not needed.
 
@@ -573,6 +573,62 @@ list — the same relative scale the energy card uses, and for the same reason: 
 question is which list is the heavy one.
 
 The calendar fills the line with what is coming up next.
+
+### Alerts
+
+```yaml
+type: custom:horos-alerts-tile
+alerts:
+  - binary_sensor.purifier_replace_filter
+  - entity: sensor.printer_status
+    alert_when: [jam, error]
+```
+
+Several cards already carry an `alerts` role, because a filter that wants changing
+belongs next to the purifier it is in. What was missing was the tile for the ones that
+belong to nothing in particular, and for the case where there are five of them.
+
+**The card is quiet by design.** While nothing has fired it is one line saying how many
+things it watches; a card that always shows something is read as decoration. The same
+reasoning as the safety card, and the same rule about silence: an alert that is
+`unavailable` cannot fire, so it is reported rather than counted as good news.
+
+A binary sensor needs no configuration — `on` is what firing looks like. Anything else
+says so itself through `alert_when`, and `unavailable`/`unknown` never count as fired
+even when listed: an entity with no data has told us nothing.
+
+### Script lamp
+
+```yaml
+type: custom:horos-lamp-tile
+state: input_boolean.bedroom_lamp
+power: script.lamp_on_off
+bright: script.lamp_brighter
+dim: script.lamp_dimmer
+presets: [script.lamp_full, script.lamp_night]
+```
+
+An infrared lamp has nothing to switch: it is a remote control, and HA reaches it
+through one script per press. Laid out as the buttons card it is a grid of eight squares
+for one lamp, and it reads as a keypad.
+
+**The scripts go in as roles, not as a list.** `bright` and `dim` are the two halves of
+one control, `warm` and `cold` of another, presets are the looks the lamp can take. That
+is what lets the card draw them the way Home Assistant draws a light: the button group
+its cover feature uses, the segmented selector its climate modes use.
+
+Those controls — `ha-control-button`, `ha-control-button-group`, `ha-control-select` —
+arrive with the feature bundles rather than with the tile, and features load on demand:
+a dashboard whose cards have no features has none of them. `ensureControls` in
+`core/ha-internals.ts` pulls them in the same way the tile itself is pulled in, by
+rendering a tile that asks for a couple of features out of sight. Rendering is the
+operative word: Lit imports them while rendering, not while being constructed, so the
+probe has to be attached to the document.
+
+**The state stays optional and separate.** With an infrared lamp nobody knows whether it
+is on. Point the card at an `input_boolean` somebody flips alongside the script and the
+line, the colour and the icon start telling the truth; leave it out and the card says
+nothing about the state rather than guessing.
 
 ## Level rows
 

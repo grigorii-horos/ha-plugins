@@ -21,7 +21,19 @@ const REQUIRED_ELEMENTS = [
   "hui-card-features",
 ] as const;
 
+/**
+ * The controls a stock feature is built from: the button row of the cover
+ * feature, the segmented selector of the climate modes. They arrive with the
+ * feature bundles rather than with the tile, so they need a nudge of their own.
+ */
+const CONTROL_ELEMENTS = [
+  "ha-control-button",
+  "ha-control-button-group",
+  "ha-control-select",
+] as const;
+
 let pending: Promise<boolean> | undefined;
+let pendingControls: Promise<boolean> | undefined;
 let pendingEditor: Promise<boolean> | undefined;
 
 interface CardHelpers {
@@ -64,6 +76,52 @@ export function ensureTileInternals(): Promise<boolean> {
   })();
 
   return pending;
+}
+
+/**
+ * true — HA's own controls are available.
+ *
+ * A feature element imports them, and features are loaded on demand, so a
+ * dashboard whose cards have no features has none of them. Rendering a tile
+ * that asks for a couple of features is what pulls them in; the tile is
+ * attached out of sight because Lit imports them while rendering, not while
+ * being constructed.
+ */
+export function ensureControls(): Promise<boolean> {
+  if (pendingControls) return pendingControls;
+
+  pendingControls = (async () => {
+    if (CONTROL_ELEMENTS.every((tag) => customElements.get(tag))) return true;
+    await ensureTileInternals();
+
+    const loader = (
+      window as unknown as { loadCardHelpers?: () => Promise<CardHelpers> }
+    ).loadCardHelpers;
+    let probe: HTMLElement | undefined;
+    try {
+      const helpers = await loader?.();
+      probe = helpers?.createCardElement?.({
+        type: "tile",
+        entity: "sun.sun",
+        features: [{ type: "cover-open-close" }, { type: "climate-hvac-modes" }],
+      });
+      if (probe) {
+        probe.style.position = "absolute";
+        probe.style.left = "-9999px";
+        document.body.appendChild(probe);
+      }
+    } catch {
+      // The features do not fit sun.sun — the import is all we are after.
+    }
+
+    const results = await Promise.all(
+      CONTROL_ELEMENTS.map((tag) => whenDefined(tag, REGISTRATION_TIMEOUT))
+    );
+    probe?.remove();
+    return results.every(Boolean);
+  })();
+
+  return pendingControls;
 }
 
 /**
