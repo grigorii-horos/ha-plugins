@@ -112,6 +112,16 @@ export class HorosLampTile extends BaseTileCard {
         --control-select-border-radius: 12px;
         --control-select-button-border-radius: 12px;
       }
+
+      /*
+       * 42px is the height a stock feature gives its selector, and it is meant
+       * for bare icons: the climate modes hide their labels to fit. With names
+       * under the icons the option needs the icon, the line of text and the
+       * padding around both, so the row grows instead of clipping them.
+       */
+      .lamp-controls.labelled ha-control-select {
+        --control-select-thickness: 56px;
+      }
     `,
   ];
 
@@ -130,11 +140,15 @@ export class HorosLampTile extends BaseTileCard {
   protected override contentRows(): number {
     const config = this._config;
     if (!config) return 0;
-    const rows =
-      (STEPS.some(({ key }) => config[key]) ? 1 : 0) +
-      (config.presets?.length ? 1 : 0);
-    // Every row of controls is about half a grid row tall.
-    return Math.ceil(rows / 2);
+    // A row of controls is about half a grid row; the presets take more when
+    // they carry names, because the option is then an icon above a line.
+    const steps = STEPS.some(({ key }) => config[key]) ? 0.5 : 0;
+    const presets = config.presets?.length
+      ? config.preset_labels === false
+        ? 0.5
+        : 0.75
+      : 0;
+    return Math.ceil(steps + presets);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -281,7 +295,12 @@ export class HorosLampTile extends BaseTileCard {
           ? [{ type: "light-brightness" }]
           : undefined,
       customFeatures: this._controlsReady
-        ? html`<div class="lamp-controls">
+        ? html`<div
+            class="lamp-controls ${config.presets?.length &&
+            config.preset_labels !== false
+              ? "labelled"
+              : ""}"
+          >
             ${this._renderSteps(config)}${this._renderPresets(config)}
           </div>`
         : undefined,

@@ -3772,6 +3772,16 @@ class nt extends $ {
         --control-select-border-radius: 12px;
         --control-select-button-border-radius: 12px;
       }
+
+      /*
+       * 42px is the height a stock feature gives its selector, and it is meant
+       * for bare icons: the climate modes hide their labels to fit. With names
+       * under the icons the option needs the icon, the line of text and the
+       * padding around both, so the row grows instead of clipping them.
+       */
+      .lamp-controls.labelled ha-control-select {
+        --control-select-thickness: 56px;
+      }
     `
     ];
   }
@@ -3783,8 +3793,8 @@ class nt extends $ {
   contentRows() {
     const e = this._config;
     if (!e) return 0;
-    const t = (We.some(({ key: r }) => e[r]) ? 1 : 0) + (e.presets?.length ? 1 : 0);
-    return Math.ceil(t / 2);
+    const t = We.some(({ key: n }) => e[n]) ? 0.5 : 0, r = e.presets?.length ? e.preset_labels === !1 ? 0.5 : 0.75 : 0;
+    return Math.ceil(t + r);
   }
   static async getConfigElement() {
     return await Promise.resolve().then(() => Ai), document.createElement(
@@ -3885,7 +3895,9 @@ class nt extends $ {
       ]),
       // A real light keeps its stock slider: nothing we draw beats it.
       ownFeatures: i && e.brightness !== !1 ? [{ type: "light-brightness" }] : void 0,
-      customFeatures: this._controlsReady ? _`<div class="lamp-controls">
+      customFeatures: this._controlsReady ? _`<div
+            class="lamp-controls ${e.presets?.length && e.preset_labels !== !1 ? "labelled" : ""}"
+          >
             ${this._renderSteps(e)}${this._renderPresets(e)}
           </div>` : void 0
     });
@@ -3907,7 +3919,7 @@ E("horos-lamp-tile", nt, {
   preview: !0
 });
 console.info(
-  "%c HOROS-CARDS %c 0.3.0 ",
+  "%c HOROS-CARDS %c 0.3.1 ",
   "background:#03a9f4;color:#fff;border-radius:3px 0 0 3px;padding:2px 4px",
   "background:#555;color:#fff;border-radius:0 3px 3px 0;padding:2px 4px"
 );
