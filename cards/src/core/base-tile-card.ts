@@ -7,7 +7,11 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators.js";
 import { tileStyles } from "./tile-styles";
-import type { HomeAssistant, HassEntity } from "./types";
+import type {
+  HomeAssistant,
+  HassEntity,
+  LovelaceGridOptions,
+} from "./types";
 import {
   SECONDARY_SEPARATOR,
   UNAVAILABLE_STATES,
@@ -24,6 +28,7 @@ import {
 } from "./actions";
 import { ensureTileInternals } from "./ha-internals";
 import { ROLE_ICONS } from "./role-icons";
+import { t } from "./i18n";
 
 export interface FormattedValue {
   value: string;
@@ -108,8 +113,33 @@ export abstract class BaseTileCard extends LitElement {
 
   private _defaultIconAction?: ActionConfig;
 
+  /**
+   * Сколько места под строкой занимает содержимое: строки уровней, features.
+   * Наследник переопределяет, если у него что-то есть.
+   */
+  protected contentRows(): number {
+    return 0;
+  }
+
   public getCardSize(): number {
-    return 1;
+    return 1 + this.contentRows();
+  }
+
+  /**
+   * Разметка для сеточного дашборда.
+   *
+   * `rows: "auto"` — потому что высота зависит от содержимого: у принтера пять
+   * строк чернил, у климата ни одной. Так же размечают себя штатные карточки с
+   * плавающей высотой, entities и heading. Без этого карточка заявляла бы одну
+   * строку независимо от того, что в ней.
+   */
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 6,
+      rows: "auto",
+      min_columns: this.base.vertical ? 3 : 6,
+      min_rows: 1,
+    };
   }
 
   public connectedCallback(): void {
@@ -173,27 +203,38 @@ export abstract class BaseTileCard extends LitElement {
       .filter((role): role is ResolvedRole => !!role && role.missing)
       .map((role) => role.entityId);
     if (!missing.length) return undefined;
-    return missing.length === 1
-      ? `Сущность не найдена: ${missing[0]}`
-      : `Сущности не найдены: ${missing.join(", ")}`;
+    return t(
+      this.hass,
+      missing.length === 1 ? "entity.missing.one" : "entity.missing.many",
+      { list: missing.join(", ") }
+    );
   }
 
   /**
    * Оборачивает величину в собственную цель тапа. Клик не всплывает до
    * подложки, поэтому открывается more-info этой сущности, а не главной.
+   *
+   * Именно кнопка, а не span с обработчиком: величины — самостоятельные цели,
+   * и до них надо доходить табом и нажимать с клавиатуры. Имя сущности идёт в
+   * title и aria-label: «63%» само по себе не говорит, чьё оно, — ни глазу при
+   * наведении, ни скринридеру.
    */
   protected renderClickable(
     content: unknown,
     entityId: string | undefined
   ): TemplateResult {
     if (!entityId) return html`<span>${content}</span>`;
-    return html`<span
+    const name =
+      this.hass?.states[entityId]?.attributes.friendly_name ?? entityId;
+    return html`<button
       class="clickable"
+      title=${name}
+      aria-label=${name}
       @click=${(ev: Event) => {
         ev.stopPropagation();
         this.fireMoreInfo(entityId);
       }}
-      >${content}</span
+      >${content}</button
     >`;
   }
 
@@ -215,9 +256,7 @@ export abstract class BaseTileCard extends LitElement {
     this._defaultIconAction = defaultIconAction;
 
     if (!this._ready) {
-      return this.renderWarning(
-        "Не удалось загрузить компоненты Home Assistant"
-      );
+      return this.renderWarning(t(this.hass, "internals.failed"));
     }
 
     const tileColor = this.base.color

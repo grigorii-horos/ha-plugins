@@ -1,15 +1,15 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   numberSelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { ButtonConfig } from "../core/buttons";
 
-@customElement("horos-buttons-tile-editor")
 export class HorosButtonsTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -36,12 +36,20 @@ export class HorosButtonsTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Заголовок",
-      columns: "Кнопок в ряд",
-      buttons: "Кнопки",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Заголовок",
+        columns: "Кнопок в ряд",
+        buttons: "Кнопки",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Heading",
+        columns: "Buttons per row",
+        buttons: "Buttons",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
@@ -64,6 +72,8 @@ export class HorosButtonsTileEditor extends FormCardEditor {
     };
   }
 }
+
+registerEditor("horos-buttons-tile-editor", HorosButtonsTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

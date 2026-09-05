@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
 import { renderLevels, levelStyles } from "../core/levels";
@@ -9,11 +9,10 @@ import {
   cartridgeCssColor,
   cartridgeColor,
   cartridgeLabel,
-  normalizeCartridge,
   readMarker,
-  type CartridgeConfig,
   type MarkerReading,
 } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 
 /** Внутреннее представление одного картриджа перед отрисовкой. */
 interface PrinterTank {
@@ -24,15 +23,17 @@ interface PrinterTank {
   text: string;
 }
 import type { HassEntity, LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 export interface PrinterTileConfig extends TileBaseConfig {
   type: string;
   /** Сущность состояния принтера: печатает, простаивает, ошибка. */
   status?: string;
   /** Сенсоры уровня чернил. */
-  cartridges: (CartridgeConfig | string)[];
+  cartridges: (EntityItem | string)[];
   /** Что угодно ещё про принтер: наработка, счётчик страниц, ошибки. */
-  sensors?: (CartridgeConfig | string)[];
+  sensors?: (EntityItem | string)[];
   /**
    * Свой порог «мало чернил». Не задан — берётся marker_low_level самого
    * принтера. На поглотитель отработки не влияет: у него тревога наоборот,
@@ -52,11 +53,15 @@ export interface PrinterTileConfig extends TileBaseConfig {
  * Крупным значением справа стоят самые кончающиеся чернила — то, ради чего на
  * принтер вообще смотрят: пора ли покупать.
  */
-@customElement("horos-printer-tile")
 export class HorosPrinterTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: PrinterTileConfig;
+
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  protected override contentRows(): number {
+    return Math.ceil(((this._config?.cartridges.length ?? 0) + (this._config?.sensors?.length ?? 0)) / 2);
+  }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editors/printer-tile-editor");
@@ -90,7 +95,7 @@ export class HorosPrinterTile extends BaseTileCard {
     const printerName = this._printerName;
 
     return this._config.cartridges
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((cartridge) => {
         const stateObj = this.hass!.states[cartridge.entity];
         return {
@@ -136,7 +141,7 @@ export class HorosPrinterTile extends BaseTileCard {
       ? resolveRole(this.hass, this._config.status)
       : undefined;
     const extras = (this._config.sensors ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((sensor) => resolveRole(this.hass, sensor.entity));
 
     const statusObj: HassEntity | undefined = status?.stateObj;
@@ -144,7 +149,7 @@ export class HorosPrinterTile extends BaseTileCard {
     return this.renderTile({
       icon: "mdi:printer",
       color: statusObj ? tileColor(statusObj) : "var(--state-icon-color)",
-      primary: this._printerName ?? "Принтер",
+      primary: this._printerName ?? t(this.hass, "printer.title"),
       secondary: composeSegments([
         roleSegment(this.hass, status),
         ...extras.map((extra) => roleSegment(this.hass, extra)),
@@ -176,11 +181,10 @@ export class HorosPrinterTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-printer-tile", HorosPrinterTile, {
   type: "horos-printer-tile",
-  name: "Принтер",
-  description: "Состояние принтера и уровни чернил колбами в одной плитке",
+  name: "Printer",
+  description: "Ink levels and printer status in a single tile",
   preview: true,
 });
 

@@ -3,21 +3,21 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const _e = globalThis, ft = _e.ShadowRoot && (_e.ShadyCSS === void 0 || _e.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, _t = Symbol(), St = /* @__PURE__ */ new WeakMap();
-class Xt {
-  constructor(e, s, n) {
-    if (this._$cssResult$ = !0, n !== _t)
+const be = globalThis, He = be.ShadowRoot && (be.ShadyCSS === void 0 || be.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Fe = Symbol(), tt = /* @__PURE__ */ new WeakMap();
+class Ct {
+  constructor(e, t, i) {
+    if (this._$cssResult$ = !0, i !== Fe)
       throw new Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
-    this.cssText = e, this._strings = s;
+    this.cssText = e, this._strings = t;
   }
   // This is a getter so that it's lazy. In practice, this means stylesheets
   // are not created until the first element instance is made.
   get styleSheet() {
     let e = this._styleSheet;
-    const s = this._strings;
-    if (ft && e === void 0) {
-      const n = s !== void 0 && s.length === 1;
-      n && (e = St.get(s)), e === void 0 && ((this._styleSheet = e = new CSSStyleSheet()).replaceSync(this.cssText), n && St.set(s, e));
+    const t = this._strings;
+    if (He && e === void 0) {
+      const i = t !== void 0 && t.length === 1;
+      i && (e = tt.get(t)), e === void 0 && ((this._styleSheet = e = new CSSStyleSheet()).replaceSync(this.cssText), i && tt.set(t, e));
     }
     return e;
   }
@@ -25,90 +25,90 @@ class Xt {
     return this.cssText;
   }
 }
-const Ss = (t) => {
-  if (t._$cssResult$ === !0)
-    return t.cssText;
-  if (typeof t == "number")
-    return t;
-  throw new Error(`Value passed to 'css' function must be a 'css' function result: ${t}. Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.`);
-}, xs = (t) => new Xt(typeof t == "string" ? t : String(t), void 0, _t), gt = (t, ...e) => {
-  const s = t.length === 1 ? t[0] : e.reduce((n, r, i) => n + Ss(r) + t[i + 1], t[0]);
-  return new Xt(s, t, _t);
-}, Ts = (t, e) => {
-  if (ft)
-    t.adoptedStyleSheets = e.map((s) => s instanceof CSSStyleSheet ? s : s.styleSheet);
+const vs = (s) => {
+  if (s._$cssResult$ === !0)
+    return s.cssText;
+  if (typeof s == "number")
+    return s;
+  throw new Error(`Value passed to 'css' function must be a 'css' function result: ${s}. Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.`);
+}, ws = (s) => new Ct(typeof s == "string" ? s : String(s), void 0, Fe), Be = (s, ...e) => {
+  const t = s.length === 1 ? s[0] : e.reduce((i, n, r) => i + vs(n) + s[r + 1], s[0]);
+  return new Ct(t, s, Fe);
+}, $s = (s, e) => {
+  if (He)
+    s.adoptedStyleSheets = e.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet);
   else
-    for (const s of e) {
-      const n = document.createElement("style"), r = _e.litNonce;
-      r !== void 0 && n.setAttribute("nonce", r), n.textContent = s.cssText, t.appendChild(n);
+    for (const t of e) {
+      const i = document.createElement("style"), n = be.litNonce;
+      n !== void 0 && i.setAttribute("nonce", n), i.textContent = t.cssText, s.appendChild(i);
     }
-}, Is = (t) => {
+}, Es = (s) => {
   let e = "";
-  for (const s of t.cssRules)
-    e += s.cssText;
-  return xs(e);
-}, xt = ft ? (t) => t : (t) => t instanceof CSSStyleSheet ? Is(t) : t;
+  for (const t of s.cssRules)
+    e += t.cssText;
+  return ws(e);
+}, st = He ? (s) => s : (s) => s instanceof CSSStyleSheet ? Es(s) : s;
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: Ds, defineProperty: As, getOwnPropertyDescriptor: Tt, getOwnPropertyNames: js, getOwnPropertySymbols: Ms, getPrototypeOf: It } = Object, I = globalThis;
+const { is: Ss, defineProperty: xs, getOwnPropertyDescriptor: nt, getOwnPropertyNames: Ps, getOwnPropertySymbols: Cs, getPrototypeOf: it } = Object, A = globalThis;
 let j;
-const Dt = I.trustedTypes, Rs = Dt ? Dt.emptyScript : "", Zt = I.reactiveElementPolyfillSupportDevMode;
-I.litIssuedWarnings ??= /* @__PURE__ */ new Set(), j = (t, e) => {
-  e += ` See https://lit.dev/msg/${t} for more information.`, !I.litIssuedWarnings.has(e) && !I.litIssuedWarnings.has(t) && (console.warn(e), I.litIssuedWarnings.add(e));
+const rt = A.trustedTypes, Ts = rt ? rt.emptyScript : "", Tt = A.reactiveElementPolyfillSupportDevMode;
+A.litIssuedWarnings ??= /* @__PURE__ */ new Set(), j = (s, e) => {
+  e += ` See https://lit.dev/msg/${s} for more information.`, !A.litIssuedWarnings.has(e) && !A.litIssuedWarnings.has(s) && (console.warn(e), A.litIssuedWarnings.add(e));
 }, queueMicrotask(() => {
-  j("dev-mode", "Lit is in dev mode. Not recommended for production!"), I.ShadyDOM?.inUse && Zt === void 0 && j("polyfill-support-missing", "Shadow DOM is being polyfilled via `ShadyDOM` but the `polyfill-support` module has not been loaded.");
+  j("dev-mode", "Lit is in dev mode. Not recommended for production!"), A.ShadyDOM?.inUse && Tt === void 0 && j("polyfill-support-missing", "Shadow DOM is being polyfilled via `ShadyDOM` but the `polyfill-support` module has not been loaded.");
 });
-const Ns = (t) => {
-  I.emitLitDebugLogEvents && I.dispatchEvent(new CustomEvent("lit-debug", {
-    detail: t
+const ks = (s) => {
+  A.emitLitDebugLogEvents && A.dispatchEvent(new CustomEvent("lit-debug", {
+    detail: s
   }));
-}, X = (t, e) => t, ye = {
-  toAttribute(t, e) {
+}, te = (s, e) => s, $e = {
+  toAttribute(s, e) {
     switch (e) {
       case Boolean:
-        t = t ? Rs : null;
+        s = s ? Ts : null;
         break;
       case Object:
       case Array:
-        t = t == null ? t : JSON.stringify(t);
+        s = s == null ? s : JSON.stringify(s);
         break;
     }
-    return t;
+    return s;
   },
-  fromAttribute(t, e) {
-    let s = t;
+  fromAttribute(s, e) {
+    let t = s;
     switch (e) {
       case Boolean:
-        s = t !== null;
+        t = s !== null;
         break;
       case Number:
-        s = t === null ? null : Number(t);
+        t = s === null ? null : Number(s);
         break;
       case Object:
       case Array:
         try {
-          s = JSON.parse(t);
+          t = JSON.parse(s);
         } catch {
-          s = null;
+          t = null;
         }
         break;
     }
-    return s;
+    return t;
   }
-}, yt = (t, e) => !Ds(t, e), At = {
+}, qe = (s, e) => !Ss(s, e), ot = {
   attribute: !0,
   type: String,
-  converter: ye,
+  converter: $e,
   reflect: !1,
   useDefault: !1,
-  hasChanged: yt
+  hasChanged: qe
 };
 Symbol.metadata ??= Symbol("metadata");
-I.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
-class U extends HTMLElement {
+A.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
+class W extends HTMLElement {
   /**
    * Adds an initializer function to the class that is called during instance
    * construction.
@@ -178,14 +178,14 @@ class U extends HTMLElement {
    * @nocollapse
    * @category properties
    */
-  static createProperty(e, s = At) {
-    if (s.state && (s.attribute = !1), this.__prepare(), this.prototype.hasOwnProperty(e) && (s = Object.create(s), s.wrapped = !0), this.elementProperties.set(e, s), !s.noAccessor) {
-      const n = (
+  static createProperty(e, t = ot) {
+    if (t.state && (t.attribute = !1), this.__prepare(), this.prototype.hasOwnProperty(e) && (t = Object.create(t), t.wrapped = !0), this.elementProperties.set(e, t), !t.noAccessor) {
+      const i = (
         // Use Symbol.for in dev mode to make it easier to maintain state
         // when doing HMR.
         Symbol.for(`${String(e)} (@property() cache)`)
-      ), r = this.getPropertyDescriptor(e, n, s);
-      r !== void 0 && As(this.prototype, e, r);
+      ), n = this.getPropertyDescriptor(e, i, t);
+      n !== void 0 && xs(this.prototype, e, n);
     }
   }
   /**
@@ -215,25 +215,25 @@ class U extends HTMLElement {
    * @nocollapse
    * @category properties
    */
-  static getPropertyDescriptor(e, s, n) {
-    const { get: r, set: i } = Tt(this.prototype, e) ?? {
+  static getPropertyDescriptor(e, t, i) {
+    const { get: n, set: r } = nt(this.prototype, e) ?? {
       get() {
-        return this[s];
+        return this[t];
       },
       set(o) {
-        this[s] = o;
+        this[t] = o;
       }
     };
-    if (r == null) {
-      if ("value" in (Tt(this.prototype, e) ?? {}))
+    if (n == null) {
+      if ("value" in (nt(this.prototype, e) ?? {}))
         throw new Error(`Field ${JSON.stringify(String(e))} on ${this.name} was declared as a reactive property but it's actually declared as a value on the prototype. Usually this is due to using @property or @state on a method.`);
       j("reactive-property-without-getter", `Field ${JSON.stringify(String(e))} on ${this.name} was declared as a reactive property but it does not have a getter. This will be an error in a future version of Lit.`);
     }
     return {
-      get: r,
+      get: n,
       set(o) {
-        const a = r?.call(this);
-        i?.call(this, o), this.requestUpdate(e, a, n);
+        const c = n?.call(this);
+        r?.call(this, o), this.requestUpdate(e, c, i);
       },
       configurable: !0,
       enumerable: !0
@@ -254,7 +254,7 @@ class U extends HTMLElement {
    * @category properties
    */
   static getPropertyOptions(e) {
-    return this.elementProperties.get(e) ?? At;
+    return this.elementProperties.get(e) ?? ot;
   }
   /**
    * Initializes static own properties of the class used in bookkeeping
@@ -268,9 +268,9 @@ class U extends HTMLElement {
    * @nocollapse
    */
   static __prepare() {
-    if (this.hasOwnProperty(X("elementProperties")))
+    if (this.hasOwnProperty(te("elementProperties")))
       return;
-    const e = It(this);
+    const e = it(this);
     e.finalize(), e._initializers !== void 0 && (this._initializers = [...e._initializers]), this.elementProperties = new Map(e.elementProperties);
   }
   /**
@@ -285,27 +285,27 @@ class U extends HTMLElement {
    * @nocollapse
    */
   static finalize() {
-    if (this.hasOwnProperty(X("finalized")))
+    if (this.hasOwnProperty(te("finalized")))
       return;
-    if (this.finalized = !0, this.__prepare(), this.hasOwnProperty(X("properties"))) {
-      const s = this.properties, n = [
-        ...js(s),
-        ...Ms(s)
+    if (this.finalized = !0, this.__prepare(), this.hasOwnProperty(te("properties"))) {
+      const t = this.properties, i = [
+        ...Ps(t),
+        ...Cs(t)
       ];
-      for (const r of n)
-        this.createProperty(r, s[r]);
+      for (const n of i)
+        this.createProperty(n, t[n]);
     }
     const e = this[Symbol.metadata];
     if (e !== null) {
-      const s = litPropertyMetadata.get(e);
-      if (s !== void 0)
-        for (const [n, r] of s)
-          this.elementProperties.set(n, r);
+      const t = litPropertyMetadata.get(e);
+      if (t !== void 0)
+        for (const [i, n] of t)
+          this.elementProperties.set(i, n);
     }
     this.__attributeToPropertyMap = /* @__PURE__ */ new Map();
-    for (const [s, n] of this.elementProperties) {
-      const r = this.__attributeNameForProperty(s, n);
-      r !== void 0 && this.__attributeToPropertyMap.set(r, s);
+    for (const [t, i] of this.elementProperties) {
+      const n = this.__attributeNameForProperty(t, i);
+      n !== void 0 && this.__attributeToPropertyMap.set(n, t);
     }
     this.elementStyles = this.finalizeStyles(this.styles), this.hasOwnProperty("createProperty") && j("no-override-create-property", "Overriding ReactiveElement.createProperty() is deprecated. The override will not be called with standard decorators"), this.hasOwnProperty("getPropertyDescriptor") && j("no-override-get-property-descriptor", "Overriding ReactiveElement.getPropertyDescriptor() is deprecated. The override will not be called with standard decorators");
   }
@@ -324,21 +324,21 @@ class U extends HTMLElement {
    * @category styles
    */
   static finalizeStyles(e) {
-    const s = [];
+    const t = [];
     if (Array.isArray(e)) {
-      const n = new Set(e.flat(1 / 0).reverse());
-      for (const r of n)
-        s.unshift(xt(r));
-    } else e !== void 0 && s.push(xt(e));
-    return s;
+      const i = new Set(e.flat(1 / 0).reverse());
+      for (const n of i)
+        t.unshift(st(n));
+    } else e !== void 0 && t.push(st(e));
+    return t;
   }
   /**
    * Returns the property name for the given attribute `name`.
    * @nocollapse
    */
-  static __attributeNameForProperty(e, s) {
-    const n = s.attribute;
-    return n === !1 ? void 0 : typeof n == "string" ? n : typeof e == "string" ? e.toLowerCase() : void 0;
+  static __attributeNameForProperty(e, t) {
+    const i = t.attribute;
+    return i === !1 ? void 0 : typeof i == "string" ? i : typeof e == "string" ? e.toLowerCase() : void 0;
   }
   constructor() {
     super(), this.__instanceProperties = void 0, this.isUpdatePending = !1, this.hasUpdated = !1, this.__reflectingProperty = null, this.__initialize();
@@ -376,9 +376,9 @@ class U extends HTMLElement {
    * constructor runs.
    */
   __saveInstanceProperties() {
-    const e = /* @__PURE__ */ new Map(), s = this.constructor.elementProperties;
-    for (const n of s.keys())
-      this.hasOwnProperty(n) && (e.set(n, this[n]), delete this[n]);
+    const e = /* @__PURE__ */ new Map(), t = this.constructor.elementProperties;
+    for (const i of t.keys())
+      this.hasOwnProperty(i) && (e.set(i, this[i]), delete this[i]);
     e.size > 0 && (this.__instanceProperties = e);
   }
   /**
@@ -392,7 +392,7 @@ class U extends HTMLElement {
    */
   createRenderRoot() {
     const e = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return Ts(e, this.constructor.elementStyles), e;
+    return $s(e, this.constructor.elementStyles), e;
   }
   /**
    * On first connection, creates the element's renderRoot, sets up
@@ -431,25 +431,25 @@ class U extends HTMLElement {
    * on MDN for more information about the `attributeChangedCallback`.
    * @category attributes
    */
-  attributeChangedCallback(e, s, n) {
-    this._$attributeToProperty(e, n);
+  attributeChangedCallback(e, t, i) {
+    this._$attributeToProperty(e, i);
   }
-  __propertyToAttribute(e, s) {
-    const r = this.constructor.elementProperties.get(e), i = this.constructor.__attributeNameForProperty(e, r);
-    if (i !== void 0 && r.reflect === !0) {
-      const a = (r.converter?.toAttribute !== void 0 ? r.converter : ye).toAttribute(s, r.type);
-      this.constructor.enabledWarnings.includes("migration") && a === void 0 && j("undefined-attribute-value", `The attribute value for the ${e} property is undefined on element ${this.localName}. The attribute will be removed, but in the previous version of \`ReactiveElement\`, the attribute would not have changed.`), this.__reflectingProperty = e, a == null ? this.removeAttribute(i) : this.setAttribute(i, a), this.__reflectingProperty = null;
+  __propertyToAttribute(e, t) {
+    const n = this.constructor.elementProperties.get(e), r = this.constructor.__attributeNameForProperty(e, n);
+    if (r !== void 0 && n.reflect === !0) {
+      const c = (n.converter?.toAttribute !== void 0 ? n.converter : $e).toAttribute(t, n.type);
+      this.constructor.enabledWarnings.includes("migration") && c === void 0 && j("undefined-attribute-value", `The attribute value for the ${e} property is undefined on element ${this.localName}. The attribute will be removed, but in the previous version of \`ReactiveElement\`, the attribute would not have changed.`), this.__reflectingProperty = e, c == null ? this.removeAttribute(r) : this.setAttribute(r, c), this.__reflectingProperty = null;
     }
   }
   /** @internal */
-  _$attributeToProperty(e, s) {
-    const n = this.constructor, r = n.__attributeToPropertyMap.get(e);
-    if (r !== void 0 && this.__reflectingProperty !== r) {
-      const i = n.getPropertyOptions(r), o = typeof i.converter == "function" ? { fromAttribute: i.converter } : i.converter?.fromAttribute !== void 0 ? i.converter : ye;
-      this.__reflectingProperty = r;
-      const a = o.fromAttribute(s, i.type);
-      this[r] = a ?? this.__defaultValues?.get(r) ?? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      a, this.__reflectingProperty = null;
+  _$attributeToProperty(e, t) {
+    const i = this.constructor, n = i.__attributeToPropertyMap.get(e);
+    if (n !== void 0 && this.__reflectingProperty !== n) {
+      const r = i.getPropertyOptions(n), o = typeof r.converter == "function" ? { fromAttribute: r.converter } : r.converter?.fromAttribute !== void 0 ? r.converter : $e;
+      this.__reflectingProperty = n;
+      const c = o.fromAttribute(t, r.type);
+      this[n] = c ?? this.__defaultValues?.get(n) ?? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      c, this.__reflectingProperty = null;
     }
   }
   /**
@@ -472,18 +472,18 @@ class U extends HTMLElement {
    *     `useNewValue` is true.
    * @category updates
    */
-  requestUpdate(e, s, n, r = !1, i) {
+  requestUpdate(e, t, i, n = !1, r) {
     if (e !== void 0) {
       e instanceof Event && j("", "The requestUpdate() method was called with an Event as the property name. This is probably a mistake caused by binding this.requestUpdate as an event listener. Instead bind a function that will call it with no arguments: () => this.requestUpdate()");
       const o = this.constructor;
-      if (r === !1 && (i = this[e]), n ??= o.getPropertyOptions(e), (n.hasChanged ?? yt)(i, s) || // When there is no change, check a corner case that can occur when
+      if (n === !1 && (r = this[e]), i ??= o.getPropertyOptions(e), (i.hasChanged ?? qe)(r, t) || // When there is no change, check a corner case that can occur when
       // 1. there's a initial value which was not reflected
       // 2. the property is subsequently set to this value.
       // For example, `prop: {useDefault: true, reflect: true}`
       // and el.prop = 'foo'. This should be considered a change if the
       // attribute is not set because we will now reflect the property to the attribute.
-      n.useDefault && n.reflect && i === this.__defaultValues?.get(e) && !this.hasAttribute(o.__attributeNameForProperty(e, n)))
-        this._$changeProperty(e, s, n);
+      i.useDefault && i.reflect && r === this.__defaultValues?.get(e) && !this.hasAttribute(o.__attributeNameForProperty(e, i)))
+        this._$changeProperty(e, t, i);
       else
         return;
     }
@@ -492,8 +492,8 @@ class U extends HTMLElement {
   /**
    * @internal
    */
-  _$changeProperty(e, s, { useDefault: n, reflect: r, wrapped: i }, o) {
-    n && !(this.__defaultValues ??= /* @__PURE__ */ new Map()).has(e) && (this.__defaultValues.set(e, o ?? s ?? this[e]), i !== !0 || o !== void 0) || (this._$changedProperties.has(e) || (!this.hasUpdated && !n && (s = void 0), this._$changedProperties.set(e, s)), r === !0 && this.__reflectingProperty !== e && (this.__reflectingProperties ??= /* @__PURE__ */ new Set()).add(e));
+  _$changeProperty(e, t, { useDefault: i, reflect: n, wrapped: r }, o) {
+    i && !(this.__defaultValues ??= /* @__PURE__ */ new Map()).has(e) && (this.__defaultValues.set(e, o ?? t ?? this[e]), r !== !0 || o !== void 0) || (this._$changedProperties.has(e) || (!this.hasUpdated && !i && (t = void 0), this._$changedProperties.set(e, t)), n === !0 && this.__reflectingProperty !== e && (this.__reflectingProperties ??= /* @__PURE__ */ new Set()).add(e));
   }
   /**
    * Sets up the element to asynchronously update.
@@ -502,8 +502,8 @@ class U extends HTMLElement {
     this.isUpdatePending = !0;
     try {
       await this.__updatePromise;
-    } catch (s) {
-      Promise.reject(s);
+    } catch (t) {
+      Promise.reject(t);
     }
     const e = this.scheduleUpdate();
     return e != null && await e, !this.isUpdatePending;
@@ -542,33 +542,33 @@ class U extends HTMLElement {
   performUpdate() {
     if (!this.isUpdatePending)
       return;
-    if (Ns?.({ kind: "update" }), !this.hasUpdated) {
+    if (ks?.({ kind: "update" }), !this.hasUpdated) {
       this.renderRoot ??= this.createRenderRoot();
       {
-        const i = [...this.constructor.elementProperties.keys()].filter((o) => this.hasOwnProperty(o) && o in It(this));
-        if (i.length)
-          throw new Error(`The following properties on element ${this.localName} will not trigger updates as expected because they are set using class fields: ${i.join(", ")}. Native class fields and some compiled output will overwrite accessors used for detecting changes. See https://lit.dev/msg/class-field-shadowing for more information.`);
+        const r = [...this.constructor.elementProperties.keys()].filter((o) => this.hasOwnProperty(o) && o in it(this));
+        if (r.length)
+          throw new Error(`The following properties on element ${this.localName} will not trigger updates as expected because they are set using class fields: ${r.join(", ")}. Native class fields and some compiled output will overwrite accessors used for detecting changes. See https://lit.dev/msg/class-field-shadowing for more information.`);
       }
       if (this.__instanceProperties) {
-        for (const [r, i] of this.__instanceProperties)
-          this[r] = i;
+        for (const [n, r] of this.__instanceProperties)
+          this[n] = r;
         this.__instanceProperties = void 0;
       }
-      const n = this.constructor.elementProperties;
-      if (n.size > 0)
-        for (const [r, i] of n) {
-          const { wrapped: o } = i, a = this[r];
-          o === !0 && !this._$changedProperties.has(r) && a !== void 0 && this._$changeProperty(r, void 0, i, a);
+      const i = this.constructor.elementProperties;
+      if (i.size > 0)
+        for (const [n, r] of i) {
+          const { wrapped: o } = r, c = this[n];
+          o === !0 && !this._$changedProperties.has(n) && c !== void 0 && this._$changeProperty(n, void 0, r, c);
         }
     }
     let e = !1;
-    const s = this._$changedProperties;
+    const t = this._$changedProperties;
     try {
-      e = this.shouldUpdate(s), e ? (this.willUpdate(s), this.__controllers?.forEach((n) => n.hostUpdate?.()), this.update(s)) : this.__markUpdated();
-    } catch (n) {
-      throw e = !1, this.__markUpdated(), n;
+      e = this.shouldUpdate(t), e ? (this.willUpdate(t), this.__controllers?.forEach((i) => i.hostUpdate?.()), this.update(t)) : this.__markUpdated();
+    } catch (i) {
+      throw e = !1, this.__markUpdated(), i;
     }
-    e && this._$didUpdate(s);
+    e && this._$didUpdate(t);
   }
   /**
    * Invoked before `update()` to compute values needed during the update.
@@ -596,7 +596,7 @@ class U extends HTMLElement {
   // Note, this is an override point for polyfill-support.
   // @internal
   _$didUpdate(e) {
-    this.__controllers?.forEach((s) => s.hostUpdated?.()), this.hasUpdated || (this.hasUpdated = !0, this.firstUpdated(e)), this.updated(e), this.isUpdatePending && this.constructor.enabledWarnings.includes("change-in-update") && j("change-in-update", `Element ${this.localName} scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update.`);
+    this.__controllers?.forEach((t) => t.hostUpdated?.()), this.hasUpdated || (this.hasUpdated = !0, this.firstUpdated(e)), this.updated(e), this.isUpdatePending && this.constructor.enabledWarnings.includes("change-in-update") && j("change-in-update", `Element ${this.localName} scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update.`);
   }
   __markUpdated() {
     this._$changedProperties = /* @__PURE__ */ new Map(), this.isUpdatePending = !1;
@@ -667,7 +667,7 @@ class U extends HTMLElement {
    * @category updates
    */
   update(e) {
-    this.__reflectingProperties &&= this.__reflectingProperties.forEach((s) => this.__propertyToAttribute(s, this[s])), this.__markUpdated();
+    this.__reflectingProperties &&= this.__reflectingProperties.forEach((t) => this.__propertyToAttribute(t, this[t])), this.__markUpdated();
   }
   /**
    * Invoked whenever the element is updated. Implement to perform
@@ -700,29 +700,29 @@ class U extends HTMLElement {
   firstUpdated(e) {
   }
 }
-U.elementStyles = [];
-U.shadowRootOptions = { mode: "open" };
-U[X("elementProperties")] = /* @__PURE__ */ new Map();
-U[X("finalized")] = /* @__PURE__ */ new Map();
-Zt?.({ ReactiveElement: U });
+W.elementStyles = [];
+W.shadowRootOptions = { mode: "open" };
+W[te("elementProperties")] = /* @__PURE__ */ new Map();
+W[te("finalized")] = /* @__PURE__ */ new Map();
+Tt?.({ ReactiveElement: W });
 {
-  U.enabledWarnings = [
+  W.enabledWarnings = [
     "change-in-update",
     "async-perform-update"
   ];
-  const t = function(e) {
-    e.hasOwnProperty(X("enabledWarnings")) || (e.enabledWarnings = e.enabledWarnings.slice());
+  const s = function(e) {
+    e.hasOwnProperty(te("enabledWarnings")) || (e.enabledWarnings = e.enabledWarnings.slice());
   };
-  U.enableWarning = function(e) {
-    t(this), this.enabledWarnings.includes(e) || this.enabledWarnings.push(e);
-  }, U.disableWarning = function(e) {
-    t(this);
-    const s = this.enabledWarnings.indexOf(e);
-    s >= 0 && this.enabledWarnings.splice(s, 1);
+  W.enableWarning = function(e) {
+    s(this), this.enabledWarnings.includes(e) || this.enabledWarnings.push(e);
+  }, W.disableWarning = function(e) {
+    s(this);
+    const t = this.enabledWarnings.indexOf(e);
+    t >= 0 && this.enabledWarnings.splice(t, 1);
   };
 }
-(I.reactiveElementVersions ??= []).push("2.1.2");
-I.reactiveElementVersions.length > 1 && queueMicrotask(() => {
+(A.reactiveElementVersions ??= []).push("2.1.2");
+A.reactiveElementVersions.length > 1 && queueMicrotask(() => {
   j("multiple-versions", "Multiple versions of Lit loaded. Loading multiple versions is not recommended.");
 });
 /**
@@ -730,45 +730,45 @@ I.reactiveElementVersions.length > 1 && queueMicrotask(() => {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const x = globalThis, f = (t) => {
-  x.emitLitDebugLogEvents && x.dispatchEvent(new CustomEvent("lit-debug", {
-    detail: t
+const I = globalThis, g = (s) => {
+  I.emitLitDebugLogEvents && I.dispatchEvent(new CustomEvent("lit-debug", {
+    detail: s
   }));
 };
-let Us = 0, ae;
-x.litIssuedWarnings ??= /* @__PURE__ */ new Set(), ae = (t, e) => {
-  e += t ? ` See https://lit.dev/msg/${t} for more information.` : "", !x.litIssuedWarnings.has(e) && !x.litIssuedWarnings.has(t) && (console.warn(e), x.litIssuedWarnings.add(e));
+let Os = 0, ue;
+I.litIssuedWarnings ??= /* @__PURE__ */ new Set(), ue = (s, e) => {
+  e += s ? ` See https://lit.dev/msg/${s} for more information.` : "", !I.litIssuedWarnings.has(e) && !I.litIssuedWarnings.has(s) && (console.warn(e), I.litIssuedWarnings.add(e));
 }, queueMicrotask(() => {
-  ae("dev-mode", "Lit is in dev mode. Not recommended for production!");
+  ue("dev-mode", "Lit is in dev mode. Not recommended for production!");
 });
-const A = x.ShadyDOM?.inUse && x.ShadyDOM?.noPatch === !0 ? x.ShadyDOM.wrap : (t) => t, be = x.trustedTypes, jt = be ? be.createPolicy("lit-html", {
-  createHTML: (t) => t
-}) : void 0, ks = (t) => t, Se = (t, e, s) => ks, zs = (t) => {
-  if (q !== Se)
+const U = I.ShadyDOM?.inUse && I.ShadyDOM?.noPatch === !0 ? I.ShadyDOM.wrap : (s) => s, Ee = I.trustedTypes, at = Ee ? Ee.createPolicy("lit-html", {
+  createHTML: (s) => s
+}) : void 0, Is = (s) => s, xe = (s, e, t) => Is, As = (s) => {
+  if (J !== xe)
     throw new Error("Attempted to overwrite existing lit-html security policy. setSanitizeDOMValueFactory should be called at most once.");
-  q = t;
-}, Vs = () => {
-  q = Se;
-}, Le = (t, e, s) => q(t, e, s), es = "$lit$", N = `lit$${Math.random().toFixed(9).slice(2)}$`, ts = "?" + N, Ls = `<${ts}>`, B = document, le = () => B.createComment(""), ce = (t) => t === null || typeof t != "object" && typeof t != "function", bt = Array.isArray, Hs = (t) => bt(t) || // eslint-disable-next-line @typescript-eslint/no-explicit-any
-typeof t?.[Symbol.iterator] == "function", Re = `[ 	
-\f\r]`, Ws = `[^ 	
-\f\r"'\`<>=]`, Fs = `[^\\s"'>=/]`, oe = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Mt = 1, Ne = 2, Bs = 3, Rt = /-->/g, Nt = />/g, H = new RegExp(`>|${Re}(?:(${Fs}+)(${Re}*=${Re}*(?:${Ws}|("|')|))|$)`, "g"), qs = 0, Ut = 1, Ks = 2, kt = 3, Ue = /'/g, ke = /"/g, ss = /^(?:script|style|textarea|title)$/i, Gs = 1, He = 2, We = 3, vt = 1, ve = 2, Ys = 3, Js = 4, Qs = 5, wt = 6, Xs = 7, Zs = (t) => (e, ...s) => (e.some((n) => n === void 0) && console.warn(`Some template strings are undefined.
-This is probably caused by illegal octal escape sequences.`), s.some((n) => n?._$litStatic$) && ae("", `Static values 'literal' or 'unsafeStatic' cannot be used as values to non-static templates.
+  J = s;
+}, Ns = () => {
+  J = xe;
+}, De = (s, e, t) => J(s, e, t), kt = "$lit$", V = `lit$${Math.random().toFixed(9).slice(2)}$`, Ot = "?" + V, Rs = `<${Ot}>`, Y = document, de = () => Y.createComment(""), he = (s) => s === null || typeof s != "object" && typeof s != "function", Ke = Array.isArray, Ms = (s) => Ke(s) || // eslint-disable-next-line @typescript-eslint/no-explicit-any
+typeof s?.[Symbol.iterator] == "function", Ne = `[ 	
+\f\r]`, Us = `[^ 	
+\f\r"'\`<>=]`, js = `[^\\s"'>=/]`, ce = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, lt = 1, Re = 2, Ls = 3, ct = /-->/g, ut = />/g, q = new RegExp(`>|${Ne}(?:(${js}+)(${Ne}*=${Ne}*(?:${Us}|("|')|))|$)`, "g"), Ds = 0, dt = 1, zs = 2, ht = 3, Me = /'/g, Ue = /"/g, It = /^(?:script|style|textarea|title)$/i, Vs = 1, ze = 2, Ve = 3, Ge = 1, Se = 2, Ws = 3, Hs = 4, Fs = 5, Ye = 6, Bs = 7, qs = (s) => (e, ...t) => (e.some((i) => i === void 0) && console.warn(`Some template strings are undefined.
+This is probably caused by illegal octal escape sequences.`), t.some((i) => i?._$litStatic$) && ue("", `Static values 'literal' or 'unsafeStatic' cannot be used as values to non-static templates.
 Please use the static 'html' tag function. See https://lit.dev/docs/templates/expressions/#static-expressions`), {
   // This property needs to remain unminified.
-  _$litType$: t,
+  _$litType$: s,
   strings: e,
-  values: s
-}), b = Zs(Gs), Z = Symbol.for("lit-noChange"), d = Symbol.for("lit-nothing"), zt = /* @__PURE__ */ new WeakMap(), F = B.createTreeWalker(
-  B,
+  values: t
+}), b = qs(Vs), se = Symbol.for("lit-noChange"), d = Symbol.for("lit-nothing"), mt = /* @__PURE__ */ new WeakMap(), G = Y.createTreeWalker(
+  Y,
   129
   /* NodeFilter.SHOW_{ELEMENT|COMMENT} */
 );
-let q = Se;
-function rs(t, e) {
-  if (!bt(t) || !t.hasOwnProperty("raw")) {
-    let s = "invalid template strings array";
-    throw s = `
+let J = xe;
+function At(s, e) {
+  if (!Ke(s) || !s.hasOwnProperty("raw")) {
+    let t = "invalid template strings array";
+    throw t = `
           Internal Error: expected template strings to be an array
           with a 'raw' field. Faking a template strings array by
           calling html or svg like an ordinary function is effectively
@@ -779,91 +779,91 @@ function rs(t, e) {
           https://github.com/lit/lit/issues/new?template=bug_report.md
           and include information about your build tooling, if any.
         `.trim().replace(/\n */g, `
-`), new Error(s);
+`), new Error(t);
   }
-  return jt !== void 0 ? jt.createHTML(e) : e;
+  return at !== void 0 ? at.createHTML(e) : e;
 }
-const er = (t, e) => {
-  const s = t.length - 1, n = [];
-  let r = e === He ? "<svg>" : e === We ? "<math>" : "", i, o = oe;
-  for (let l = 0; l < s; l++) {
-    const u = t[l];
-    let c = -1, h, y = 0, p;
-    for (; y < u.length && (o.lastIndex = y, p = o.exec(u), p !== null); )
-      if (y = o.lastIndex, o === oe) {
-        if (p[Mt] === "!--")
-          o = Rt;
-        else if (p[Mt] !== void 0)
-          o = Nt;
-        else if (p[Ne] !== void 0)
-          ss.test(p[Ne]) && (i = new RegExp(`</${p[Ne]}`, "g")), o = H;
-        else if (p[Bs] !== void 0)
+const Ks = (s, e) => {
+  const t = s.length - 1, i = [];
+  let n = e === ze ? "<svg>" : e === Ve ? "<math>" : "", r, o = ce;
+  for (let a = 0; a < t; a++) {
+    const l = s[a];
+    let h = -1, u, f = 0, y;
+    for (; f < l.length && (o.lastIndex = f, y = o.exec(l), y !== null); )
+      if (f = o.lastIndex, o === ce) {
+        if (y[lt] === "!--")
+          o = ct;
+        else if (y[lt] !== void 0)
+          o = ut;
+        else if (y[Re] !== void 0)
+          It.test(y[Re]) && (r = new RegExp(`</${y[Re]}`, "g")), o = q;
+        else if (y[Ls] !== void 0)
           throw new Error("Bindings in tag names are not supported. Please use static templates instead. See https://lit.dev/docs/templates/expressions/#static-expressions");
-      } else o === H ? p[qs] === ">" ? (o = i ?? oe, c = -1) : p[Ut] === void 0 ? c = -2 : (c = o.lastIndex - p[Ks].length, h = p[Ut], o = p[kt] === void 0 ? H : p[kt] === '"' ? ke : Ue) : o === ke || o === Ue ? o = H : o === Rt || o === Nt ? o = oe : (o = H, i = void 0);
-    console.assert(c === -1 || o === H || o === Ue || o === ke, "unexpected parse state B");
-    const Q = o === H && t[l + 1].startsWith("/>") ? " " : "";
-    r += o === oe ? u + Ls : c >= 0 ? (n.push(h), u.slice(0, c) + es + u.slice(c) + N + Q) : u + N + (c === -2 ? l : Q);
+      } else o === q ? y[Ds] === ">" ? (o = r ?? ce, h = -1) : y[dt] === void 0 ? h = -2 : (h = o.lastIndex - y[zs].length, u = y[dt], o = y[ht] === void 0 ? q : y[ht] === '"' ? Ue : Me) : o === Ue || o === Me ? o = q : o === ct || o === ut ? o = ce : (o = q, r = void 0);
+    console.assert(h === -1 || o === q || o === Me || o === Ue, "unexpected parse state B");
+    const $ = o === q && s[a + 1].startsWith("/>") ? " " : "";
+    n += o === ce ? l + Rs : h >= 0 ? (i.push(u), l.slice(0, h) + kt + l.slice(h) + V + $) : l + V + (h === -2 ? a : $);
   }
-  const a = r + (t[s] || "<?>") + (e === He ? "</svg>" : e === We ? "</math>" : "");
-  return [rs(t, a), n];
+  const c = n + (s[t] || "<?>") + (e === ze ? "</svg>" : e === Ve ? "</math>" : "");
+  return [At(s, c), i];
 };
-class ue {
-  constructor({ strings: e, ["_$litType$"]: s }, n) {
+class me {
+  constructor({ strings: e, ["_$litType$"]: t }, i) {
     this.parts = [];
-    let r, i = 0, o = 0;
-    const a = e.length - 1, l = this.parts, [u, c] = er(e, s);
-    if (this.el = ue.createElement(u, n), F.currentNode = this.el.content, s === He || s === We) {
-      const h = this.el.content.firstChild;
-      h.replaceWith(...h.childNodes);
+    let n, r = 0, o = 0;
+    const c = e.length - 1, a = this.parts, [l, h] = Ks(e, t);
+    if (this.el = me.createElement(l, i), G.currentNode = this.el.content, t === ze || t === Ve) {
+      const u = this.el.content.firstChild;
+      u.replaceWith(...u.childNodes);
     }
-    for (; (r = F.nextNode()) !== null && l.length < a; ) {
-      if (r.nodeType === 1) {
+    for (; (n = G.nextNode()) !== null && a.length < c; ) {
+      if (n.nodeType === 1) {
         {
-          const h = r.localName;
-          if (/^(?:textarea|template)$/i.test(h) && r.innerHTML.includes(N)) {
-            const y = `Expressions are not supported inside \`${h}\` elements. See https://lit.dev/msg/expression-in-${h} for more information.`;
-            if (h === "template")
-              throw new Error(y);
-            ae("", y);
+          const u = n.localName;
+          if (/^(?:textarea|template)$/i.test(u) && n.innerHTML.includes(V)) {
+            const f = `Expressions are not supported inside \`${u}\` elements. See https://lit.dev/msg/expression-in-${u} for more information.`;
+            if (u === "template")
+              throw new Error(f);
+            ue("", f);
           }
         }
-        if (r.hasAttributes())
-          for (const h of r.getAttributeNames())
-            if (h.endsWith(es)) {
-              const y = c[o++], Q = r.getAttribute(h).split(N), V = /([.?@])?(.*)/.exec(y);
-              l.push({
-                type: vt,
-                index: i,
-                name: V[2],
-                strings: Q,
-                ctor: V[1] === "." ? sr : V[1] === "?" ? rr : V[1] === "@" ? nr : xe
-              }), r.removeAttribute(h);
-            } else h.startsWith(N) && (l.push({
-              type: wt,
-              index: i
-            }), r.removeAttribute(h));
-        if (ss.test(r.tagName)) {
-          const h = r.textContent.split(N), y = h.length - 1;
-          if (y > 0) {
-            r.textContent = be ? be.emptyScript : "";
-            for (let p = 0; p < y; p++)
-              r.append(h[p], le()), F.nextNode(), l.push({ type: ve, index: ++i });
-            r.append(h[y], le());
+        if (n.hasAttributes())
+          for (const u of n.getAttributeNames())
+            if (u.endsWith(kt)) {
+              const f = h[o++], $ = n.getAttribute(u).split(V), B = /([.?@])?(.*)/.exec(f);
+              a.push({
+                type: Ge,
+                index: r,
+                name: B[2],
+                strings: $,
+                ctor: B[1] === "." ? Ys : B[1] === "?" ? Js : B[1] === "@" ? Qs : Pe
+              }), n.removeAttribute(u);
+            } else u.startsWith(V) && (a.push({
+              type: Ye,
+              index: r
+            }), n.removeAttribute(u));
+        if (It.test(n.tagName)) {
+          const u = n.textContent.split(V), f = u.length - 1;
+          if (f > 0) {
+            n.textContent = Ee ? Ee.emptyScript : "";
+            for (let y = 0; y < f; y++)
+              n.append(u[y], de()), G.nextNode(), a.push({ type: Se, index: ++r });
+            n.append(u[f], de());
           }
         }
-      } else if (r.nodeType === 8)
-        if (r.data === ts)
-          l.push({ type: ve, index: i });
+      } else if (n.nodeType === 8)
+        if (n.data === Ot)
+          a.push({ type: Se, index: r });
         else {
-          let y = -1;
-          for (; (y = r.data.indexOf(N, y + 1)) !== -1; )
-            l.push({ type: Xs, index: i }), y += N.length - 1;
+          let f = -1;
+          for (; (f = n.data.indexOf(V, f + 1)) !== -1; )
+            a.push({ type: Bs, index: r }), f += V.length - 1;
         }
-      i++;
+      r++;
     }
-    if (c.length !== o)
+    if (h.length !== o)
       throw new Error('Detected duplicate attribute bindings. This occurs if your template has duplicate attributes on an element tag. For example "<input ?disabled=${true} ?disabled=${false}>" contains a duplicate "disabled" attribute. The error was detected in the following template: \n`' + e.join("${...}") + "`");
-    f && f({
+    g && g({
       kind: "template prep",
       template: this,
       clonableTemplate: this.el,
@@ -873,24 +873,24 @@ class ue {
   }
   // Overridden via `litHtmlPolyfillSupport` to provide platform support.
   /** @nocollapse */
-  static createElement(e, s) {
-    const n = B.createElement("template");
-    return n.innerHTML = e, n;
+  static createElement(e, t) {
+    const i = Y.createElement("template");
+    return i.innerHTML = e, i;
   }
 }
-function ee(t, e, s = t, n) {
-  if (e === Z)
+function ne(s, e, t = s, i) {
+  if (e === se)
     return e;
-  let r = n !== void 0 ? s.__directives?.[n] : s.__directive;
-  const i = ce(e) ? void 0 : (
+  let n = i !== void 0 ? t.__directives?.[i] : t.__directive;
+  const r = he(e) ? void 0 : (
     // This property needs to remain unminified.
     e._$litDirective$
   );
-  return r?.constructor !== i && (r?._$notifyDirectiveConnectionChanged?.(!1), i === void 0 ? r = void 0 : (r = new i(t), r._$initialize(t, s, n)), n !== void 0 ? (s.__directives ??= [])[n] = r : s.__directive = r), r !== void 0 && (e = ee(t, r._$resolve(t, e.values), r, n)), e;
+  return n?.constructor !== r && (n?._$notifyDirectiveConnectionChanged?.(!1), r === void 0 ? n = void 0 : (n = new r(s), n._$initialize(s, t, i)), i !== void 0 ? (t.__directives ??= [])[i] = n : t.__directive = n), n !== void 0 && (e = ne(s, n._$resolve(s, e.values), n, i)), e;
 }
-class tr {
-  constructor(e, s) {
-    this._$parts = [], this._$disconnectableChildren = void 0, this._$template = e, this._$parent = s;
+class Gs {
+  constructor(e, t) {
+    this._$parts = [], this._$disconnectableChildren = void 0, this._$template = e, this._$parent = t;
   }
   // Called by ChildPart parentNode getter
   get parentNode() {
@@ -903,38 +903,38 @@ class tr {
   // This method is separate from the constructor because we need to return a
   // DocumentFragment and we don't want to hold onto it with an instance field.
   _clone(e) {
-    const { el: { content: s }, parts: n } = this._$template, r = (e?.creationScope ?? B).importNode(s, !0);
-    F.currentNode = r;
-    let i = F.nextNode(), o = 0, a = 0, l = n[0];
-    for (; l !== void 0; ) {
-      if (o === l.index) {
-        let u;
-        l.type === ve ? u = new de(i, i.nextSibling, this, e) : l.type === vt ? u = new l.ctor(i, l.name, l.strings, this, e) : l.type === wt && (u = new ir(i, this, e)), this._$parts.push(u), l = n[++a];
+    const { el: { content: t }, parts: i } = this._$template, n = (e?.creationScope ?? Y).importNode(t, !0);
+    G.currentNode = n;
+    let r = G.nextNode(), o = 0, c = 0, a = i[0];
+    for (; a !== void 0; ) {
+      if (o === a.index) {
+        let l;
+        a.type === Se ? l = new pe(r, r.nextSibling, this, e) : a.type === Ge ? l = new a.ctor(r, a.name, a.strings, this, e) : a.type === Ye && (l = new Xs(r, this, e)), this._$parts.push(l), a = i[++c];
       }
-      o !== l?.index && (i = F.nextNode(), o++);
+      o !== a?.index && (r = G.nextNode(), o++);
     }
-    return F.currentNode = B, r;
+    return G.currentNode = Y, n;
   }
   _update(e) {
-    let s = 0;
-    for (const n of this._$parts)
-      n !== void 0 && (f && f({
+    let t = 0;
+    for (const i of this._$parts)
+      i !== void 0 && (g && g({
         kind: "set part",
-        part: n,
-        value: e[s],
-        valueIndex: s,
+        part: i,
+        value: e[t],
+        valueIndex: t,
         values: e,
         templateInstance: this
-      }), n.strings !== void 0 ? (n._$setValue(e, n, s), s += n.strings.length - 2) : n._$setValue(e[s])), s++;
+      }), i.strings !== void 0 ? (i._$setValue(e, i, t), t += i.strings.length - 2) : i._$setValue(e[t])), t++;
   }
 }
-class de {
+class pe {
   // See comment in Disconnectable interface for why this is a getter
   get _$isConnected() {
     return this._$parent?._$isConnected ?? this.__isConnected;
   }
-  constructor(e, s, n, r) {
-    this.type = ve, this._$committedValue = d, this._$disconnectableChildren = void 0, this._$startNode = e, this._$endNode = s, this._$parent = n, this.options = r, this.__isConnected = r?.isConnected ?? !0, this._textSanitizer = void 0;
+  constructor(e, t, i, n) {
+    this.type = Se, this._$committedValue = d, this._$disconnectableChildren = void 0, this._$startNode = e, this._$endNode = t, this._$parent = i, this.options = n, this.__isConnected = n?.isConnected ?? !0, this._textSanitizer = void 0;
   }
   /**
    * The parent node into which the part renders its content.
@@ -955,9 +955,9 @@ class de {
    * consists of all child nodes of `.parentNode`.
    */
   get parentNode() {
-    let e = A(this._$startNode).parentNode;
-    const s = this._$parent;
-    return s !== void 0 && e?.nodeType === 11 && (e = s.parentNode), e;
+    let e = U(this._$startNode).parentNode;
+    const t = this._$parent;
+    return t !== void 0 && e?.nodeType === 11 && (e = t.parentNode), e;
   }
   /**
    * The part's leading marker node, if any. See `.parentNode` for more
@@ -973,17 +973,17 @@ class de {
   get endNode() {
     return this._$endNode;
   }
-  _$setValue(e, s = this) {
+  _$setValue(e, t = this) {
     if (this.parentNode === null)
       throw new Error("This `ChildPart` has no `parentNode` and therefore cannot accept a value. This likely means the element containing the part was manipulated in an unsupported way outside of Lit's control such that the part's marker nodes were ejected from DOM. For example, setting the element's `innerHTML` or `textContent` can do this.");
-    if (e = ee(this, e, s), ce(e))
-      e === d || e == null || e === "" ? (this._$committedValue !== d && (f && f({
+    if (e = ne(this, e, t), he(e))
+      e === d || e == null || e === "" ? (this._$committedValue !== d && (g && g({
         kind: "commit nothing to child",
         start: this._$startNode,
         end: this._$endNode,
         parent: this._$parent,
         options: this.options
-      }), this._$clear()), this._$committedValue = d) : e !== this._$committedValue && e !== Z && this._commitText(e);
+      }), this._$clear()), this._$committedValue = d) : e !== this._$committedValue && e !== se && this._commitText(e);
     else if (e._$litType$ !== void 0)
       this._commitTemplateResult(e);
     else if (e.nodeType !== void 0) {
@@ -992,21 +992,21 @@ class de {
         return;
       }
       this._commitNode(e);
-    } else Hs(e) ? this._commitIterable(e) : this._commitText(e);
+    } else Ms(e) ? this._commitIterable(e) : this._commitText(e);
   }
   _insert(e) {
-    return A(A(this._$startNode).parentNode).insertBefore(e, this._$endNode);
+    return U(U(this._$startNode).parentNode).insertBefore(e, this._$endNode);
   }
   _commitNode(e) {
     if (this._$committedValue !== e) {
-      if (this._$clear(), q !== Se) {
-        const s = this._$startNode.parentNode?.nodeName;
-        if (s === "STYLE" || s === "SCRIPT") {
-          let n = "Forbidden";
-          throw s === "STYLE" ? n = "Lit does not support binding inside style nodes. This is a security risk, as style injection attacks can exfiltrate data and spoof UIs. Consider instead using css`...` literals to compose styles, and do dynamic styling with css custom properties, ::parts, <slot>s, and by mutating the DOM rather than stylesheets." : n = "Lit does not support binding inside script nodes. This is a security risk, as it could allow arbitrary code execution.", new Error(n);
+      if (this._$clear(), J !== xe) {
+        const t = this._$startNode.parentNode?.nodeName;
+        if (t === "STYLE" || t === "SCRIPT") {
+          let i = "Forbidden";
+          throw t === "STYLE" ? i = "Lit does not support binding inside style nodes. This is a security risk, as style injection attacks can exfiltrate data and spoof UIs. Consider instead using css`...` literals to compose styles, and do dynamic styling with css custom properties, ::parts, <slot>s, and by mutating the DOM rather than stylesheets." : i = "Lit does not support binding inside script nodes. This is a security risk, as it could allow arbitrary code execution.", new Error(i);
         }
       }
-      f && f({
+      g && g({
         kind: "commit node",
         start: this._$startNode,
         parent: this._$parent,
@@ -1016,70 +1016,70 @@ class de {
     }
   }
   _commitText(e) {
-    if (this._$committedValue !== d && ce(this._$committedValue)) {
-      const s = A(this._$startNode).nextSibling;
-      this._textSanitizer === void 0 && (this._textSanitizer = Le(s, "data", "property")), e = this._textSanitizer(e), f && f({
+    if (this._$committedValue !== d && he(this._$committedValue)) {
+      const t = U(this._$startNode).nextSibling;
+      this._textSanitizer === void 0 && (this._textSanitizer = De(t, "data", "property")), e = this._textSanitizer(e), g && g({
         kind: "commit text",
-        node: s,
+        node: t,
         value: e,
         options: this.options
-      }), s.data = e;
+      }), t.data = e;
     } else {
-      const s = B.createTextNode("");
-      this._commitNode(s), this._textSanitizer === void 0 && (this._textSanitizer = Le(s, "data", "property")), e = this._textSanitizer(e), f && f({
+      const t = Y.createTextNode("");
+      this._commitNode(t), this._textSanitizer === void 0 && (this._textSanitizer = De(t, "data", "property")), e = this._textSanitizer(e), g && g({
         kind: "commit text",
-        node: s,
+        node: t,
         value: e,
         options: this.options
-      }), s.data = e;
+      }), t.data = e;
     }
     this._$committedValue = e;
   }
   _commitTemplateResult(e) {
-    const { values: s, ["_$litType$"]: n } = e, r = typeof n == "number" ? this._$getTemplate(e) : (n.el === void 0 && (n.el = ue.createElement(rs(n.h, n.h[0]), this.options)), n);
-    if (this._$committedValue?._$template === r)
-      f && f({
+    const { values: t, ["_$litType$"]: i } = e, n = typeof i == "number" ? this._$getTemplate(e) : (i.el === void 0 && (i.el = me.createElement(At(i.h, i.h[0]), this.options)), i);
+    if (this._$committedValue?._$template === n)
+      g && g({
         kind: "template updating",
-        template: r,
+        template: n,
         instance: this._$committedValue,
         parts: this._$committedValue._$parts,
         options: this.options,
-        values: s
-      }), this._$committedValue._update(s);
+        values: t
+      }), this._$committedValue._update(t);
     else {
-      const i = new tr(r, this), o = i._clone(this.options);
-      f && f({
+      const r = new Gs(n, this), o = r._clone(this.options);
+      g && g({
         kind: "template instantiated",
-        template: r,
-        instance: i,
-        parts: i._$parts,
+        template: n,
+        instance: r,
+        parts: r._$parts,
         options: this.options,
         fragment: o,
-        values: s
-      }), i._update(s), f && f({
+        values: t
+      }), r._update(t), g && g({
         kind: "template instantiated and updated",
-        template: r,
-        instance: i,
-        parts: i._$parts,
+        template: n,
+        instance: r,
+        parts: r._$parts,
         options: this.options,
         fragment: o,
-        values: s
-      }), this._commitNode(o), this._$committedValue = i;
+        values: t
+      }), this._commitNode(o), this._$committedValue = r;
     }
   }
   // Overridden via `litHtmlPolyfillSupport` to provide platform support.
   /** @internal */
   _$getTemplate(e) {
-    let s = zt.get(e.strings);
-    return s === void 0 && zt.set(e.strings, s = new ue(e)), s;
+    let t = mt.get(e.strings);
+    return t === void 0 && mt.set(e.strings, t = new me(e)), t;
   }
   _commitIterable(e) {
-    bt(this._$committedValue) || (this._$committedValue = [], this._$clear());
-    const s = this._$committedValue;
-    let n = 0, r;
-    for (const i of e)
-      n === s.length ? s.push(r = new de(this._insert(le()), this._insert(le()), this, this.options)) : r = s[n], r._$setValue(i), n++;
-    n < s.length && (this._$clear(r && A(r._$endNode).nextSibling, n), s.length = n);
+    Ke(this._$committedValue) || (this._$committedValue = [], this._$clear());
+    const t = this._$committedValue;
+    let i = 0, n;
+    for (const r of e)
+      i === t.length ? t.push(n = new pe(this._insert(de()), this._insert(de()), this, this.options)) : n = t[i], n._$setValue(r), i++;
+    i < t.length && (this._$clear(n && U(n._$endNode).nextSibling, i), t.length = i);
   }
   /**
    * Removes the nodes contained within this Part from the DOM.
@@ -1092,10 +1092,10 @@ class de {
    *
    * @internal
    */
-  _$clear(e = A(this._$startNode).nextSibling, s) {
-    for (this._$notifyConnectionChanged?.(!1, !0, s); e !== this._$endNode; ) {
-      const n = A(e).nextSibling;
-      A(e).remove(), e = n;
+  _$clear(e = U(this._$startNode).nextSibling, t) {
+    for (this._$notifyConnectionChanged?.(!1, !0, t); e !== this._$endNode; ) {
+      const i = U(e).nextSibling;
+      U(e).remove(), e = i;
     }
   }
   /**
@@ -1112,7 +1112,7 @@ class de {
       throw new Error("part.setConnected() may only be called on a RootPart returned from render().");
   }
 }
-class xe {
+class Pe {
   get tagName() {
     return this.element.tagName;
   }
@@ -1120,8 +1120,8 @@ class xe {
   get _$isConnected() {
     return this._$parent._$isConnected;
   }
-  constructor(e, s, n, r, i) {
-    this.type = vt, this._$committedValue = d, this._$disconnectableChildren = void 0, this.element = e, this.name = s, this._$parent = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$committedValue = new Array(n.length - 1).fill(new String()), this.strings = n) : this._$committedValue = d, this._sanitizer = void 0;
+  constructor(e, t, i, n, r) {
+    this.type = Ge, this._$committedValue = d, this._$disconnectableChildren = void 0, this.element = e, this.name = t, this._$parent = n, this.options = r, i.length > 2 || i[0] !== "" || i[1] !== "" ? (this._$committedValue = new Array(i.length - 1).fill(new String()), this.strings = i) : this._$committedValue = d, this._sanitizer = void 0;
   }
   /**
    * Sets the value of this part by resolving the value from possibly multiple
@@ -1145,38 +1145,38 @@ class xe {
    *
    * @internal
    */
-  _$setValue(e, s = this, n, r) {
-    const i = this.strings;
+  _$setValue(e, t = this, i, n) {
+    const r = this.strings;
     let o = !1;
-    if (i === void 0)
-      e = ee(this, e, s, 0), o = !ce(e) || e !== this._$committedValue && e !== Z, o && (this._$committedValue = e);
+    if (r === void 0)
+      e = ne(this, e, t, 0), o = !he(e) || e !== this._$committedValue && e !== se, o && (this._$committedValue = e);
     else {
-      const a = e;
-      e = i[0];
-      let l, u;
-      for (l = 0; l < i.length - 1; l++)
-        u = ee(this, a[n + l], s, l), u === Z && (u = this._$committedValue[l]), o ||= !ce(u) || u !== this._$committedValue[l], u === d ? e = d : e !== d && (e += (u ?? "") + i[l + 1]), this._$committedValue[l] = u;
+      const c = e;
+      e = r[0];
+      let a, l;
+      for (a = 0; a < r.length - 1; a++)
+        l = ne(this, c[i + a], t, a), l === se && (l = this._$committedValue[a]), o ||= !he(l) || l !== this._$committedValue[a], l === d ? e = d : e !== d && (e += (l ?? "") + r[a + 1]), this._$committedValue[a] = l;
     }
-    o && !r && this._commitValue(e);
+    o && !n && this._commitValue(e);
   }
   /** @internal */
   _commitValue(e) {
-    e === d ? A(this.element).removeAttribute(this.name) : (this._sanitizer === void 0 && (this._sanitizer = q(this.element, this.name, "attribute")), e = this._sanitizer(e ?? ""), f && f({
+    e === d ? U(this.element).removeAttribute(this.name) : (this._sanitizer === void 0 && (this._sanitizer = J(this.element, this.name, "attribute")), e = this._sanitizer(e ?? ""), g && g({
       kind: "commit attribute",
       element: this.element,
       name: this.name,
       value: e,
       options: this.options
-    }), A(this.element).setAttribute(this.name, e ?? ""));
+    }), U(this.element).setAttribute(this.name, e ?? ""));
   }
 }
-class sr extends xe {
+class Ys extends Pe {
   constructor() {
-    super(...arguments), this.type = Ys;
+    super(...arguments), this.type = Ws;
   }
   /** @internal */
   _commitValue(e) {
-    this._sanitizer === void 0 && (this._sanitizer = q(this.element, this.name, "property")), e = this._sanitizer(e), f && f({
+    this._sanitizer === void 0 && (this._sanitizer = J(this.element, this.name, "property")), e = this._sanitizer(e), g && g({
       kind: "commit property",
       element: this.element,
       name: this.name,
@@ -1185,108 +1185,108 @@ class sr extends xe {
     }), this.element[this.name] = e === d ? void 0 : e;
   }
 }
-class rr extends xe {
+class Js extends Pe {
   constructor() {
-    super(...arguments), this.type = Js;
+    super(...arguments), this.type = Hs;
   }
   /** @internal */
   _commitValue(e) {
-    f && f({
+    g && g({
       kind: "commit boolean attribute",
       element: this.element,
       name: this.name,
       value: !!(e && e !== d),
       options: this.options
-    }), A(this.element).toggleAttribute(this.name, !!e && e !== d);
+    }), U(this.element).toggleAttribute(this.name, !!e && e !== d);
   }
 }
-class nr extends xe {
-  constructor(e, s, n, r, i) {
-    if (super(e, s, n, r, i), this.type = Qs, this.strings !== void 0)
-      throw new Error(`A \`<${e.localName}>\` has a \`@${s}=...\` listener with invalid content. Event listeners in templates must have exactly one expression and no surrounding text.`);
+class Qs extends Pe {
+  constructor(e, t, i, n, r) {
+    if (super(e, t, i, n, r), this.type = Fs, this.strings !== void 0)
+      throw new Error(`A \`<${e.localName}>\` has a \`@${t}=...\` listener with invalid content. Event listeners in templates must have exactly one expression and no surrounding text.`);
   }
   // EventPart does not use the base _$setValue/_resolveValue implementation
   // since the dirty checking is more complex
   /** @internal */
-  _$setValue(e, s = this) {
-    if (e = ee(this, e, s, 0) ?? d, e === Z)
+  _$setValue(e, t = this) {
+    if (e = ne(this, e, t, 0) ?? d, e === se)
       return;
-    const n = this._$committedValue, r = e === d && n !== d || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== d && (n === d || r);
-    f && f({
+    const i = this._$committedValue, n = e === d && i !== d || e.capture !== i.capture || e.once !== i.once || e.passive !== i.passive, r = e !== d && (i === d || n);
+    g && g({
       kind: "commit event listener",
       element: this.element,
       name: this.name,
       value: e,
       options: this.options,
-      removeListener: r,
-      addListener: i,
-      oldListener: n
-    }), r && this.element.removeEventListener(this.name, this, n), i && this.element.addEventListener(this.name, this, e), this._$committedValue = e;
+      removeListener: n,
+      addListener: r,
+      oldListener: i
+    }), n && this.element.removeEventListener(this.name, this, i), r && this.element.addEventListener(this.name, this, e), this._$committedValue = e;
   }
   handleEvent(e) {
     typeof this._$committedValue == "function" ? this._$committedValue.call(this.options?.host ?? this.element, e) : this._$committedValue.handleEvent(e);
   }
 }
-class ir {
-  constructor(e, s, n) {
-    this.element = e, this.type = wt, this._$disconnectableChildren = void 0, this._$parent = s, this.options = n;
+class Xs {
+  constructor(e, t, i) {
+    this.element = e, this.type = Ye, this._$disconnectableChildren = void 0, this._$parent = t, this.options = i;
   }
   // See comment in Disconnectable interface for why this is a getter
   get _$isConnected() {
     return this._$parent._$isConnected;
   }
   _$setValue(e) {
-    f && f({
+    g && g({
       kind: "commit to element binding",
       element: this.element,
       value: e,
       options: this.options
-    }), ee(this, e);
+    }), ne(this, e);
   }
 }
-const or = x.litHtmlPolyfillSupportDevMode;
-or?.(ue, de);
-(x.litHtmlVersions ??= []).push("3.3.3");
-x.litHtmlVersions.length > 1 && queueMicrotask(() => {
-  ae("multiple-versions", "Multiple versions of Lit loaded. Loading multiple versions is not recommended.");
+const Zs = I.litHtmlPolyfillSupportDevMode;
+Zs?.(me, pe);
+(I.litHtmlVersions ??= []).push("3.3.3");
+I.litHtmlVersions.length > 1 && queueMicrotask(() => {
+  ue("multiple-versions", "Multiple versions of Lit loaded. Loading multiple versions is not recommended.");
 });
-const ge = (t, e, s) => {
+const ve = (s, e, t) => {
   if (e == null)
     throw new TypeError(`The container to render into may not be ${e}`);
-  const n = Us++, r = s?.renderBefore ?? e;
-  let i = r._$litPart$;
-  if (f && f({
+  const i = Os++, n = t?.renderBefore ?? e;
+  let r = n._$litPart$;
+  if (g && g({
     kind: "begin render",
-    id: n,
-    value: t,
+    id: i,
+    value: s,
     container: e,
-    options: s,
-    part: i
-  }), i === void 0) {
-    const o = s?.renderBefore ?? null;
-    r._$litPart$ = i = new de(e.insertBefore(le(), o), o, void 0, s ?? {});
+    options: t,
+    part: r
+  }), r === void 0) {
+    const o = t?.renderBefore ?? null;
+    n._$litPart$ = r = new pe(e.insertBefore(de(), o), o, void 0, t ?? {});
   }
-  return i._$setValue(t), f && f({
+  return r._$setValue(s), g && g({
     kind: "end render",
-    id: n,
-    value: t,
+    id: i,
+    value: s,
     container: e,
-    options: s,
-    part: i
-  }), i;
+    options: t,
+    part: r
+  }), r;
 };
-ge.setSanitizer = zs, ge.createSanitizer = Le, ge._testOnlyClearSanitizerFactoryDoNotCallOrElse = Vs;
+ve.setSanitizer = As, ve.createSanitizer = De, ve._testOnlyClearSanitizerFactoryDoNotCallOrElse = Ns;
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const ar = (t, e) => t, z = globalThis;
-let ns;
-z.litIssuedWarnings ??= /* @__PURE__ */ new Set(), ns = (t, e) => {
-  e += ` See https://lit.dev/msg/${t} for more information.`, !z.litIssuedWarnings.has(e) && !z.litIssuedWarnings.has(t) && (console.warn(e), z.litIssuedWarnings.add(e));
+const en = (s, e) => s, F = globalThis;
+let Nt;
+F.litIssuedWarnings ??= /* @__PURE__ */ new Set(), Nt = (s, e) => {
+  e += ` See https://lit.dev/msg/${s} for more information.`, !F.litIssuedWarnings.has(e) && !F.litIssuedWarnings.has(s) && (console.warn(e), F.litIssuedWarnings.add(e));
 };
-class K extends U {
+class Q extends W {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this.__childPart = void 0;
   }
@@ -1305,8 +1305,8 @@ class K extends U {
    * @category updates
    */
   update(e) {
-    const s = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this.__childPart = ge(s, this.renderRoot, this.renderOptions);
+    const t = this.render();
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this.__childPart = ve(t, this.renderRoot, this.renderOptions);
   }
   /**
    * Invoked when the component is added to the document's DOM.
@@ -1361,81 +1361,71 @@ class K extends U {
    * @category rendering
    */
   render() {
-    return Z;
+    return se;
   }
 }
-K._$litElement$ = !0;
-K[ar("finalized")] = !0;
-z.litElementHydrateSupport?.({ LitElement: K });
-const lr = z.litElementPolyfillSupportDevMode;
-lr?.({ LitElement: K });
-(z.litElementVersions ??= []).push("4.2.2");
-z.litElementVersions.length > 1 && queueMicrotask(() => {
-  ns("multiple-versions", "Multiple versions of Lit loaded. Loading multiple versions is not recommended.");
+Q._$litElement$ = !0;
+Q[en("finalized")] = !0;
+F.litElementHydrateSupport?.({ LitElement: Q });
+const tn = F.litElementPolyfillSupportDevMode;
+tn?.({ LitElement: Q });
+(F.litElementVersions ??= []).push("4.2.2");
+F.litElementVersions.length > 1 && queueMicrotask(() => {
+  Nt("multiple-versions", "Multiple versions of Lit loaded. Loading multiple versions is not recommended.");
 });
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const g = (t) => (e, s) => {
-  s !== void 0 ? s.addInitializer(() => {
-    customElements.define(t, e);
-  }) : customElements.define(t, e);
+let Rt;
+globalThis.litIssuedWarnings ??= /* @__PURE__ */ new Set(), Rt = (s, e) => {
+  e += ` See https://lit.dev/msg/${s} for more information.`, !globalThis.litIssuedWarnings.has(e) && !globalThis.litIssuedWarnings.has(s) && (console.warn(e), globalThis.litIssuedWarnings.add(e));
 };
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-let is;
-globalThis.litIssuedWarnings ??= /* @__PURE__ */ new Set(), is = (t, e) => {
-  e += ` See https://lit.dev/msg/${t} for more information.`, !globalThis.litIssuedWarnings.has(e) && !globalThis.litIssuedWarnings.has(t) && (console.warn(e), globalThis.litIssuedWarnings.add(e));
-};
-const cr = (t, e, s) => {
-  const n = e.hasOwnProperty(s);
-  return e.constructor.createProperty(s, t), n ? Object.getOwnPropertyDescriptor(e, s) : void 0;
-}, ur = {
+const sn = (s, e, t) => {
+  const i = e.hasOwnProperty(t);
+  return e.constructor.createProperty(t, s), i ? Object.getOwnPropertyDescriptor(e, t) : void 0;
+}, nn = {
   attribute: !0,
   type: String,
-  converter: ye,
+  converter: $e,
   reflect: !1,
-  hasChanged: yt
-}, dr = (t = ur, e, s) => {
-  const { kind: n, metadata: r } = s;
-  r == null && is("missing-class-metadata", `The class ${e} is missing decorator metadata. This could mean that you're using a compiler that supports decorators but doesn't support decorator metadata, such as TypeScript 5.1. Please update your compiler.`);
-  let i = globalThis.litPropertyMetadata.get(r);
-  if (i === void 0 && globalThis.litPropertyMetadata.set(r, i = /* @__PURE__ */ new Map()), n === "setter" && (t = Object.create(t), t.wrapped = !0), i.set(s.name, t), n === "accessor") {
-    const { name: o } = s;
+  hasChanged: qe
+}, rn = (s = nn, e, t) => {
+  const { kind: i, metadata: n } = t;
+  n == null && Rt("missing-class-metadata", `The class ${e} is missing decorator metadata. This could mean that you're using a compiler that supports decorators but doesn't support decorator metadata, such as TypeScript 5.1. Please update your compiler.`);
+  let r = globalThis.litPropertyMetadata.get(n);
+  if (r === void 0 && globalThis.litPropertyMetadata.set(n, r = /* @__PURE__ */ new Map()), i === "setter" && (s = Object.create(s), s.wrapped = !0), r.set(t.name, s), i === "accessor") {
+    const { name: o } = t;
     return {
-      set(a) {
-        const l = e.get.call(this);
-        e.set.call(this, a), this.requestUpdate(o, l, t, !0, a);
+      set(c) {
+        const a = e.get.call(this);
+        e.set.call(this, c), this.requestUpdate(o, a, s, !0, c);
       },
-      init(a) {
-        return a !== void 0 && this._$changeProperty(o, void 0, t, a), a;
+      init(c) {
+        return c !== void 0 && this._$changeProperty(o, void 0, s, c), c;
       }
     };
-  } else if (n === "setter") {
-    const { name: o } = s;
-    return function(a) {
-      const l = this[o];
-      e.call(this, a), this.requestUpdate(o, l, t, !0, a);
+  } else if (i === "setter") {
+    const { name: o } = t;
+    return function(c) {
+      const a = this[o];
+      e.call(this, c), this.requestUpdate(o, a, s, !0, c);
     };
   }
-  throw new Error(`Unsupported decorator location: ${n}`);
+  throw new Error(`Unsupported decorator location: ${i}`);
 };
-function Te(t) {
-  return (e, s) => typeof s == "object" ? dr(t, e, s) : cr(t, e, s);
+function Ce(s) {
+  return (e, t) => typeof t == "object" ? rn(s, e, t) : sn(s, e, t);
 }
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function v(t) {
-  return Te({
-    ...t,
+function v(s) {
+  return Ce({
+    ...s,
     // Add both `state` and `attribute` because we found a third party
     // controller that is keying off of PropertyOptions.state to determine
     // whether a field is a private internal property or not.
@@ -1449,7 +1439,7 @@ function v(t) {
  * SPDX-License-Identifier: BSD-3-Clause
  */
 globalThis.litIssuedWarnings ??= /* @__PURE__ */ new Set();
-const G = gt`
+const X = Be`
   :host {
     --tile-color: var(--state-inactive-color, #7b7b7b);
     display: block;
@@ -1522,6 +1512,29 @@ const G = gt`
     gap: 2px;
   }
 
+  /* Иконка называет величину; число остаётся главным, иконка приглушена. */
+  .values .clickable,
+  .values > span,
+  .values > button {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .value-icon {
+    flex: none;
+    color: var(--secondary-text-color);
+    --mdc-icon-size: 17px;
+  }
+
+  .values.of-2 .value-icon {
+    --mdc-icon-size: 15px;
+  }
+
+  .values.of-3 .value-icon {
+    --mdc-icon-size: 14px;
+  }
+
   .values-separator {
     color: var(--secondary-text-color);
   }
@@ -1537,11 +1550,22 @@ const G = gt`
    * поэтому цели тапа включают их обратно.
    */
   .clickable {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
     cursor: pointer;
     pointer-events: auto;
   }
   .clickable:hover {
     opacity: 0.7;
+  }
+  .clickable:focus-visible {
+    outline: 2px solid var(--tile-color);
+    outline-offset: 2px;
+    border-radius: var(--ha-border-radius-sm, 6px);
   }
 
   /* Своя линия features: те же отступы, что у штатного ряда. */
@@ -1557,53 +1581,53 @@ const G = gt`
     color: var(--warning-color, #ffa600);
     font-size: var(--ha-font-size-m, 14px);
   }
-`, os = /* @__PURE__ */ new Set(["unavailable", "unknown"]), hr = " · ";
-function m(t, e) {
+`, Mt = /* @__PURE__ */ new Set(["unavailable", "unknown"]), on = " · ";
+function m(s, e) {
   if (!e) return;
-  const s = t?.states[e];
+  const t = s?.states[e];
   return {
     entityId: e,
-    stateObj: s,
-    missing: !s,
-    unavailable: !!s && os.has(s.state)
+    stateObj: t,
+    missing: !t,
+    unavailable: !!t && Mt.has(t.state)
   };
 }
-function mr(t, e) {
-  if (!(!t || !e || !e.stateObj || e.missing || e.unavailable))
-    return t.formatEntityState(e.stateObj);
+function an(s, e) {
+  if (!(!s || !e || !e.stateObj || e.missing || e.unavailable))
+    return s.formatEntityState(e.stateObj);
 }
-function S(t) {
-  return t.filter(
+function O(s) {
+  return s.filter(
     (e) => !!e && e.text.trim() !== ""
   );
 }
-function w(t, e) {
-  const s = mr(t, e);
-  return s ? { text: s, entityId: e?.entityId } : void 0;
+function w(s, e) {
+  const t = an(s, e);
+  return t ? { text: t, entityId: e?.entityId } : void 0;
 }
-function R(t, e) {
-  const s = pr(t, e);
-  return s ? { text: s, entityId: e?.entityId } : void 0;
+function D(s, e) {
+  const t = ln(s, e);
+  return t ? { text: t, entityId: e?.entityId } : void 0;
 }
-function pr(t, e) {
-  if (!(!t || !e?.stateObj || !e.unavailable))
-    return t.formatEntityState(e.stateObj);
+function ln(s, e) {
+  if (!(!s || !e?.stateObj || !e.unavailable))
+    return s.formatEntityState(e.stateObj);
 }
-function M(t) {
-  if (!t?.stateObj) return;
-  const e = Number(t.stateObj.state);
+function L(s) {
+  if (!s?.stateObj) return;
+  const e = Number(s.stateObj.state);
   return Number.isFinite(e) ? e : void 0;
 }
-function $t(t, e) {
-  return t || (e?.stateObj?.attributes.friendly_name ?? e?.entityId ?? "");
+function Je(s, e) {
+  return s || (e?.stateObj?.attributes.friendly_name ?? e?.entityId ?? "");
 }
-function fr(t, e) {
-  if (!e) return { value: t };
-  if (!t.endsWith(e)) return { value: t };
-  const s = t.slice(0, t.length - e.length).trimEnd();
-  return s ? { value: s, unit: e } : { value: t };
+function cn(s, e) {
+  if (!e) return { value: s };
+  if (!s.endsWith(e)) return { value: s };
+  const t = s.slice(0, s.length - e.length).trimEnd();
+  return t ? { value: t, unit: e } : { value: s };
 }
-const Fe = "unavailable", _r = "unknown", gr = "off", yr = /* @__PURE__ */ new Set(["button", "input_button", "scene"]), br = /* @__PURE__ */ new Set([
+const We = "unavailable", un = "unknown", dn = "off", hn = /* @__PURE__ */ new Set(["button", "input_button", "scene"]), mn = /* @__PURE__ */ new Set([
   "alarm_control_panel",
   "alert",
   "automation",
@@ -1635,79 +1659,79 @@ const Fe = "unavailable", _r = "unknown", gr = "off", yr = /* @__PURE__ */ new S
   "valve",
   "water_heater",
   "weather"
-]), Ie = (t) => t.substring(0, t.indexOf(".")), vr = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "unknown";
-function as(t, e) {
-  const s = Ie(t.entity_id), n = t.state;
-  if (yr.has(s))
-    return n !== Fe;
-  if (n === Fe || n === _r || n === gr && s !== "alert")
+]), Te = (s) => s.substring(0, s.indexOf(".")), pn = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "unknown";
+function Ut(s, e) {
+  const t = Te(s.entity_id), i = s.state;
+  if (hn.has(t))
+    return i !== We;
+  if (i === We || i === un || i === dn && t !== "alert")
     return !1;
-  switch (s) {
+  switch (t) {
     case "alarm_control_panel":
-      return n !== "disarmed";
+      return i !== "disarmed";
     case "alert":
-      return n !== "idle";
+      return i !== "idle";
     case "cover":
     case "valve":
-      return n !== "closed";
+      return i !== "closed";
     case "device_tracker":
     case "person":
-      return n !== "not_home";
+      return i !== "not_home";
     case "lawn_mower":
-      return !["docked", "paused"].includes(n);
+      return !["docked", "paused"].includes(i);
     case "lock":
-      return n !== "locked";
+      return i !== "locked";
     case "media_player":
-      return n !== "standby";
+      return i !== "standby";
     case "vacuum":
-      return !["idle", "docked", "paused"].includes(n);
+      return !["idle", "docked", "paused"].includes(i);
     case "plant":
-      return n === "problem";
+      return i === "problem";
     case "group":
-      return ["on", "home", "open", "locked", "problem"].includes(n);
+      return ["on", "home", "open", "locked", "problem"].includes(i);
     case "timer":
-      return n === "active";
+      return i === "active";
     case "camera":
-      return ["streaming", "recording"].includes(n);
+      return ["streaming", "recording"].includes(i);
     default:
       return !0;
   }
 }
-const wr = (t) => t.reduceRight(
-  (e, s) => `var(${s}${e ? `, ${e}` : ""})`,
+const fn = (s) => s.reduceRight(
+  (e, t) => `var(${t}${e ? `, ${e}` : ""})`,
   void 0
-), $r = (t) => {
-  const e = Number(t);
+), gn = (s) => {
+  const e = Number(s);
   if (!isNaN(e))
     return e >= 70 ? "--state-sensor-battery-high-color" : e >= 30 ? "--state-sensor-battery-medium-color" : "--state-sensor-battery-low-color";
 };
-function Pr(t, e) {
-  if (!t) return e;
-  if (t.state === Fe)
+function _n(s, e) {
+  if (!s) return e;
+  if (s.state === We)
     return "var(--state-unavailable-color)";
-  const s = Ie(t.entity_id), n = t.attributes.device_class;
-  if (s === "sensor" && n === "battery") {
-    const l = $r(t.state);
-    if (l) return `var(${l})`;
+  const t = Te(s.entity_id), i = s.attributes.device_class;
+  if (t === "sensor" && i === "battery") {
+    const a = gn(s.state);
+    if (a) return `var(${a})`;
   }
-  if (!br.has(s))
+  if (!mn.has(t))
     return e;
-  const r = as(t), i = vr(t.state), o = r ? "active" : "inactive", a = [];
-  return n && a.push(`--state-${s}-${n}-${i}-color`), a.push(
-    `--state-${s}-${i}-color`,
-    `--state-${s}-${o}-color`,
+  const n = Ut(s), r = pn(s.state), o = n ? "active" : "inactive", c = [];
+  return i && c.push(`--state-${t}-${i}-${r}-color`), c.push(
+    `--state-${t}-${r}-color`,
+    `--state-${t}-${o}-color`,
     `--state-${o}-color`
-  ), wr(a);
+  ), fn(c);
 }
-function k(t) {
-  if (!t) return "var(--state-inactive-color)";
-  const e = Pr(t);
-  return e || (as(t) ? "var(--state-icon-color)" : "var(--state-inactive-color)");
+function H(s) {
+  if (!s) return "var(--state-inactive-color)";
+  const e = _n(s);
+  return e || (Ut(s) ? "var(--state-icon-color)" : "var(--state-inactive-color)");
 }
-function W(t) {
-  return t !== void 0 && t.action !== "none";
+function K(s) {
+  return s !== void 0 && s.action !== "none";
 }
-const Er = ["closed", "locked", "off"], Cr = /* @__PURE__ */ new Set([
+const yn = ["closed", "locked", "off"], bn = /* @__PURE__ */ new Set([
   "fan",
   "input_boolean",
   "light",
@@ -1717,12 +1741,12 @@ const Er = ["closed", "locked", "off"], Cr = /* @__PURE__ */ new Set([
   "humidifier",
   "valve"
 ]);
-function Pt(t) {
-  if (!t) return { action: "none" };
-  const e = Ie(t);
-  return { action: Cr.has(e) || ["button", "input_button", "scene"].includes(e) ? "toggle" : "none" };
+function Qe(s) {
+  if (!s) return { action: "none" };
+  const e = Te(s);
+  return { action: bn.has(e) || ["button", "input_button", "scene"].includes(e) ? "toggle" : "none" };
 }
-const Or = {
+const vn = {
   button: { on: "press" },
   camera: { on: "turn_on", off: "turn_off" },
   climate: { on: "turn_on", off: "turn_off" },
@@ -1734,135 +1758,260 @@ const Or = {
   siren: { on: "turn_on", off: "turn_off" },
   valve: { on: "open_valve", off: "close_valve" }
 };
-function Sr(t, e) {
-  const s = Or[t];
-  return s ? (e ? s.on : s.off) ?? s.on : e ? "turn_on" : "turn_off";
+function wn(s, e) {
+  const t = vn[s];
+  return t ? (e ? t.on : t.off) ?? t.on : e ? "turn_on" : "turn_off";
 }
-function xr(t, e) {
-  const s = t.states[e];
-  if (!s) return;
-  const n = Ie(e), r = n === "group" ? "homeassistant" : n, i = Er.includes(s.state);
-  t.callService(r, Sr(n, i), {
+function $n(s, e) {
+  const t = s.states[e];
+  if (!t) return;
+  const i = Te(e), n = i === "group" ? "homeassistant" : i, r = yn.includes(t.state);
+  s.callService(n, wn(i, r), {
     entity_id: e
   });
 }
-function Vt(t, e, s) {
-  t.dispatchEvent(
-    new CustomEvent(e, { detail: s, bubbles: !0, composed: !0 })
+function pt(s, e, t) {
+  s.dispatchEvent(
+    new CustomEvent(e, { detail: t, bubbles: !0, composed: !0 })
   );
 }
-function Tr(t, e) {
-  e ? window.history.replaceState(null, "", t) : window.history.pushState(null, "", t), window.dispatchEvent(new CustomEvent("location-changed", { detail: {} }));
+function En(s, e) {
+  e ? window.history.replaceState(null, "", s) : window.history.pushState(null, "", s), window.dispatchEvent(new CustomEvent("location-changed", { detail: {} }));
 }
-async function Ir(t, e) {
+async function Sn(s, e) {
   if (!e.confirmation) return !0;
-  const s = window.loadCardHelpers;
-  if (!s) return window.confirm(e.confirmation.text ?? "Подтвердить?");
-  const n = await s();
-  return n.showConfirmationDialog ? n.showConfirmationDialog(t, {
+  const t = window.loadCardHelpers;
+  if (!t) return window.confirm(e.confirmation.text ?? "Подтвердить?");
+  const i = await t();
+  return i.showConfirmationDialog ? i.showConfirmationDialog(s, {
     text: e.confirmation.text,
     title: e.confirmation.title,
     confirmText: e.confirmation.confirm_text,
     dismissText: e.confirmation.dismiss_text
   }) : window.confirm(e.confirmation.text ?? "Подтвердить?");
 }
-async function Dr(t, e, s, n) {
-  let r;
-  if (n === "double_tap" ? r = s.double_tap_action : n === "hold" ? r = s.hold_action : r = s.tap_action, r || (r = { action: "more-info" }), !!await Ir(t, r))
-    switch (r.action) {
+async function xn(s, e, t, i) {
+  let n;
+  if (i === "double_tap" ? n = t.double_tap_action : i === "hold" ? n = t.hold_action : n = t.tap_action, n || (n = { action: "more-info" }), !!await Sn(s, n))
+    switch (n.action) {
       case "none":
         break;
       case "more-info": {
-        const i = r.entity || s.entity;
-        i && Vt(t, "hass-more-info", { entityId: i });
+        const r = n.entity || t.entity;
+        r && pt(s, "hass-more-info", { entityId: r });
         break;
       }
       case "toggle": {
-        const i = r.entity || s.entity;
-        i && xr(e, i);
+        const r = n.entity || t.entity;
+        r && $n(e, r);
         break;
       }
       case "navigate":
-        r.navigation_path && Tr(r.navigation_path, r.navigation_replace);
+        n.navigation_path && En(n.navigation_path, n.navigation_replace);
         break;
       case "url":
-        r.url_path && window.open(r.url_path, "_blank", "noreferrer");
+        n.url_path && window.open(n.url_path, "_blank", "noreferrer");
         break;
       case "perform-action":
       case "call-service": {
-        const i = r.perform_action || r.service;
-        if (!i) break;
-        const [o, a] = i.split(".", 2);
-        e.callService(o, a, {
-          ...r.data ?? r.service_data ?? {},
-          ...r.target ?? {}
+        const r = n.perform_action || n.service;
+        if (!r) break;
+        const [o, c] = r.split(".", 2);
+        e.callService(o, c, {
+          ...n.data ?? n.service_data ?? {},
+          ...n.target ?? {}
         });
         break;
       }
       case "fire-dom-event":
-        Vt(t, "ll-custom", r);
+        pt(s, "ll-custom", n);
         break;
       default:
         console.warn(
-          `horos-cards: действие "${r.action}" не поддержано`
+          `horos-cards: действие "${n.action}" не поддержано`
         );
     }
 }
-const ls = 5e3, Lt = [
+const jt = 5e3, ft = [
   "ha-tile-container",
   "ha-tile-icon",
   "ha-tile-info",
   "hui-card-features"
 ];
-let pe, fe;
-function cs(t, e) {
-  return customElements.get(t) ? Promise.resolve(!0) : Promise.race([
-    customElements.whenDefined(t).then(() => !0),
-    new Promise((s) => setTimeout(() => s(!1), e))
+let _e, ye;
+function Lt(s, e) {
+  return customElements.get(s) ? Promise.resolve(!0) : Promise.race([
+    customElements.whenDefined(s).then(() => !0),
+    new Promise((t) => setTimeout(() => t(!1), e))
   ]);
 }
-async function Ar() {
-  const t = window.loadCardHelpers;
-  if (t)
+async function Pn() {
+  const s = window.loadCardHelpers;
+  if (s)
     try {
-      (await t()).createCardElement?.({ type: "tile", entity: "sun.sun" });
+      (await s()).createCardElement?.({ type: "tile", entity: "sun.sun" });
     } catch {
     }
 }
-function us() {
-  return pe || (pe = (async () => Lt.every((e) => customElements.get(e)) ? !0 : (await Ar(), (await Promise.all(
-    Lt.map((e) => cs(e, ls))
-  )).every(Boolean)))(), pe);
+function Dt() {
+  return _e || (_e = (async () => ft.every((e) => customElements.get(e)) ? !0 : (await Pn(), (await Promise.all(
+    ft.map((e) => Lt(e, jt))
+  )).every(Boolean)))(), _e);
 }
-function jr() {
-  return fe || (fe = (async () => {
+function Cn() {
+  return ye || (ye = (async () => {
     if (customElements.get("hui-card-features-editor")) return !0;
-    await us();
-    const t = customElements.get("hui-tile-card");
+    await Dt();
+    const s = customElements.get("hui-tile-card");
     try {
-      await t?.getConfigElement?.();
+      await s?.getConfigElement?.();
     } catch {
     }
-    return cs("hui-card-features-editor", ls);
-  })(), fe);
+    return Lt("hui-card-features-editor", jt);
+  })(), ye);
 }
-var Mr = Object.defineProperty, ds = (t, e, s, n) => {
-  for (var r = void 0, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(e, s, r) || r);
-  return r && Mr(e, s, r), r;
+const Tn = {
+  temperature: "mdi:thermometer",
+  humidity: "mdi:water-percent",
+  moisture: "mdi:water-percent",
+  illuminance: "mdi:brightness-5",
+  pm25: "mdi:blur",
+  power: "mdi:flash",
+  energy: "mdi:counter",
+  battery: "mdi:battery",
+  disk: "mdi:harddisk",
+  cpu: "mdi:cpu-64-bit",
+  memory: "mdi:memory",
+  gpu: "mdi:expansion-card",
+  download: "mdi:download",
+  upload: "mdi:upload",
+  total: "mdi:flash"
+}, kn = {
+  "entity.missing.one": "Сущность не найдена: {list}",
+  "entity.missing.many": "Сущности не найдены: {list}",
+  "internals.failed": "Не удалось загрузить компоненты Home Assistant",
+  "value.unknown": "нет данных",
+  "batteries.title": "Батарейки",
+  "batteries.allFull": "Все заряжены, {count} шт.",
+  "safety.title": "Безопасность",
+  "safety.calm.one": "Всё спокойно, {count} датчик",
+  "safety.calm.few": "Всё спокойно, {count} датчика",
+  "safety.calm.many": "Всё спокойно, {count} датчиков",
+  "safety.offline": "{name}: нет связи",
+  "presence.title": "Присутствие",
+  "presence.empty.one": "Пусто, {count} зона",
+  "presence.empty.few": "Пусто, {count} зоны",
+  "presence.empty.many": "Пусто, {count} зон",
+  "energy.title": "Энергия",
+  "energy.consuming": "{count} потребляют",
+  "energy.idle": "Никто не потребляет",
+  "offline.count": "{count} без связи",
+  "list.missing.one": "{count} не найдена",
+  "list.missing.few": "{count} не найдены",
+  "list.missing.many": "{count} не найдено",
+  "server.title": "Домашний сервер",
+  "vacuum.title": "Пылесос",
+  "printer.title": "Принтер",
+  "computer.title": "Компьютер",
+  "person.title": "Человек",
+  "air.title": "Воздух",
+  "cover.title": "Шторы",
+  "level.cpu": "CPU",
+  "level.memory": "Память",
+  "level.gpu": "GPU",
+  "level.disk": "Диск",
+  "level.diskFree": "Свободно",
+  "level.open": "Открыто"
+}, we = {
+  "entity.missing.one": "Entity not found: {list}",
+  "entity.missing.many": "Entities not found: {list}",
+  "internals.failed": "Could not load Home Assistant components",
+  "value.unknown": "no data",
+  "batteries.title": "Batteries",
+  "batteries.allFull": "All charged, {count} total",
+  "safety.title": "Safety",
+  "safety.calm.one": "All clear, {count} sensor",
+  "safety.calm.many": "All clear, {count} sensors",
+  "safety.offline": "{name}: no connection",
+  "presence.title": "Presence",
+  "presence.empty.one": "Empty, {count} area",
+  "presence.empty.many": "Empty, {count} areas",
+  "energy.title": "Energy",
+  "energy.consuming": "{count} drawing power",
+  "energy.idle": "Nothing drawing power",
+  "offline.count": "{count} offline",
+  "list.missing.one": "{count} not found",
+  "list.missing.many": "{count} not found",
+  "server.title": "Home server",
+  "vacuum.title": "Vacuum",
+  "printer.title": "Printer",
+  "computer.title": "Computer",
+  "person.title": "Person",
+  "air.title": "Air",
+  "cover.title": "Curtains",
+  "level.cpu": "CPU",
+  "level.memory": "Memory",
+  "level.gpu": "GPU",
+  "level.disk": "Disk",
+  "level.diskFree": "Free",
+  "level.open": "Open"
+}, zt = { ru: kn, en: we };
+function Vt(s) {
+  const t = (s?.language ?? s?.locale?.language ?? "en").split("-")[0].toLowerCase();
+  return t in zt ? t : "en";
+}
+function On(s, e) {
+  if (s !== "ru") return e === 1 ? "one" : "many";
+  const t = e % 10, i = e % 100;
+  return t === 1 && i !== 11 ? "one" : t >= 2 && t <= 4 && (i < 12 || i > 14) ? "few" : "many";
+}
+function p(s, e, t = {}) {
+  const i = Vt(s), n = zt[i] ?? we, r = t.count, o = typeof r == "number" ? `${e}.${On(i, r)}` : void 0;
+  return ((o && (n[o] ?? we[o])) ?? n[e] ?? we[e] ?? e).replace(
+    /\{(\w+)\}/g,
+    (a, l) => l in t ? String(t[l]) : a
+  );
+}
+var In = Object.defineProperty, Wt = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && In(e, t, n), n;
 };
-class $ extends K {
+class E extends Q {
   constructor() {
     super(...arguments), this._ready = !1, this.base = {};
   }
   static {
-    this.styles = [G];
+    this.styles = [X];
+  }
+  /**
+   * Сколько места под строкой занимает содержимое: строки уровней, features.
+   * Наследник переопределяет, если у него что-то есть.
+   */
+  contentRows() {
+    return 0;
   }
   getCardSize() {
-    return 1;
+    return 1 + this.contentRows();
+  }
+  /**
+   * Разметка для сеточного дашборда.
+   *
+   * `rows: "auto"` — потому что высота зависит от содержимого: у принтера пять
+   * строк чернил, у климата ни одной. Так же размечают себя штатные карточки с
+   * плавающей высотой, entities и heading. Без этого карточка заявляла бы одну
+   * строку независимо от того, что в ней.
+   */
+  getGridOptions() {
+    return {
+      columns: 6,
+      rows: "auto",
+      min_columns: this.base.vertical ? 3 : 6,
+      min_rows: 1
+    };
   }
   connectedCallback() {
-    super.connectedCallback(), us().then((e) => {
+    super.connectedCallback(), Dt().then((e) => {
       this._ready = e;
     });
   }
@@ -1882,9 +2031,9 @@ class $ extends K {
   _handleIconAction(e) {
     e.stopPropagation(), this._runAction(e.detail.action, !0);
   }
-  _runAction(e, s) {
+  _runAction(e, t) {
     if (!this.hass) return;
-    const n = s ? {
+    const i = t ? {
       entity: this._entityId,
       tap_action: this.base.icon_tap_action ?? this._defaultIconAction,
       hold_action: this.base.icon_hold_action,
@@ -1895,7 +2044,7 @@ class $ extends K {
       hold_action: this.base.hold_action,
       double_tap_action: this.base.double_tap_action
     };
-    Dr(this, this.hass, n, e);
+    xn(this, this.hass, i, e);
   }
   // ---- отрисовка -------------------------------------------------------
   /** Плашка вместо карточки: конфиг невалиден или сущности нет в HA. */
@@ -1904,112 +2053,134 @@ class $ extends K {
   }
   /** Сообщение о ненайденных сущностях, либо undefined если всё на месте. */
   missingRolesWarning(e) {
-    const s = e.filter((n) => !!n && n.missing).map((n) => n.entityId);
-    if (s.length)
-      return s.length === 1 ? `Сущность не найдена: ${s[0]}` : `Сущности не найдены: ${s.join(", ")}`;
+    const t = e.filter((i) => !!i && i.missing).map((i) => i.entityId);
+    if (t.length)
+      return p(
+        this.hass,
+        t.length === 1 ? "entity.missing.one" : "entity.missing.many",
+        { list: t.join(", ") }
+      );
   }
   /**
    * Оборачивает величину в собственную цель тапа. Клик не всплывает до
    * подложки, поэтому открывается more-info этой сущности, а не главной.
+   *
+   * Именно кнопка, а не span с обработчиком: величины — самостоятельные цели,
+   * и до них надо доходить табом и нажимать с клавиатуры. Имя сущности идёт в
+   * title и aria-label: «63%» само по себе не говорит, чьё оно, — ни глазу при
+   * наведении, ни скринридеру.
    */
-  renderClickable(e, s) {
-    return s ? b`<span
+  renderClickable(e, t) {
+    if (!t) return b`<span>${e}</span>`;
+    const i = this.hass?.states[t]?.attributes.friendly_name ?? t;
+    return b`<button
       class="clickable"
+      title=${i}
+      aria-label=${i}
       @click=${(n) => {
-      n.stopPropagation(), this.fireMoreInfo(s);
+      n.stopPropagation(), this.fireMoreInfo(t);
     }}
-      >${e}</span
-    >` : b`<span>${e}</span>`;
+      >${e}</button
+    >`;
   }
   renderTile(e) {
     const {
-      icon: s,
-      color: n,
-      primary: r,
-      secondary: i,
+      icon: t,
+      color: i,
+      primary: n,
+      secondary: r,
       mainEntityId: o,
-      imageUrl: a,
-      defaultIconAction: l,
-      values: u,
-      ownFeatures: c,
-      customFeatures: h
+      imageUrl: c,
+      defaultIconAction: a,
+      values: l,
+      ownFeatures: h,
+      customFeatures: u
     } = e;
-    if (this._entityId = o, this._defaultIconAction = l, !this._ready)
-      return this.renderWarning(
-        "Не удалось загрузить компоненты Home Assistant"
-      );
-    const y = this.base.color ? Rr(this.base.color) : n ?? "var(--state-inactive-color)", p = this.base.icon_tap_action ?? l, Q = W(p) || W(this.base.icon_hold_action) || W(this.base.icon_double_tap_action), V = this.base.features?.length ? this.base.features : c, je = this.base.features_position ?? "bottom";
+    if (this._entityId = o, this._defaultIconAction = a, !this._ready)
+      return this.renderWarning(p(this.hass, "internals.failed"));
+    const f = this.base.color ? An(this.base.color) : i ?? "var(--state-inactive-color)", y = this.base.icon_tap_action ?? a, $ = K(y) || K(this.base.icon_hold_action) || K(this.base.icon_double_tap_action), B = this.base.features?.length ? this.base.features : h, Ie = this.base.features_position ?? "bottom";
     return b`
-      <ha-card style="--tile-color: ${y};">
+      <ha-card style="--tile-color: ${f};">
         <ha-tile-container
-          .featurePosition=${je}
+          .featurePosition=${Ie}
           .vertical=${!!this.base.vertical}
           .interactive=${!0}
           .actionHandlerOptions=${{
-      hasHold: W(this.base.hold_action),
-      hasDoubleClick: W(this.base.double_tap_action)
+      hasHold: K(this.base.hold_action),
+      hasDoubleClick: K(this.base.double_tap_action)
     }}
           @action=${this._handleAction}
         >
           <ha-tile-icon
             slot="icon"
-            class=${a ? "image" : ""}
-            .interactive=${Q}
-            .imageUrl=${a}
-            .icon=${this.base.icon ?? s}
+            class=${c ? "image" : ""}
+            .interactive=${$}
+            .imageUrl=${c}
+            .icon=${this.base.icon ?? t}
             .actionHandlerOptions=${{
-      hasHold: W(this.base.icon_hold_action),
-      hasDoubleClick: W(this.base.icon_double_tap_action)
+      hasHold: K(this.base.icon_hold_action),
+      hasDoubleClick: K(this.base.icon_double_tap_action)
     }}
             @action=${this._handleIconAction}
           ></ha-tile-icon>
 
           <div slot="info" class="info ${this.base.vertical ? "vertical" : ""}">
             <ha-tile-info>
-              <span slot="primary">${r}</span>
-              ${i?.length && !this.base.hide_state ? b`<span slot="secondary"
-                    >${i.map(
-      (L, Me) => b`
-                        ${Me ? b`<span>${hr}</span>` : d}${this.renderClickable(
-        L.text,
-        L.entityId
+              <span slot="primary">${n}</span>
+              ${r?.length && !this.base.hide_state ? b`<span slot="secondary"
+                    >${r.map(
+      (z, Ae) => b`
+                        ${Ae ? b`<span>${on}</span>` : d}${this.renderClickable(
+        z.text,
+        z.entityId
       )}
                       `
     )}</span
                   >` : d}
             </ha-tile-info>
-            ${u?.length ? b`<div class="values of-${u.length}">
-                  ${u.map(
-      (L, Me) => b`
-                      ${Me ? b`<span class="values-separator">/</span>` : d}
+            ${l?.length ? b`<div class="values of-${l.length}">
+                  ${l.map(
+      (z, Ae) => b`
+                      ${Ae ? b`<span class="values-separator">/</span>` : d}
                       ${this.renderClickable(
-        b`${L.value}${L.unit ? b`<span class="unit"> ${L.unit}</span>` : d}`,
-        L.entityId
+        b`${z.icon ? b`<ha-icon
+                              class="value-icon"
+                              .icon=${z.icon}
+                            ></ha-icon>` : d}${z.value}${z.unit ? b`<span class="unit"> ${z.unit}</span>` : d}`,
+        z.entityId
       )}
                     `
     )}
                 </div>` : d}
           </div>
 
-          ${h ? b`<div slot="features" class="custom-features">
-                ${h}
+          ${u ? b`<div slot="features" class="custom-features">
+                ${u}
               </div>` : d}
-          ${V?.length ? b`<hui-card-features
-                slot=${je === "inline" ? "features-inline" : "features"}
+          ${B?.length ? b`<hui-card-features
+                slot=${Ie === "inline" ? "features-inline" : "features"}
                 .hass=${this.hass}
                 .context=${{ entity_id: o }}
-                .features=${V}
-                .position=${je}
+                .features=${B}
+                .position=${Ie}
               ></hui-card-features>` : d}
         </ha-tile-container>
       </ha-card>
     `;
   }
-  bigValues(e) {
-    return e.map((s) => {
-      const n = this.formatted(s.role?.stateObj);
-      return n ? { ...n, entityId: s.role?.entityId } : void 0;
-    }).filter((s) => !!s);
+  /**
+   * Значения правой колонки. `icons` называет величину по ключу роли: без неё
+   * два процента подряд неотличимы друг от друга.
+   */
+  bigValues(e, t = Tn) {
+    return e.map((i) => {
+      const n = this.formatted(i.role?.stateObj);
+      return n ? {
+        ...n,
+        entityId: i.role?.entityId,
+        icon: t[i.key]
+      } : void 0;
+    }).filter((i) => !!i);
   }
   /**
    * Адрес картинки сущности — та же логика, что в _getImageUrl штатной плитки.
@@ -2018,274 +2189,278 @@ class $ extends K {
   entityImage(e) {
     if (!this.base.show_entity_picture || !this.hass || !e)
       return;
-    const s = e.attributes.entity_picture_local || e.attributes.entity_picture;
-    return s ? this.hass.hassUrl(s) : void 0;
+    const t = e.attributes.entity_picture_local || e.attributes.entity_picture;
+    return t ? this.hass.hassUrl(t) : void 0;
   }
   /** Готовое к показу крупное значение. У недоступной сущности его нет. */
   formatted(e) {
-    if (!(!this.hass || !e) && !os.has(e.state))
-      return fr(
+    if (!(!this.hass || !e) && !Mt.has(e.state))
+      return cn(
         this.hass.formatEntityState(e),
         e.attributes.unit_of_measurement
       );
   }
 }
-ds([
-  Te({ attribute: !1 })
-], $.prototype, "hass");
-ds([
+Wt([
+  Ce({ attribute: !1 })
+], E.prototype, "hass");
+Wt([
   v()
-], $.prototype, "_ready");
-function Rr(t) {
-  return /^(#|rgb|hsl|var\()/.test(t) ? t : t === "state" ? "var(--state-icon-color)" : `var(--${t}-color, var(--state-icon-color))`;
+], E.prototype, "_ready");
+function An(s) {
+  return /^(#|rgb|hsl|var\()/.test(s) ? s : s === "state" ? "var(--state-icon-color)" : `var(--${s}-color, var(--state-icon-color))`;
 }
-const Ht = 3;
-function Y(t, e, s) {
-  if (!t || t.length === 0) return [e];
-  if (t.length > Ht)
+const gt = 3;
+function Z(s, e, t) {
+  if (!s || s.length === 0) return [e];
+  if (s.length > gt)
     throw new Error(
-      `Крупных значений может быть не больше ${Ht}, указано ${t.length}`
+      `Крупных значений может быть не больше ${gt}, указано ${s.length}`
     );
-  const n = t.filter((i) => !s.includes(i));
-  if (n.length)
+  const i = s.filter((r) => !t.includes(r));
+  if (i.length)
     throw new Error(
-      `Неизвестные роли в big_values: ${n.join(", ")}. Допустимы: ${s.join(", ")}`
+      `Неизвестные роли в big_values: ${i.join(", ")}. Допустимы: ${t.join(", ")}`
     );
-  const r = t.filter(
-    (i, o) => t.indexOf(i) !== o
+  const n = s.filter(
+    (r, o) => s.indexOf(r) !== o
   );
-  if (r.length)
-    throw new Error(`Роль указана дважды: ${r.join(", ")}`);
-  return t;
+  if (n.length)
+    throw new Error(`Роль указана дважды: ${n.join(", ")}`);
+  return s;
 }
-function J(t, e) {
-  const s = e.map((r) => t.find((i) => i.key === r)).filter((r) => !!r), n = t.filter((r) => !e.includes(r.key));
-  return { big: s, rest: n };
+function ee(s, e) {
+  const t = e.map((n) => s.find((r) => r.key === n)).filter((n) => !!n), i = s.filter((n) => !e.includes(n.key));
+  return { big: t, rest: i };
 }
-var Nr = Object.defineProperty, Ur = Object.getOwnPropertyDescriptor, hs = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Ur(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && Nr(e, s, r), r;
+let _t = !1;
+function Nn(s) {
+  _t || (_t = !0, console.warn(
+    `horos-cards: карточка ${s} уже зарегистрирована. Похоже, бандл подключён к дашборду дважды — работает копия, загруженная первой. Проверьте ресурсы дашборда.`
+  ));
+}
+function P(s, e, t) {
+  if (customElements.get(s)) {
+    Nn(s);
+    return;
+  }
+  customElements.define(s, e), window.customCards = window.customCards ?? [], window.customCards.push(t);
+}
+function C(s, e) {
+  customElements.get(s) || customElements.define(s, e);
+}
+var Rn = Object.defineProperty, Mn = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && Rn(e, t, n), n;
 };
-const Wt = [
+const yt = [
   "temperature",
   "humidity",
   "illuminance",
   "pm25"
 ];
-let Be = class extends $ {
+class Ht extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["temperature"];
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => kn), document.createElement(
+    return await Promise.resolve().then(() => Ni), document.createElement(
       "horos-climate-tile-editor"
     );
   }
   static getStubConfig() {
     return { temperature: "", humidity: "" };
   }
-  setConfig(t) {
-    if (!t.temperature)
+  setConfig(e) {
+    if (!e.temperature)
       throw new Error("Нужно указать сущность температуры (temperature)");
-    this._bigKeys = Y(
-      t.big_values,
+    this._bigKeys = Z(
+      e.big_values,
       "temperature",
-      Wt
-    ), this.base = t, this._config = t;
+      yt
+    ), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = Wt.map((o) => ({
-      key: o,
-      role: m(this.hass, t[o])
-    })), s = this.missingRolesWarning(e.map((o) => o.role));
-    if (s) return this.renderWarning(s);
-    const { big: n, rest: r } = J(e, this._bigKeys), i = e[0].role;
+    const e = this._config, t = yt.map((c) => ({
+      key: c,
+      role: m(this.hass, e[c])
+    })), i = this.missingRolesWarning(t.map((c) => c.role));
+    if (i) return this.renderWarning(i);
+    const { big: n, rest: r } = ee(t, this._bigKeys), o = t[0].role;
     return this.renderTile({
       icon: "mdi:thermometer",
-      color: k(i?.stateObj),
-      primary: $t(t.name, i),
-      imageUrl: this.entityImage(i?.stateObj),
-      defaultIconAction: Pt(i?.entityId),
-      secondary: S([
-        R(this.hass, i),
-        ...r.map((o) => w(this.hass, o.role))
+      color: H(o?.stateObj),
+      primary: Je(e.name, o),
+      imageUrl: this.entityImage(o?.stateObj),
+      defaultIconAction: Qe(o?.entityId),
+      secondary: O([
+        D(this.hass, o),
+        ...r.map((c) => w(this.hass, c.role))
       ]),
-      mainEntityId: i?.entityId,
+      mainEntityId: o?.entityId,
       values: this.bigValues(n)
     });
   }
-};
-hs([
+}
+Mn([
   v()
-], Be.prototype, "_config", 2);
-Be = hs([
-  g("horos-climate-tile")
-], Be);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Ht.prototype, "_config");
+P("horos-climate-tile", Ht, {
   type: "horos-climate-tile",
-  name: "Климат комнаты",
-  description: "Температура, влажность, освещённость и PM2.5 одной комнаты в одной плитке",
+  name: "Room climate",
+  description: "Temperature, humidity, illuminance and PM2.5 of one room in a single tile",
   preview: !0
 });
-var kr = Object.defineProperty, zr = Object.getOwnPropertyDescriptor, ms = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? zr(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && kr(e, s, r), r;
+var Un = Object.defineProperty, jn = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && Un(e, t, n), n;
 };
-const Ft = ["switch", "power", "energy"];
-let qe = class extends $ {
+const bt = ["switch", "power", "energy"];
+class Ft extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["power"];
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Ln), document.createElement("horos-plug-tile-editor");
+    return await Promise.resolve().then(() => Ri), document.createElement("horos-plug-tile-editor");
   }
   static getStubConfig() {
     return { switch: "", power: "" };
   }
-  setConfig(t) {
-    if (!t.switch)
+  setConfig(e) {
+    if (!e.switch)
       throw new Error("Нужно указать выключатель (switch)");
-    this._bigKeys = Y(t.big_values, "power", Ft), this.base = t, this._config = t;
+    this._bigKeys = Z(e.big_values, "power", bt), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = Ft.map((a) => ({
+    const e = this._config, t = bt.map((a) => ({
       key: a,
-      role: m(this.hass, t[a])
-    })), s = this.missingRolesWarning(e.map((a) => a.role));
-    if (s) return this.renderWarning(s);
-    const { big: n, rest: r } = J(e, this._bigKeys), i = e[0].role, o = i.entityId;
+      role: m(this.hass, e[a])
+    })), i = this.missingRolesWarning(t.map((a) => a.role));
+    if (i) return this.renderWarning(i);
+    const { big: n, rest: r } = ee(t, this._bigKeys), o = t[0].role, c = o.entityId;
     return this.renderTile({
       icon: "mdi:power-plug",
-      color: k(i.stateObj),
-      primary: $t(t.name, i),
-      secondary: S([
+      color: H(o.stateObj),
+      primary: Je(e.name, o),
+      secondary: O([
         // Одна из двух вернёт кусок: доступный выключатель даёт своё
         // состояние, недоступный — статус недоступности.
-        R(this.hass, i),
+        D(this.hass, o),
         ...r.map((a) => w(this.hass, a.role))
       ]),
-      mainEntityId: o,
-      imageUrl: this.entityImage(i.stateObj),
-      defaultIconAction: Pt(o),
+      mainEntityId: c,
+      imageUrl: this.entityImage(o.stateObj),
+      defaultIconAction: Qe(c),
       values: this.bigValues(n),
       // Кнопка — штатная feature HA, своей вёрстки для неё больше нет.
-      ownFeatures: t.toggle_button ? [{ type: "toggle" }] : void 0
+      ownFeatures: e.toggle_button ? [{ type: "toggle" }] : void 0
     });
   }
-};
-ms([
+}
+jn([
   v()
-], qe.prototype, "_config", 2);
-qe = ms([
-  g("horos-plug-tile")
-], qe);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Ft.prototype, "_config");
+P("horos-plug-tile", Ft, {
   type: "horos-plug-tile",
-  name: "Розетка с потреблением",
-  description: "Выключатель, текущая мощность и накопленная энергия в одной плитке",
+  name: "Smart plug",
+  description: "Switch, current power draw and accumulated energy in a single tile",
   preview: !0
 });
-const Bt = 30, qt = 70;
-function Vr(t, e, s) {
-  return t === void 0 ? "unknown" : t < e ? "dry" : t > s ? "wet" : "ok";
+const vt = 30, wt = 70;
+function Ln(s, e, t) {
+  return s === void 0 ? "unknown" : s < e ? "dry" : s > t ? "wet" : "ok";
 }
-const Lr = {
+const Dn = {
   dry: "var(--warning-color)",
   ok: "var(--success-color)",
   wet: "var(--info-color)",
   unknown: "var(--state-inactive-color)"
-}, Hr = {
+}, zn = {
   dry: "mdi:water-off",
   ok: "mdi:sprout",
   wet: "mdi:water-alert",
   unknown: "mdi:sprout"
 };
-var Wr = Object.defineProperty, Fr = Object.getOwnPropertyDescriptor, ps = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Fr(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && Wr(e, s, r), r;
+var Vn = Object.defineProperty, Wn = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && Vn(e, t, n), n;
 };
-const Kt = ["moisture", "temperature", "battery"];
-let Ke = class extends $ {
+const $t = ["moisture", "temperature", "battery"];
+class Bt extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["moisture"];
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Fn), document.createElement(
+    return await Promise.resolve().then(() => Mi), document.createElement(
       "horos-plant-tile-editor"
     );
   }
   static getStubConfig() {
     return { moisture: "" };
   }
-  setConfig(t) {
-    if (!t.moisture)
+  setConfig(e) {
+    if (!e.moisture)
       throw new Error("Нужно указать сущность влажности почвы (moisture)");
-    const e = t.dry_below ?? Bt, s = t.wet_above ?? qt;
-    if (e >= s)
+    const t = e.dry_below ?? vt, i = e.wet_above ?? wt;
+    if (t >= i)
       throw new Error("dry_below должен быть меньше wet_above");
-    this._bigKeys = Y(t.big_values, "moisture", Kt), this.base = t, this._config = t;
+    this._bigKeys = Z(e.big_values, "moisture", $t), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = Kt.map((l) => ({
+    const e = this._config, t = $t.map((l) => ({
       key: l,
-      role: m(this.hass, t[l])
-    })), s = this.missingRolesWarning(e.map((l) => l.role));
-    if (s) return this.renderWarning(s);
-    const { big: n, rest: r } = J(e, this._bigKeys), i = e[0].role, o = M(i), a = Vr(
-      o,
-      t.dry_below ?? Bt,
-      t.wet_above ?? qt
+      role: m(this.hass, e[l])
+    })), i = this.missingRolesWarning(t.map((l) => l.role));
+    if (i) return this.renderWarning(i);
+    const { big: n, rest: r } = ee(t, this._bigKeys), o = t[0].role, c = L(o), a = Ln(
+      c,
+      e.dry_below ?? vt,
+      e.wet_above ?? wt
     );
     return this.renderTile({
-      icon: Hr[a],
-      color: Lr[a],
-      primary: $t(t.name, i),
-      imageUrl: this.entityImage(i?.stateObj),
-      defaultIconAction: Pt(i?.entityId),
-      secondary: S([
-        R(this.hass, i),
+      icon: zn[a],
+      color: Dn[a],
+      primary: Je(e.name, o),
+      imageUrl: this.entityImage(o?.stateObj),
+      defaultIconAction: Qe(o?.entityId),
+      secondary: O([
+        D(this.hass, o),
         ...r.map((l) => w(this.hass, l.role))
       ]),
-      mainEntityId: i?.entityId,
+      mainEntityId: o?.entityId,
       values: this.bigValues(n),
       // Шкала — штатная feature HA, а не своя полоса. Цвет она берёт из
       // --tile-color, то есть из наших порогов сухости.
-      ownFeatures: o === void 0 ? void 0 : [{ type: "bar-gauge", min: 0, max: 100 }]
+      ownFeatures: c === void 0 ? void 0 : [{ type: "bar-gauge", min: 0, max: 100 }]
     });
   }
-};
-ps([
+}
+Wn([
   v()
-], Ke.prototype, "_config", 2);
-Ke = ps([
-  g("horos-plant-tile")
-], Ke);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Bt.prototype, "_config");
+P("horos-plant-tile", Bt, {
   type: "horos-plant-tile",
-  name: "Растение",
-  description: "Влажность почвы шкалой, температура почвы и заряд датчика в одной плитке",
+  name: "Plant",
+  description: "Soil moisture with dryness thresholds, soil temperature and sensor battery",
   preview: !0
 });
-var Br = Object.defineProperty, De = (t, e, s, n) => {
-  for (var r = void 0, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(e, s, r) || r);
-  return r && Br(e, s, r), r;
+var Hn = Object.defineProperty, ke = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && Hn(e, t, n), n;
 };
-class he extends K {
+class fe extends Q {
   constructor() {
     super(...arguments), this._children = [];
   }
   static {
-    this.styles = gt`
+    this.styles = Be`
     :host {
       display: block;
     }
@@ -2311,6 +2486,10 @@ class he extends K {
   getCardSize() {
     return 1 + Math.ceil(this._children.length / Math.max(1, this.columns()));
   }
+  /** Высота зависит от числа ячеек, поэтому её считает сама HA. */
+  getGridOptions() {
+    return { columns: 12, rows: "auto", min_columns: 6, min_rows: 2 };
+  }
   /** Наследник обязан позвать это в конце setConfig. */
   rebuild() {
     this._build();
@@ -2321,9 +2500,9 @@ class he extends K {
       this._error = "Home Assistant не отдал помощники карточек";
       return;
     }
-    const s = await e(), n = this.headingConfig();
-    this._heading = n ? s.createCardElement(n) : void 0, this._children = this.childConfigs().map(
-      (r) => s.createCardElement(r)
+    const t = await e(), i = this.headingConfig();
+    this._heading = i ? t.createCardElement(i) : void 0, this._children = this.childConfigs().map(
+      (n) => t.createCardElement(n)
     ), this._passHass();
   }
   _passHass() {
@@ -2344,48 +2523,48 @@ class he extends K {
     ` : d;
   }
 }
-De([
-  Te({ attribute: !1 })
-], he.prototype, "hass");
-De([
+ke([
+  Ce({ attribute: !1 })
+], fe.prototype, "hass");
+ke([
   v()
-], he.prototype, "_heading");
-De([
+], fe.prototype, "_heading");
+ke([
   v()
-], he.prototype, "_children");
-De([
+], fe.prototype, "_children");
+ke([
   v()
-], he.prototype, "_error");
-function qr(t) {
-  if (!t) return;
-  const e = t.split(":").pop();
-  return e ? e.trim() : t;
+], fe.prototype, "_error");
+function Fn(s) {
+  if (!s) return;
+  const e = s.split(":").pop();
+  return e ? e.trim() : s;
 }
-function Kr(t) {
-  return typeof t == "string" ? { entity: t } : t;
+function Bn(s) {
+  return typeof s == "string" ? { entity: s } : s;
 }
-var Gr = Object.defineProperty, Yr = Object.getOwnPropertyDescriptor, fs = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Yr(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && Gr(e, s, r), r;
+var qn = Object.defineProperty, Kn = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && qn(e, t, n), n;
 };
-const Jr = 3;
-let Ge = class extends he {
+const Gn = 3;
+class qt extends fe {
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Kn), document.createElement(
+    return await Promise.resolve().then(() => Ui), document.createElement(
       "horos-buttons-tile-editor"
     );
   }
   static getStubConfig() {
     return { buttons: [] };
   }
-  setConfig(t) {
-    if (!t.buttons?.length)
+  setConfig(e) {
+    if (!e.buttons?.length)
       throw new Error("Нужно указать хотя бы одну кнопку (buttons)");
-    this._config = t, this.rebuild();
+    this._config = e, this.rebuild();
   }
   columns() {
-    return this._config?.columns ?? Jr;
+    return this._config?.columns ?? Gn;
   }
   headingConfig() {
     if (this._config?.name)
@@ -2398,33 +2577,29 @@ let Ge = class extends he {
       };
   }
   childConfigs() {
-    return this._config ? this._config.buttons.map((t) => {
-      const e = Kr(t), s = this.hass?.states[e.entity];
+    return this._config ? this._config.buttons.map((e) => {
+      const t = Bn(e), i = this.hass?.states[t.entity];
       return {
         type: "button",
-        entity: e.entity,
-        name: e.name ?? qr(s?.attributes.friendly_name),
-        icon: e.icon,
+        entity: t.entity,
+        name: t.name ?? Fn(i?.attributes.friendly_name),
+        icon: t.icon,
         show_state: !1,
         tap_action: { action: "toggle" }
       };
     }) : [];
   }
-};
-fs([
+}
+Kn([
   v()
-], Ge.prototype, "_config", 2);
-Ge = fs([
-  g("horos-buttons-tile")
-], Ge);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], qt.prototype, "_config");
+P("horos-buttons-tile", qt, {
   type: "horos-buttons-tile",
-  name: "Кнопки скриптов",
-  description: "Сетка кнопок, вызывающих скрипты, с общим заголовком",
+  name: "Script buttons",
+  description: "A grid of buttons running scripts, under one heading",
   preview: !0
 });
-const se = gt`
+const re = Be`
   .levels {
     display: flex;
     flex-direction: column;
@@ -2511,55 +2686,61 @@ const se = gt`
     }
   }
 `;
-function re(t, e) {
+function oe(s, e) {
   return b`
     <div class="levels">
-      ${t.map(
-    (s) => b`
+      ${s.map(
+    (t) => b`
           <button
-            class="level ${s.alarm ? "low" : ""}"
-            style="--ink: ${s.ink};"
-            title="${s.name}: ${s.text}"
-            @click=${(n) => {
-      n.stopPropagation(), e(s.entityId);
+            class="level ${t.alarm ? "low" : ""}"
+            style="--ink: ${t.ink};"
+            title="${t.name}: ${t.text}"
+            @click=${(i) => {
+      i.stopPropagation(), e(t.entityId);
     }}
           >
             <span class="name">
-              ${s.alarm ? b`<ha-icon
-                    icon=${s.alarmIcon ?? "mdi:alert-circle"}
-                  ></ha-icon>` : d}${s.name}
+              ${t.alarm ? b`<ha-icon
+                    icon=${t.alarmIcon ?? "mdi:alert-circle"}
+                  ></ha-icon>` : d}${t.name}
             </span>
             <span class="bar">
               <span
                 class="fill"
-                style="width: ${Math.max(0, Math.min(100, s.level))}%"
+                style="width: ${Math.max(0, Math.min(100, t.level))}%"
               ></span>
               <span class="rest"></span>
             </span>
-            <span class="value">${s.text}</span>
+            <span class="value">${t.text}</span>
           </button>
         `
   )}
     </div>
   `;
 }
-function ne(t, e) {
-  if (t) {
-    if (e && t.startsWith(e)) {
-      const s = t.slice(e.length).trim();
-      if (s) return s;
+function ae(s, e) {
+  if (s) {
+    if (e && s.startsWith(e)) {
+      const t = s.slice(e.length).trim();
+      if (t) return t;
     }
-    return t;
+    return s;
   }
 }
-function me(t) {
-  return t === void 0 ? "var(--state-unavailable-color)" : t >= 70 ? "var(--state-sensor-battery-high-color, #4caf50)" : t >= 30 ? "var(--state-sensor-battery-medium-color, #ffa600)" : "var(--state-sensor-battery-low-color, #db4437)";
+function Kt(s) {
+  return s ? s.replace(/[\s—-]*(battery(\s+level)?|заряд)\s*$/i, "").trim() || s : void 0;
 }
-const Qr = me;
-function Xr(t) {
-  return t === void 0 ? "var(--state-unavailable-color)" : t >= 90 ? "var(--error-color, #db4437)" : t >= 80 ? "var(--warning-color, #ffa600)" : "var(--state-icon-color)";
+function ge(s) {
+  return s === void 0 ? "var(--state-unavailable-color)" : s >= 70 ? "var(--state-sensor-battery-high-color, #4caf50)" : s >= 30 ? "var(--state-sensor-battery-medium-color, #ffa600)" : "var(--state-sensor-battery-low-color, #db4437)";
 }
-const Zr = [
+const Yn = ge;
+function Jn(s) {
+  return s === void 0 ? "var(--state-unavailable-color)" : s >= 90 ? "var(--error-color, #db4437)" : s >= 80 ? "var(--warning-color, #ffa600)" : "var(--state-icon-color)";
+}
+function k(s) {
+  return typeof s == "string" ? { entity: s } : s;
+}
+const Qn = [
   [/black|pgbk|_bk(_|$)/i, "black"],
   [/cyan/i, "cyan"],
   [/magenta/i, "purple"],
@@ -2568,94 +2749,98 @@ const Zr = [
   // неотличим от чёрного: тот красится цветом текста и тоже выходит серым.
   [/_mc(_|$)|maintenance/i, "blue-grey"]
 ];
-function en(t) {
-  return Zr.find(([s]) => s.test(t))?.[1];
+function Xn(s) {
+  return Qn.find(([t]) => t.test(s))?.[1];
 }
-function tn(t) {
-  return t === "black" ? "var(--primary-text-color)" : /^(#|rgb|hsl|var\()/.test(t) ? t : `var(--${t}-color, var(--state-icon-color))`;
+function Zn(s) {
+  return s === "black" ? "var(--primary-text-color)" : /^(#|rgb|hsl|var\()/.test(s) ? s : `var(--${s}-color, var(--state-icon-color))`;
 }
-const sn = ne;
-function O(t) {
-  return typeof t == "string" ? { entity: t } : t;
+const ei = ae, Et = (s, e) => typeof s == "number" && Number.isFinite(s) ? s : e;
+function ti(s, e, t) {
+  const i = Number(s);
+  if (!Number.isFinite(i)) return;
+  const n = Et(e.marker_high_level, 100), r = Et(e.marker_low_level, 0), o = String(e.marker_type ?? "").includes("waste"), c = n > 0 ? Math.max(0, Math.min(100, i / n * 100)) : 0, a = o ? i >= n : i <= (t ?? r);
+  return { fill: c, alarm: a, fills: o };
 }
-const Gt = (t, e) => typeof t == "number" && Number.isFinite(t) ? t : e;
-function rn(t, e, s) {
-  const n = Number(t);
-  if (!Number.isFinite(n)) return;
-  const r = Gt(e.marker_high_level, 100), i = Gt(e.marker_low_level, 0), o = String(e.marker_type ?? "").includes("waste"), a = r > 0 ? Math.max(0, Math.min(100, n / r * 100)) : 0, l = o ? n >= r : n <= (s ?? i);
-  return { fill: a, alarm: l, fills: o };
-}
-var nn = Object.defineProperty, on = Object.getOwnPropertyDescriptor, _s = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? on(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && nn(e, s, r), r;
+var si = Object.defineProperty, ni = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && si(e, t, n), n;
 };
-let we = class extends $ {
+class Gt extends E {
+  static {
+    this.styles = [X, re];
+  }
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  contentRows() {
+    return Math.ceil(((this._config?.cartridges.length ?? 0) + (this._config?.sensors?.length ?? 0)) / 2);
+  }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Jn), document.createElement(
+    return await Promise.resolve().then(() => ji), document.createElement(
       "horos-printer-tile-editor"
     );
   }
   static getStubConfig() {
     return { cartridges: [] };
   }
-  setConfig(t) {
-    if (!t.cartridges?.length)
+  setConfig(e) {
+    if (!e.cartridges?.length)
       throw new Error("Нужно указать хотя бы один картридж (cartridges)");
-    this.base = t, this._config = t;
+    this.base = e, this._config = e;
   }
   get _printerName() {
     return this._config?.name ? this._config.name : (this._config?.status ? this.hass?.states[this._config.status] : void 0)?.attributes.friendly_name;
   }
   _tanks() {
     if (!this._config || !this.hass) return [];
-    const t = this._printerName;
-    return this._config.cartridges.map((e) => O(e)).map((e) => {
-      const s = this.hass.states[e.entity];
+    const e = this._printerName;
+    return this._config.cartridges.map((t) => k(t)).map((t) => {
+      const i = this.hass.states[t.entity];
       return {
-        entityId: e.entity,
-        name: e.name ?? sn(s?.attributes.friendly_name, t),
-        ink: tn(
-          e.color ?? en(e.entity) ?? "grey"
+        entityId: t.entity,
+        name: t.name ?? ei(i?.attributes.friendly_name, e),
+        ink: Zn(
+          t.color ?? Xn(t.entity) ?? "grey"
         ),
-        marker: s ? rn(
-          s.state,
-          s.attributes,
+        marker: i ? ti(
+          i.state,
+          i.attributes,
           this._config.low_below
         ) : void 0,
-        text: s ? this.hass.formatEntityState(s) : "—"
+        text: i ? this.hass.formatEntityState(i) : "—"
       };
     });
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._tanks(), e = t.filter((a) => !a.marker && a.text === "—");
-    if (e.length)
+    const e = this._tanks(), t = e.filter((a) => !a.marker && a.text === "—");
+    if (t.length)
       return this.renderWarning(
-        `Сущности не найдены: ${e.map((a) => a.entityId).join(", ")}`
+        `Сущности не найдены: ${t.map((a) => a.entityId).join(", ")}`
       );
-    const n = t.filter((a) => a.marker && !a.marker.fills).reduce(
+    const n = e.filter((a) => a.marker && !a.marker.fills).reduce(
       (a, l) => !a || l.marker.fill < a.marker.fill ? l : a,
       void 0
-    ), r = this._config.status ? m(this.hass, this._config.status) : void 0, i = (this._config.sensors ?? []).map((a) => O(a)).map((a) => m(this.hass, a.entity)), o = r?.stateObj;
+    ), r = this._config.status ? m(this.hass, this._config.status) : void 0, o = (this._config.sensors ?? []).map((a) => k(a)).map((a) => m(this.hass, a.entity)), c = r?.stateObj;
     return this.renderTile({
       icon: "mdi:printer",
-      color: o ? k(o) : "var(--state-icon-color)",
-      primary: this._printerName ?? "Принтер",
-      secondary: S([
+      color: c ? H(c) : "var(--state-icon-color)",
+      primary: this._printerName ?? p(this.hass, "printer.title"),
+      secondary: O([
         w(this.hass, r),
-        ...i.map((a) => w(this.hass, a))
+        ...o.map((a) => w(this.hass, a))
       ]),
       mainEntityId: this._config.status ?? n?.entityId,
       values: n ? [
         {
           value: String(Math.round(n.marker.fill)),
           unit: "%",
-          entityId: n.entityId
+          entityId: n.entityId,
+          icon: "mdi:water"
         }
       ] : [],
-      customFeatures: re(
-        t.map((a) => ({
+      customFeatures: oe(
+        e.map((a) => ({
           entityId: a.entityId,
           name: a.name ?? a.entityId,
           text: a.text,
@@ -2668,318 +2853,326 @@ let we = class extends $ {
       )
     });
   }
-};
-we.styles = [G, se];
-_s([
+}
+ni([
   v()
-], we.prototype, "_config", 2);
-we = _s([
-  g("horos-printer-tile")
-], we);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Gt.prototype, "_config");
+P("horos-printer-tile", Gt, {
   type: "horos-printer-tile",
-  name: "Принтер",
-  description: "Состояние принтера и уровни чернил колбами в одной плитке",
+  name: "Printer",
+  description: "Ink levels and printer status in a single tile",
   preview: !0
 });
-var an = Object.defineProperty, ln = Object.getOwnPropertyDescriptor, gs = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? ln(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && an(e, s, r), r;
+var ii = Object.defineProperty, ri = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && ii(e, t, n), n;
 };
-const cn = 20;
-let $e = class extends $ {
+const oi = 20;
+class Yt extends E {
+  static {
+    this.styles = [X, re];
+  }
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  contentRows() {
+    return Math.ceil((this._config?.consumables?.length ?? 0) / 2);
+  }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Zn), document.createElement(
+    return await Promise.resolve().then(() => Li), document.createElement(
       "horos-vacuum-tile-editor"
     );
   }
   static getStubConfig() {
     return { vacuum: "" };
   }
-  setConfig(t) {
-    if (!t.vacuum)
+  setConfig(e) {
+    if (!e.vacuum)
       throw new Error("Нужно указать пылесос (vacuum)");
-    this.base = t, this._config = t;
+    this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = m(this.hass, t.vacuum), s = m(this.hass, t.battery), n = (t.sensors ?? []).map((l) => O(l)).map((l) => m(this.hass, l.entity)), r = this.missingRolesWarning([e, s, ...n]);
+    const e = this._config, t = m(this.hass, e.vacuum), i = m(this.hass, e.battery), n = (e.sensors ?? []).map((l) => k(l)).map((l) => m(this.hass, l.entity)), r = this.missingRolesWarning([t, i, ...n]);
     if (r) return this.renderWarning(r);
-    const i = e?.stateObj?.attributes.friendly_name, o = t.low_below ?? cn, a = (t.consumables ?? []).map((l) => O(l)).map((l) => {
-      const u = m(this.hass, l.entity), c = M(u) ?? 0, h = l.name ?? ne(u?.stateObj?.attributes.friendly_name, i);
+    const o = t?.stateObj?.attributes.friendly_name, c = e.low_below ?? oi, a = (e.consumables ?? []).map((l) => k(l)).map((l) => {
+      const h = m(this.hass, l.entity), u = L(h) ?? 0, f = l.name ?? ae(h?.stateObj?.attributes.friendly_name, o);
       return {
         entityId: l.entity,
-        name: h ?? l.entity,
-        text: `${c}%`,
+        name: f ?? l.entity,
+        text: `${u}%`,
         // Цветом плитки красить нельзя: у стоящего на базе пылесоса он
         // неактивный, и все колбы выходят одинаково серыми. Красим по
         // уровню — вопрос у расходника тот же, что у батарейки.
-        ink: l.color ?? me(c),
-        level: c,
-        alarm: c < o
+        ink: l.color ?? ge(u),
+        level: u,
+        alarm: u < c
       };
     });
     return this.renderTile({
       icon: "mdi:robot-vacuum",
-      color: k(e?.stateObj),
-      primary: t.name ?? i ?? "Пылесос",
-      mainEntityId: e?.entityId,
-      secondary: S([
-        R(this.hass, e),
-        w(this.hass, e),
+      color: H(t?.stateObj),
+      primary: e.name ?? o ?? p(this.hass, "vacuum.title"),
+      mainEntityId: t?.entityId,
+      secondary: O([
+        D(this.hass, t),
+        w(this.hass, t),
         ...n.map((l) => w(this.hass, l))
       ]),
-      values: s ? this.bigValues([{ key: "battery", role: s }]) : [],
-      customFeatures: a.length ? re(a, (l) => this.fireMoreInfo(l)) : void 0
+      values: i ? this.bigValues([{ key: "battery", role: i }]) : [],
+      customFeatures: a.length ? oe(a, (l) => this.fireMoreInfo(l)) : void 0
     });
   }
-};
-$e.styles = [G, se];
-gs([
+}
+ri([
   v()
-], $e.prototype, "_config", 2);
-$e = gs([
-  g("horos-vacuum-tile")
-], $e);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Yt.prototype, "_config");
+P("horos-vacuum-tile", Yt, {
   type: "horos-vacuum-tile",
-  name: "Пылесос",
-  description: "Состояние робота, заряд и ресурс расходников в одной плитке",
+  name: "Vacuum",
+  description: "Robot status, battery and consumable life in a single tile",
   preview: !0
 });
-var un = Object.defineProperty, dn = Object.getOwnPropertyDescriptor, ys = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? dn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && un(e, s, r), r;
+var ai = Object.defineProperty, li = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && ai(e, t, n), n;
 };
-const hn = 30;
-let Ye = class extends $ {
+const ci = 30;
+class Jt extends E {
   static async getConfigElement() {
-    return await Promise.resolve().then(() => si), document.createElement(
+    return await Promise.resolve().then(() => Di), document.createElement(
       "horos-batteries-tile-editor"
     );
   }
   static getStubConfig() {
     return { batteries: [] };
   }
-  setConfig(t) {
-    if (!t.batteries?.length)
+  setConfig(e) {
+    if (!e.batteries?.length)
       throw new Error("Нужно указать хотя бы одну батарейку (batteries)");
-    this.base = t, this._config = t;
+    this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = t.low_below ?? hn, s = [], n = [];
-    for (const o of t.batteries) {
-      const a = O(o), l = m(this.hass, a.entity);
+    const e = this._config, t = e.low_below ?? ci, i = [], n = [];
+    for (const c of e.batteries) {
+      const a = k(c), l = m(this.hass, a.entity);
       if (l?.missing) {
         n.push(a.entity);
         continue;
       }
-      const u = M(l);
-      u !== void 0 && s.push({
+      const h = L(l);
+      h !== void 0 && i.push({
         entityId: a.entity,
-        name: a.name ?? l?.stateObj?.attributes.friendly_name ?? a.entity,
-        level: u
+        name: a.name ?? Kt(l?.stateObj?.attributes.friendly_name) ?? a.entity,
+        level: h
       });
     }
-    if (n.length)
-      return this.renderWarning(`Сущности не найдены: ${n.join(", ")}`);
-    const r = s.filter((o) => o.level < e).sort((o, a) => o.level - a.level), i = r[0];
+    const r = i.filter((c) => c.level < t).sort((c, a) => c.level - a.level), o = r[0];
     return this.renderTile({
-      icon: i ? "mdi:battery-alert-variant-outline" : "mdi:battery",
-      color: Qr(i?.level),
-      primary: t.name ?? "Батарейки",
-      mainEntityId: i?.entityId,
-      secondary: S(
-        r.length ? r.map((o) => ({
-          text: `${o.name} ${o.level}%`,
-          entityId: o.entityId
-        })) : [{ text: `Все заряжены, ${s.length} шт.` }]
-      ),
-      values: i ? [{ value: String(i.level), unit: "%", entityId: i.entityId }] : []
+      icon: o ? "mdi:battery-alert-variant-outline" : "mdi:battery",
+      color: Yn(o?.level),
+      primary: e.name ?? p(this.hass, "batteries.title"),
+      mainEntityId: o?.entityId,
+      secondary: O([
+        ...r.length ? r.map((c) => ({
+          text: `${c.name} ${c.level}%`,
+          entityId: c.entityId
+        })) : [
+          {
+            text: p(this.hass, "batteries.allFull", {
+              count: i.length
+            })
+          }
+        ],
+        // Пропавшую строку выбрасываем, но молчать о ней нельзя: карточка со
+        // списком не должна гаснуть целиком из-за одной переименованной
+        // сущности, и не должна делать вид, что её там и не было.
+        ...n.length ? [{ text: p(this.hass, "list.missing", { count: n.length }) }] : []
+      ]),
+      values: o ? [
+        {
+          value: String(o.level),
+          unit: "%",
+          entityId: o.entityId,
+          icon: "mdi:battery"
+        }
+      ] : []
     });
   }
-};
-ys([
+}
+li([
   v()
-], Ye.prototype, "_config", 2);
-Ye = ys([
-  g("horos-batteries-tile")
-], Ye);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Jt.prototype, "_config");
+P("horos-batteries-tile", Jt, {
   type: "horos-batteries-tile",
-  name: "Батарейки",
-  description: "Только садящиеся батарейки, от самой пустой",
+  name: "Batteries",
+  description: "Only the batteries that are running down, emptiest first",
   preview: !0
 });
-var mn = Object.defineProperty, pn = Object.getOwnPropertyDescriptor, bs = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? pn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && mn(e, s, r), r;
+var ui = Object.defineProperty, di = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && ui(e, t, n), n;
 };
-let Je = class extends $ {
+class Qt extends E {
   static async getConfigElement() {
-    return await Promise.resolve().then(() => ii), document.createElement(
+    return await Promise.resolve().then(() => zi), document.createElement(
       "horos-safety-tile-editor"
     );
   }
   static getStubConfig() {
     return { sensors: [] };
   }
-  setConfig(t) {
-    if (!t.sensors?.length)
+  setConfig(e) {
+    if (!e.sensors?.length)
       throw new Error("Нужно указать хотя бы один датчик (sensors)");
-    this.base = t, this._config = t;
+    this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = [], s = [], n = [];
+    const e = this._config, t = [], i = [], n = [];
     let r = 0;
-    for (const a of t.sensors) {
-      const l = O(a), u = m(this.hass, l.entity);
-      if (u?.missing) {
+    for (const a of e.sensors) {
+      const l = k(a), h = m(this.hass, l.entity);
+      if (h?.missing) {
         n.push(l.entity);
         continue;
       }
       r += 1;
-      const c = l.name ?? u?.stateObj?.attributes.friendly_name ?? l.entity;
-      u?.unavailable ? s.push({ text: `${c}: нет связи`, entityId: l.entity }) : u?.stateObj?.state === "on" && e.push({ text: c, entityId: l.entity });
+      const u = l.name ?? h?.stateObj?.attributes.friendly_name ?? l.entity;
+      h?.unavailable ? i.push({ text: p(this.hass, "safety.offline", { name: u }), entityId: l.entity }) : h?.stateObj?.state === "on" && t.push({ text: u, entityId: l.entity });
     }
-    if (n.length)
-      return this.renderWarning(`Сущности не найдены: ${n.join(", ")}`);
-    const i = e.length > 0, o = [...e, ...s];
+    const o = t.length > 0, c = [...t, ...i];
     return this.renderTile({
-      icon: i ? "mdi:shield-alert" : s.length ? "mdi:shield-off-outline" : "mdi:shield-check",
-      color: i ? "var(--error-color, #db4437)" : s.length ? "var(--warning-color, #ffa600)" : "var(--success-color, #43a047)",
-      primary: t.name ?? "Безопасность",
-      mainEntityId: o[0]?.entityId,
-      secondary: S(
-        o.length ? o : [{ text: `Всё спокойно, ${r} датч.` }]
-      )
+      icon: o ? "mdi:shield-alert" : i.length ? "mdi:shield-off-outline" : "mdi:shield-check",
+      color: o ? "var(--error-color, #db4437)" : i.length ? "var(--warning-color, #ffa600)" : "var(--success-color, #43a047)",
+      primary: e.name ?? p(this.hass, "safety.title"),
+      mainEntityId: c[0]?.entityId,
+      secondary: O([
+        ...c.length ? c : [{ text: p(this.hass, "safety.calm", { count: r }) }],
+        ...n.length ? [{ text: p(this.hass, "list.missing", { count: n.length }) }] : []
+      ])
     });
   }
-};
-bs([
+}
+di([
   v()
-], Je.prototype, "_config", 2);
-Je = bs([
-  g("horos-safety-tile")
-], Je);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Qt.prototype, "_config");
+P("horos-safety-tile", Qt, {
   type: "horos-safety-tile",
-  name: "Безопасность",
-  description: "Протечка, дым, газ — и датчики, потерявшие связь",
+  name: "Safety",
+  description: "Leak, smoke, gas — and sensors that lost connection",
   preview: !0
 });
-var fn = Object.defineProperty, _n = Object.getOwnPropertyDescriptor, vs = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? _n(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && fn(e, s, r), r;
+var hi = Object.defineProperty, mi = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && hi(e, t, n), n;
 };
-const Yt = ["disk", "download", "upload"];
-let Qe = class extends $ {
+const St = ["disk", "download", "upload"];
+class Xt extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["disk"];
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => li), document.createElement(
+    return await Promise.resolve().then(() => Vi), document.createElement(
       "horos-server-tile-editor"
     );
   }
   static getStubConfig() {
     return { disk: "" };
   }
-  setConfig(t) {
-    if (!t.disk && !t.download && !t.status)
+  setConfig(e) {
+    if (!e.disk && !e.download && !e.status)
       throw new Error(
         "Нужна хотя бы одна сущность: status, disk или download"
       );
-    this._bigKeys = Y(t.big_values, "disk", Yt), this.base = t, this._config = t;
+    this._bigKeys = Z(e.big_values, "disk", St), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = Yt.map((a) => ({
+    const e = this._config, t = St.map((a) => ({
       key: a,
-      role: m(this.hass, t[a])
-    })), s = m(this.hass, t.status), n = (t.services ?? []).map((a) => O(a)).map((a) => m(this.hass, a.entity)), r = this.missingRolesWarning([
-      s,
-      ...e.map((a) => a.role),
+      role: m(this.hass, e[a])
+    })), i = m(this.hass, e.status), n = (e.services ?? []).map((a) => k(a)).map((a) => m(this.hass, a.entity)), r = this.missingRolesWarning([
+      i,
+      ...t.map((a) => a.role),
       ...n
     ]);
     if (r) return this.renderWarning(r);
-    const { big: i, rest: o } = J(e, this._bigKeys);
+    const { big: o, rest: c } = ee(t, this._bigKeys);
     return this.renderTile({
       icon: "mdi:server",
-      color: s ? k(s.stateObj) : "var(--state-icon-color)",
-      primary: t.name ?? "Домашний сервер",
-      mainEntityId: s?.entityId ?? e[0].role?.entityId,
-      secondary: S([
-        R(this.hass, s),
-        w(this.hass, s),
-        ...o.map((a) => {
+      color: i ? H(i.stateObj) : "var(--state-icon-color)",
+      primary: e.name ?? p(this.hass, "server.title"),
+      mainEntityId: i?.entityId ?? t[0].role?.entityId,
+      secondary: O([
+        D(this.hass, i),
+        w(this.hass, i),
+        ...c.map((a) => {
           const l = w(this.hass, a.role);
           if (!l) return;
-          const u = a.key === "download" ? "↓ " : a.key === "upload" ? "↑ " : "";
-          return { ...l, text: u + l.text };
+          const h = a.key === "download" ? "↓ " : a.key === "upload" ? "↑ " : "";
+          return { ...l, text: h + l.text };
         }),
         ...n.map((a) => w(this.hass, a))
       ]),
-      values: this.bigValues(i)
+      values: this.bigValues(o)
     });
   }
-};
-vs([
+}
+mi([
   v()
-], Qe.prototype, "_config", 2);
-Qe = vs([
-  g("horos-server-tile")
-], Qe);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Xt.prototype, "_config");
+P("horos-server-tile", Xt, {
   type: "horos-server-tile",
-  name: "Домашний сервер",
-  description: "Диск, скорости и состояние сервисов в одной плитке",
+  name: "Home server",
+  description: "Disk, speeds and service status in a single tile",
   preview: !0
 });
-var gn = Object.defineProperty, yn = Object.getOwnPropertyDescriptor, ws = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? yn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && gn(e, s, r), r;
+var pi = Object.defineProperty, fi = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && pi(e, t, n), n;
 };
-let Pe = class extends $ {
+class Zt extends E {
+  static {
+    this.styles = [X, re];
+  }
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  contentRows() {
+    return Math.ceil((this._config?.devices?.length ?? 0) / 2);
+  }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => di), document.createElement(
+    return await Promise.resolve().then(() => Wi), document.createElement(
       "horos-person-tile-editor"
     );
   }
   static getStubConfig() {
     return { person: "" };
   }
-  setConfig(t) {
-    if (!t.person)
+  setConfig(e) {
+    if (!e.person)
       throw new Error("Нужно указать человека (person)");
-    this.base = { show_entity_picture: !0, ...t }, this._config = t;
+    this.base = { show_entity_picture: !0, ...e }, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = m(this.hass, t.person), s = m(this.hass, t.battery), n = m(this.hass, t.location), r = this.missingRolesWarning([e, s, n]);
+    const e = this._config, t = m(this.hass, e.person), i = m(this.hass, e.battery), n = m(this.hass, e.location), r = this.missingRolesWarning([t, i, n]);
     if (r) return this.renderWarning(r);
-    const i = (t.devices ?? []).map((o) => O(o)).map((o) => {
-      const a = m(this.hass, o.entity), l = M(a), u = o.name ?? ne(
-        a?.stateObj?.attributes.friendly_name,
-        t.name
-      ) ?? o.entity;
+    const o = (e.devices ?? []).map((c) => k(c)).map((c) => {
+      const a = m(this.hass, c.entity), l = L(a), h = c.name ?? Kt(
+        ae(
+          a?.stateObj?.attributes.friendly_name,
+          e.name
+        )
+      ) ?? c.entity;
       return {
-        entityId: o.entity,
-        name: u,
-        text: l === void 0 ? "нет данных" : `${l}%`,
-        ink: o.color ?? me(l),
+        entityId: c.entity,
+        name: h,
+        text: l === void 0 ? p(this.hass, "value.unknown") : `${l}%`,
+        ink: c.color ?? ge(l),
         level: l ?? 0,
         alarm: l !== void 0 && l < 20,
         alarmIcon: "mdi:battery-alert-variant-outline"
@@ -2987,465 +3180,462 @@ let Pe = class extends $ {
     });
     return this.renderTile({
       icon: "mdi:account",
-      color: k(e?.stateObj),
-      primary: t.name ?? e?.stateObj?.attributes.friendly_name ?? "Человек",
-      mainEntityId: e?.entityId,
-      imageUrl: this.entityImage(e?.stateObj),
-      secondary: S([
-        R(this.hass, e),
-        w(this.hass, e),
+      color: H(t?.stateObj),
+      primary: e.name ?? t?.stateObj?.attributes.friendly_name ?? p(this.hass, "person.title"),
+      mainEntityId: t?.entityId,
+      imageUrl: this.entityImage(t?.stateObj),
+      secondary: O([
+        D(this.hass, t),
+        w(this.hass, t),
         w(this.hass, n)
       ]),
-      values: s ? this.bigValues([{ key: "battery", role: s }]) : [],
-      customFeatures: i.length ? re(i, (o) => this.fireMoreInfo(o)) : void 0
+      values: i ? this.bigValues([{ key: "battery", role: i }]) : [],
+      customFeatures: o.length ? oe(o, (c) => this.fireMoreInfo(c)) : void 0
     });
   }
-};
-Pe.styles = [G, se];
-ws([
+}
+fi([
   v()
-], Pe.prototype, "_config", 2);
-Pe = ws([
-  g("horos-person-tile")
-], Pe);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], Zt.prototype, "_config");
+P("horos-person-tile", Zt, {
   type: "horos-person-tile",
-  name: "Человек",
-  description: "Дома ли, где именно и заряд его устройств",
+  name: "Person",
+  description: "Whether they are home, where exactly, and their devices' battery",
   preview: !0
 });
-function ze(t, e, s) {
-  if (!t || !e?.length) return;
-  let n, r;
-  for (const i of e) {
-    const o = m(t, i), a = M(o);
-    a !== void 0 && (r === void 0 || (s === "max" ? a > r : a < r)) && (n = o, r = a);
+function je(s, e, t) {
+  if (!s || !e?.length) return;
+  let i, n;
+  for (const r of e) {
+    const o = m(s, r), c = L(o);
+    c !== void 0 && (n === void 0 || (t === "max" ? c > n : c < n)) && (i = o, n = c);
   }
-  return n ?? m(t, e[0]);
+  return i ?? m(s, e[0]);
 }
-var bn = Object.defineProperty, vn = Object.getOwnPropertyDescriptor, $s = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? vn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && bn(e, s, r), r;
+var gi = Object.defineProperty, _i = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && gi(e, t, n), n;
 };
-const wn = [
+const yi = [
   "temperature",
   "cpu",
   "memory",
   "gpu",
   "disk"
 ];
-let Ee = class extends $ {
+class es extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["temperature"];
   }
+  static {
+    this.styles = [X, re];
+  }
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  contentRows() {
+    return Math.ceil(4 / 2);
+  }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => pi), document.createElement(
+    return await Promise.resolve().then(() => Hi), document.createElement(
       "horos-computer-tile-editor"
     );
   }
   static getStubConfig() {
     return { cpu: "" };
   }
-  setConfig(t) {
-    if (!t.cpu && !t.memory && !t.temperatures?.length && !t.disks?.length && !t.disks_free?.length)
+  setConfig(e) {
+    if (!e.cpu && !e.memory && !e.temperatures?.length && !e.disks?.length && !e.disks_free?.length)
       throw new Error(
         "Нужна хотя бы одна сущность: cpu, memory, temperatures или disks"
       );
-    this._bigKeys = Y(
-      t.big_values,
+    this._bigKeys = Z(
+      e.big_values,
       "temperature",
-      wn
-    ), this.base = t, this._config = t;
+      yi
+    ), this.base = e, this._config = e;
   }
   /** Роли карточки: списки уже сведены к крайнему датчику. */
   _roles() {
-    const t = this._config;
+    const e = this._config;
     return [
       {
         key: "temperature",
-        role: ze(this.hass, t.temperatures, "max")
+        role: je(this.hass, e.temperatures, "max")
       },
-      { key: "cpu", role: m(this.hass, t.cpu) },
-      { key: "memory", role: m(this.hass, t.memory) },
-      { key: "gpu", role: m(this.hass, t.gpu) },
-      { key: "disk", role: ze(this.hass, t.disks, "max") }
+      { key: "cpu", role: m(this.hass, e.cpu) },
+      { key: "memory", role: m(this.hass, e.memory) },
+      { key: "gpu", role: m(this.hass, e.gpu) },
+      { key: "disk", role: je(this.hass, e.disks, "max") }
     ];
   }
   /** Раздел с наименьшим запасом свободного места. */
   _freeDisk() {
-    return ze(this.hass, this._config?.disks_free, "min");
+    return je(this.hass, this._config?.disks_free, "min");
   }
-  _levelRow(t, e) {
-    if (!e) return;
-    const s = M(e);
+  _levelRow(e, t) {
+    if (!t) return;
+    const i = L(t);
     return {
-      entityId: e.entityId,
-      name: t,
-      text: s === void 0 ? "нет данных" : `${Math.round(s)}%`,
-      ink: Xr(s),
-      level: s ?? 0,
-      alarm: s !== void 0 && s >= 90,
+      entityId: t.entityId,
+      name: e,
+      text: i === void 0 ? p(this.hass, "value.unknown") : `${Math.round(i)}%`,
+      ink: Jn(i),
+      level: i ?? 0,
+      alarm: i !== void 0 && i >= 90,
       alarmIcon: "mdi:alert-circle"
     };
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = this._roles(), s = m(this.hass, t.status), n = (t.sensors ?? []).map((c) => O(c)).map((c) => m(this.hass, c.entity)), r = this.missingRolesWarning([
-      s,
-      ...e.map((c) => c.role),
+    const e = this._config, t = this._roles(), i = m(this.hass, e.status), n = (e.sensors ?? []).map((u) => k(u)).map((u) => m(this.hass, u.entity)), r = this.missingRolesWarning([
+      i,
+      ...t.map((u) => u.role),
       ...n
     ]);
     if (r) return this.renderWarning(r);
-    const i = (t.alerts ?? []).map((c) => O(c)).map((c) => ({ alert: c, role: m(this.hass, c.entity) })).filter(({ role: c }) => c?.stateObj?.state === "on").map(({ alert: c, role: h }) => ({
-      text: c.name ?? ne(
-        h?.stateObj?.attributes.friendly_name,
-        t.name
-      ) ?? c.entity,
-      entityId: c.entity
-    })), { big: o } = J(e, this._bigKeys), a = this._freeDisk(), l = M(a), u = [
-      this._levelRow("CPU", e[1].role),
-      this._levelRow("Память", e[2].role),
-      this._levelRow("GPU", e[3].role),
-      this._levelRow("Диск", e[4].role),
+    const o = (e.alerts ?? []).map((u) => k(u)).map((u) => ({ alert: u, role: m(this.hass, u.entity) })).filter(({ role: u }) => u?.stateObj?.state === "on").map(({ alert: u, role: f }) => ({
+      text: u.name ?? ae(
+        f?.stateObj?.attributes.friendly_name,
+        e.name
+      ) ?? u.entity,
+      entityId: u.entity
+    })), { big: c } = ee(t, this._bigKeys), a = this._freeDisk(), l = L(a), h = [
+      this._levelRow(p(this.hass, "level.cpu"), t[1].role),
+      this._levelRow(p(this.hass, "level.memory"), t[2].role),
+      this._levelRow(p(this.hass, "level.gpu"), t[3].role),
+      this._levelRow(p(this.hass, "level.disk"), t[4].role),
       // Свободное место — ресурс, который кончается, поэтому и цвет, и тревога
       // здесь как у батарейки, а не как у загрузки.
       a ? {
         entityId: a.entityId,
-        name: "Свободно",
-        text: l === void 0 ? "нет данных" : `${Math.round(l)}%`,
-        ink: me(l),
+        name: p(this.hass, "level.diskFree"),
+        text: l === void 0 ? p(this.hass, "value.unknown") : `${Math.round(l)}%`,
+        ink: ge(l),
         level: l ?? 0,
         alarm: l !== void 0 && l < 10,
         alarmIcon: "mdi:harddisk"
       } : void 0
-    ].filter((c) => !!c);
+    ].filter((u) => !!u);
     return this.renderTile({
       icon: "mdi:desktop-tower-monitor",
-      color: s ? k(s.stateObj) : "var(--state-icon-color)",
-      primary: t.name ?? "Компьютер",
-      mainEntityId: s?.entityId ?? e[0].role?.entityId ?? a?.entityId,
-      secondary: S([
-        R(this.hass, s),
-        ...i,
-        ...n.map((c) => w(this.hass, c)),
+      color: i ? H(i.stateObj) : "var(--state-icon-color)",
+      primary: e.name ?? p(this.hass, "computer.title"),
+      mainEntityId: i?.entityId ?? t[0].role?.entityId ?? a?.entityId,
+      secondary: O([
+        D(this.hass, i),
+        ...o,
+        ...n.map((u) => w(this.hass, u)),
         // Загрузка и диски уже показаны полосами со своими подписями.
-        ...this._bigKeys.includes("temperature") ? [] : [w(this.hass, e[0].role)]
+        ...this._bigKeys.includes("temperature") ? [] : [w(this.hass, t[0].role)]
       ]),
-      values: this.bigValues(o),
-      customFeatures: u.length ? re(u, (c) => this.fireMoreInfo(c)) : void 0
+      values: this.bigValues(c),
+      customFeatures: h.length ? oe(h, (u) => this.fireMoreInfo(u)) : void 0
     });
   }
-};
-Ee.styles = [G, se];
-$s([
+}
+_i([
   v()
-], Ee.prototype, "_config", 2);
-Ee = $s([
-  g("horos-computer-tile")
-], Ee);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], es.prototype, "_config");
+P("horos-computer-tile", es, {
   type: "horos-computer-tile",
-  name: "Компьютер",
-  description: "Самая горячая точка, загрузка и диски одной плиткой",
+  name: "Computer",
+  description: "Hottest spot, load and disks in a single tile",
   preview: !0
 });
-var $n = Object.defineProperty, Pn = Object.getOwnPropertyDescriptor, Ps = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Pn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && $n(e, s, r), r;
+var bi = Object.defineProperty, vi = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && bi(e, t, n), n;
 };
-const Jt = ["pm25", "humidity", "temperature", "power"];
-let Xe = class extends $ {
+const xt = ["pm25", "humidity", "temperature", "power"];
+class ts extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["pm25"];
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => gi), document.createElement("horos-air-tile-editor");
+    return await Promise.resolve().then(() => Fi), document.createElement("horos-air-tile-editor");
   }
   static getStubConfig() {
     return { appliance: "" };
   }
-  setConfig(t) {
-    if (!t.appliance)
+  setConfig(e) {
+    if (!e.appliance)
       throw new Error("Нужно указать прибор (appliance)");
-    this._bigKeys = Y(t.big_values, "pm25", Jt), this.base = t, this._config = t;
+    this._bigKeys = Z(e.big_values, "pm25", xt), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = m(this.hass, t.appliance), s = Jt.map((l) => {
-      const u = m(this.hass, t[l]);
+    const e = this._config, t = m(this.hass, e.appliance), i = xt.map((l) => {
+      const h = m(this.hass, e[l]);
       if (l === "pm25") {
-        const c = M(u);
-        if (c !== void 0 && c < 0) return { key: l, role: void 0 };
+        const u = L(h);
+        if (u !== void 0 && u < 0) return { key: l, role: void 0 };
       }
-      return { key: l, role: u };
-    }), n = (t.sensors ?? []).map((l) => O(l)).map((l) => m(this.hass, l.entity)), r = this.missingRolesWarning([
-      e,
-      ...s.map((l) => l.role),
+      return { key: l, role: h };
+    }), n = (e.sensors ?? []).map((l) => k(l)).map((l) => m(this.hass, l.entity)), r = this.missingRolesWarning([
+      t,
+      ...i.map((l) => l.role),
       ...n
     ]);
     if (r) return this.renderWarning(r);
-    const i = (t.alerts ?? []).map((l) => O(l)).map((l) => ({ alert: l, role: m(this.hass, l.entity) })).filter(({ role: l }) => l?.stateObj?.state === "on").map(({ alert: l, role: u }) => ({
-      text: l.name ?? ne(
-        u?.stateObj?.attributes.friendly_name,
-        t.name
+    const o = (e.alerts ?? []).map((l) => k(l)).map((l) => ({ alert: l, role: m(this.hass, l.entity) })).filter(({ role: l }) => l?.stateObj?.state === "on").map(({ alert: l, role: h }) => ({
+      text: l.name ?? ae(
+        h?.stateObj?.attributes.friendly_name,
+        e.name
       ) ?? l.entity,
       entityId: l.entity
-    })), { big: o, rest: a } = J(s, this._bigKeys);
+    })), { big: c, rest: a } = ee(i, this._bigKeys);
     return this.renderTile({
-      icon: t.humidity ? "mdi:air-humidifier" : "mdi:air-filter",
-      color: k(e?.stateObj),
-      primary: t.name ?? e?.stateObj?.attributes.friendly_name ?? "Воздух",
-      mainEntityId: e?.entityId,
-      secondary: S([
-        R(this.hass, e),
-        ...i,
-        w(this.hass, e),
+      icon: e.humidity ? "mdi:air-humidifier" : "mdi:air-filter",
+      color: H(t?.stateObj),
+      primary: e.name ?? t?.stateObj?.attributes.friendly_name ?? p(this.hass, "air.title"),
+      mainEntityId: t?.entityId,
+      secondary: O([
+        D(this.hass, t),
+        ...o,
+        w(this.hass, t),
         ...n.map((l) => w(this.hass, l)),
         ...a.map((l) => w(this.hass, l.role))
       ]),
-      values: this.bigValues(o)
+      values: this.bigValues(c)
     });
   }
-};
-Ps([
+}
+vi([
   v()
-], Xe.prototype, "_config", 2);
-Xe = Ps([
-  g("horos-air-tile")
-], Xe);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], ts.prototype, "_config");
+P("horos-air-tile", ts, {
   type: "horos-air-tile",
-  name: "Воздух",
-  description: "Очиститель, рекуператор, увлажнитель — прибор и что с воздухом",
+  name: "Air",
+  description: "Purifier, recuperator, humidifier — the appliance and the air",
   preview: !0
 });
-var En = Object.defineProperty, Cn = Object.getOwnPropertyDescriptor, Es = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Cn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && En(e, s, r), r;
+var wi = Object.defineProperty, $i = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && wi(e, t, n), n;
 };
-const Qt = ["illuminance", "battery"], On = 1, Sn = 2, xn = 4;
-let Ce = class extends $ {
+const Pt = ["illuminance", "battery"], Ei = 1, Si = 2, xi = 4;
+class ss extends E {
   constructor() {
     super(...arguments), this._bigKeys = ["illuminance"];
   }
+  static {
+    this.styles = [X, re];
+  }
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  contentRows() {
+    return Math.ceil(2 / 2);
+  }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => vi), document.createElement(
+    return await Promise.resolve().then(() => Bi), document.createElement(
       "horos-cover-tile-editor"
     );
   }
   static getStubConfig() {
     return { cover: "" };
   }
-  setConfig(t) {
-    if (!t.cover)
+  setConfig(e) {
+    if (!e.cover)
       throw new Error("Нужно указать штору (cover)");
-    this._bigKeys = Y(t.big_values, "illuminance", Qt), this.base = t, this._config = t;
+    this._bigKeys = Z(e.big_values, "illuminance", Pt), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = m(this.hass, t.cover), s = m(this.hass, t.position), n = Qt.map((p) => ({
-      key: p,
-      role: m(this.hass, t[p])
+    const e = this._config, t = m(this.hass, e.cover), i = m(this.hass, e.position), n = Pt.map(($) => ({
+      key: $,
+      role: m(this.hass, e[$])
     })), r = this.missingRolesWarning([
-      e,
-      s,
-      ...n.map((p) => p.role)
+      t,
+      i,
+      ...n.map(($) => $.role)
     ]);
     if (r) return this.renderWarning(r);
-    const { big: i, rest: o } = J(n, this._bigKeys), a = Number(
-      e?.stateObj?.attributes.supported_features ?? 0
-    ), l = (a & xn) !== 0, u = (a & (On | Sn)) !== 0, c = [];
-    t.controls !== !1 && (l && c.push({ type: "cover-position" }), u && c.push({ type: "cover-open-close" }));
-    const h = M(s), y = s && !l ? [
+    const { big: o, rest: c } = ee(n, this._bigKeys), a = Number(
+      t?.stateObj?.attributes.supported_features ?? 0
+    ), l = (a & xi) !== 0, h = (a & (Ei | Si)) !== 0, u = [];
+    e.controls !== !1 && (l && u.push({ type: "cover-position" }), h && u.push({ type: "cover-open-close" }));
+    const f = L(i), y = i && !l ? [
       {
-        entityId: s.entityId,
-        name: "Открыто",
-        text: h === void 0 ? "нет данных" : `${Math.round(h)}%`,
-        ink: me(h),
-        level: h ?? 0
+        entityId: i.entityId,
+        name: p(this.hass, "level.open"),
+        text: f === void 0 ? p(this.hass, "value.unknown") : `${Math.round(f)}%`,
+        ink: ge(f),
+        level: f ?? 0
       }
     ] : [];
     return this.renderTile({
       icon: "mdi:curtains",
-      color: k(e?.stateObj),
-      primary: t.name ?? e?.stateObj?.attributes.friendly_name ?? "Шторы",
-      mainEntityId: e?.entityId,
-      secondary: S([
-        R(this.hass, e),
-        w(this.hass, e),
-        ...o.map((p) => w(this.hass, p.role))
+      color: H(t?.stateObj),
+      primary: e.name ?? t?.stateObj?.attributes.friendly_name ?? p(this.hass, "cover.title"),
+      mainEntityId: t?.entityId,
+      secondary: O([
+        D(this.hass, t),
+        w(this.hass, t),
+        ...c.map(($) => w(this.hass, $.role))
       ]),
-      values: this.bigValues(i),
-      ownFeatures: c.length ? c : void 0,
-      customFeatures: y.length ? re(y, (p) => this.fireMoreInfo(p)) : void 0
+      values: this.bigValues(o),
+      ownFeatures: u.length ? u : void 0,
+      customFeatures: y.length ? oe(y, ($) => this.fireMoreInfo($)) : void 0
     });
   }
-};
-Ce.styles = [G, se];
-Es([
+}
+$i([
   v()
-], Ce.prototype, "_config", 2);
-Ce = Es([
-  g("horos-cover-tile")
-], Ce);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], ss.prototype, "_config");
+P("horos-cover-tile", ss, {
   type: "horos-cover-tile",
-  name: "Шторы",
-  description: "Насколько открыты, светло ли снаружи и сколько заряда",
+  name: "Curtains",
+  description: "How far open, how bright outside, and battery",
   preview: !0
 });
-var Tn = Object.defineProperty, In = Object.getOwnPropertyDescriptor, Cs = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? In(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && Tn(e, s, r), r;
+var Pi = Object.defineProperty, Ci = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && Pi(e, t, n), n;
 };
-const Dn = 5;
-let Oe = class extends $ {
+const Ti = 5;
+class ns extends E {
+  static {
+    this.styles = [X, re];
+  }
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  contentRows() {
+    return Math.ceil(Math.min(this._config?.consumers.length ?? 0, this._config?.limit ?? 5) / 2);
+  }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Pi), document.createElement(
+    return await Promise.resolve().then(() => qi), document.createElement(
       "horos-energy-tile-editor"
     );
   }
   static getStubConfig() {
     return { consumers: [] };
   }
-  setConfig(t) {
-    if (!t.consumers?.length)
+  setConfig(e) {
+    if (!e.consumers?.length)
       throw new Error("Нужно указать хотя бы одного потребителя (consumers)");
-    this.base = t, this._config = t;
+    this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = m(this.hass, t.total), s = [], n = [], r = [];
-    for (const u of t.consumers) {
-      const c = O(u), h = m(this.hass, c.entity);
-      if (h?.missing) {
-        s.push(c.entity);
+    const e = this._config, t = m(this.hass, e.total), i = [], n = [], r = [];
+    for (const h of e.consumers) {
+      const u = k(h), f = m(this.hass, u.entity);
+      if (f?.missing) {
+        i.push(u.entity);
         continue;
       }
-      const y = c.name ?? ne(h?.stateObj?.attributes.friendly_name, t.name) ?? c.entity;
-      if (h?.unavailable) {
+      const y = u.name ?? ae(f?.stateObj?.attributes.friendly_name, e.name) ?? u.entity;
+      if (f?.unavailable) {
         n.push(y);
         continue;
       }
-      const p = M(h);
-      p === void 0 || p <= 0 || r.push({
-        watts: p,
+      const $ = L(f);
+      $ === void 0 || $ <= 0 || r.push({
+        watts: $,
         row: {
-          entityId: c.entity,
+          entityId: u.entity,
           name: y,
-          text: this.hass.formatEntityState(h.stateObj),
-          ink: c.color ?? "var(--amber-color, #ffc107)"
+          text: this.hass.formatEntityState(f.stateObj),
+          ink: u.color ?? "var(--amber-color, #ffc107)"
         }
       });
     }
-    if (s.length)
-      return this.renderWarning(`Сущности не найдены: ${s.join(", ")}`);
-    r.sort((u, c) => c.watts - u.watts);
-    const i = r.slice(0, t.limit ?? Dn), o = i[0]?.watts ?? 0, a = i.map(({ row: u, watts: c }) => ({
-      ...u,
-      level: o > 0 ? c / o * 100 : 0
+    r.sort((h, u) => u.watts - h.watts);
+    const o = r.slice(0, e.limit ?? Ti), c = o[0]?.watts ?? 0, a = o.map(({ row: h, watts: u }) => ({
+      ...h,
+      level: c > 0 ? u / c * 100 : 0
     })), l = [
-      R(this.hass, e),
-      r.length ? { text: `${r.length} потребляют` } : { text: "Никто не потребляет" },
-      n.length ? { text: `${n.length} без связи` } : void 0
+      D(this.hass, t),
+      r.length ? { text: p(this.hass, "energy.consuming", { count: r.length }) } : { text: p(this.hass, "energy.idle") },
+      n.length ? { text: p(this.hass, "offline.count", { count: n.length }) } : void 0,
+      i.length ? { text: p(this.hass, "list.missing", { count: i.length }) } : void 0
     ];
     return this.renderTile({
       icon: "mdi:flash",
       color: "var(--amber-color, #ffc107)",
-      primary: t.name ?? "Энергия",
-      mainEntityId: e?.entityId ?? i[0]?.row.entityId,
-      secondary: S([w(this.hass, e), ...l]),
-      values: e ? this.bigValues([{ key: "total", role: e }]) : [],
-      customFeatures: a.length ? re(a, (u) => this.fireMoreInfo(u)) : void 0
+      primary: e.name ?? p(this.hass, "energy.title"),
+      mainEntityId: t?.entityId ?? o[0]?.row.entityId,
+      secondary: O([w(this.hass, t), ...l]),
+      values: t ? this.bigValues([{ key: "total", role: t }]) : [],
+      customFeatures: a.length ? oe(a, (h) => this.fireMoreInfo(h)) : void 0
     });
   }
-};
-Oe.styles = [G, se];
-Cs([
+}
+Ci([
   v()
-], Oe.prototype, "_config", 2);
-Oe = Cs([
-  g("horos-energy-tile")
-], Oe);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], ns.prototype, "_config");
+P("horos-energy-tile", ns, {
   type: "horos-energy-tile",
-  name: "Энергия",
-  description: "Кто в доме ест электричество, от самого прожорливого",
+  name: "Energy",
+  description: "Who in the house draws power, hungriest first",
   preview: !0
 });
-var An = Object.defineProperty, jn = Object.getOwnPropertyDescriptor, Os = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? jn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = (n ? o(e, s, r) : o(r)) || r);
-  return n && r && An(e, s, r), r;
+var ki = Object.defineProperty, Oi = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && ki(e, t, n), n;
 };
-let Ze = class extends $ {
+class is extends E {
   static async getConfigElement() {
-    return await Promise.resolve().then(() => Oi), document.createElement(
+    return await Promise.resolve().then(() => Ki), document.createElement(
       "horos-presence-tile-editor"
     );
   }
   static getStubConfig() {
     return { areas: [] };
   }
-  setConfig(t) {
-    if (!t.areas?.length)
+  setConfig(e) {
+    if (!e.areas?.length)
       throw new Error("Нужно указать хотя бы одну зону (areas)");
-    this.base = t, this._config = t;
+    this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const t = this._config, e = [], s = [];
+    const e = this._config, t = [], i = [];
     let n = 0, r = 0;
-    for (const i of t.areas) {
-      const o = O(i), a = m(this.hass, o.entity);
+    for (const o of e.areas) {
+      const c = k(o), a = m(this.hass, c.entity);
       if (a?.missing) {
-        s.push(o.entity);
+        i.push(c.entity);
         continue;
       }
       if (r += 1, a?.unavailable) {
         n += 1;
         continue;
       }
-      a?.stateObj?.state === "on" && e.push({
-        text: o.name ?? a.stateObj.attributes.friendly_name ?? o.entity,
-        entityId: o.entity
+      a?.stateObj?.state === "on" && t.push({
+        text: c.name ?? a.stateObj.attributes.friendly_name ?? c.entity,
+        entityId: c.entity
       });
     }
-    return s.length ? this.renderWarning(`Сущности не найдены: ${s.join(", ")}`) : this.renderTile({
-      icon: e.length ? "mdi:home-account" : "mdi:home-outline",
-      color: e.length ? "var(--state-icon-color)" : "var(--state-inactive-color)",
-      primary: t.name ?? "Присутствие",
-      mainEntityId: e[0]?.entityId,
-      secondary: S([
-        ...e.length ? e : [{ text: `Пусто, ${r} зон` }],
-        n ? { text: `${n} без связи` } : void 0
+    return this.renderTile({
+      icon: t.length ? "mdi:home-account" : "mdi:home-outline",
+      color: t.length ? "var(--state-icon-color)" : "var(--state-inactive-color)",
+      primary: e.name ?? p(this.hass, "presence.title"),
+      mainEntityId: t[0]?.entityId,
+      secondary: O([
+        ...t.length ? t : [{ text: p(this.hass, "presence.empty", { count: r }) }],
+        n ? { text: p(this.hass, "offline.count", { count: n }) } : void 0,
+        i.length ? { text: p(this.hass, "list.missing", { count: i.length }) } : void 0
       ]),
       values: [
-        { value: String(e.length), entityId: e[0]?.entityId }
+        {
+          value: String(t.length),
+          entityId: t[0]?.entityId,
+          icon: "mdi:home-account"
+        }
       ]
     });
   }
-};
-Os([
+}
+Oi([
   v()
-], Ze.prototype, "_config", 2);
-Ze = Os([
-  g("horos-presence-tile")
-], Ze);
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+], is.prototype, "_config");
+P("horos-presence-tile", is, {
   type: "horos-presence-tile",
-  name: "Присутствие",
-  description: "В каких зонах сейчас есть кто-то",
+  name: "Presence",
+  description: "Which areas have someone in them right now",
   preview: !0
 });
 console.info(
@@ -3453,14 +3643,14 @@ console.info(
   "background:#03a9f4;color:#fff;border-radius:3px 0 0 3px;padding:2px 4px",
   "background:#555;color:#fff;border-radius:0 3px 3px 0;padding:2px 4px"
 );
-var Mn = Object.defineProperty, Et = (t, e, s, n) => {
-  for (var r = void 0, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(e, s, r) || r);
-  return r && Mn(e, s, r), r;
+var Ii = Object.defineProperty, Xe = (s, e, t, i) => {
+  for (var n = void 0, r = s.length - 1, o; r >= 0; r--)
+    (o = s[r]) && (n = o(e, t, n) || n);
+  return n && Ii(e, t, n), n;
 };
-class C extends K {
+class T extends Q {
   constructor() {
-    super(...arguments), this._computeLabel = (e) => this.labels[e.name] ?? T[e.name] ?? e.name;
+    super(...arguments), this._computeLabel = (e) => this.labels[e.name] ?? e.name;
   }
   setConfig(e) {
     this._config = e;
@@ -3472,6 +3662,14 @@ class C extends K {
   /** Что положить в конфиг из формы. */
   fromForm(e) {
     return e;
+  }
+  /**
+   * Подписи на языке пользователя. Держим их парой прямо у карточки, а не в
+   * общем словаре: одно и то же поле в разных карточках называется по-разному —
+   * «Заряд», «Заряд датчика», «Заряд основного устройства».
+   */
+  pick(e) {
+    return Vt(this.hass) === "ru" ? e.ru : e.en;
   }
   fireConfigChanged(e) {
     this.dispatchEvent(
@@ -3502,18 +3700,18 @@ class C extends K {
     return this.renderForm();
   }
 }
-Et([
-  Te({ attribute: !1 })
-], C.prototype, "hass");
-Et([
+Xe([
+  Ce({ attribute: !1 })
+], T.prototype, "hass");
+Xe([
   v()
-], C.prototype, "_config");
-class Ae extends C {
+], T.prototype, "_config");
+class Oe extends T {
   constructor() {
     super(...arguments), this._featuresEditorReady = !1;
   }
   connectedCallback() {
-    super.connectedCallback(), jr().then((e) => {
+    super.connectedCallback(), Cn().then((e) => {
       this._featuresEditorReady = e;
     });
   }
@@ -3522,9 +3720,9 @@ class Ae extends C {
    * булево vertical — ровно как в редакторе штатной плитки.
    */
   get formData() {
-    const { vertical: e, ...s } = this._config ?? {};
+    const { vertical: e, ...t } = this._config ?? {};
     return {
-      ...s,
+      ...t,
       content_layout: e ? "vertical" : "horizontal"
     };
   }
@@ -3540,8 +3738,8 @@ class Ae extends C {
     );
   }
   fromForm(e) {
-    const { content_layout: s, ...n } = e, r = { ...n };
-    return s === "vertical" && (r.vertical = !0), r;
+    const { content_layout: t, ...i } = e, n = { ...i };
+    return t === "vertical" && (n.vertical = !0), n;
   }
   render() {
     return !this.hass || !this._config ? d : b`
@@ -3560,10 +3758,10 @@ class Ae extends C {
     `;
   }
 }
-Et([
+Xe([
   v()
-], Ae.prototype, "_featuresEditorReady");
-const Ct = (t) => ({
+], Oe.prototype, "_featuresEditorReady");
+const Ze = (s) => ({
   name: "appearance",
   type: "expandable",
   flatten: !0,
@@ -3576,7 +3774,7 @@ const Ct = (t) => ({
         {
           name: "icon",
           selector: { icon: {} },
-          context: { icon_entity: t }
+          context: { icon_entity: s }
         },
         {
           name: "color",
@@ -3618,10 +3816,10 @@ const Ct = (t) => ({
       }
     }
   ]
-}), Ve = (t) => ({
-  entity_id: t,
+}), Le = (s) => ({
+  entity_id: s,
   area_id: "area"
-}), Ot = (t, e) => ({
+}), et = (s, e) => ({
   name: "interactions",
   type: "expandable",
   flatten: !0,
@@ -3630,13 +3828,13 @@ const Ct = (t) => ({
     {
       name: "tap_action",
       selector: { ui_action: { default_action: "more-info" } },
-      context: Ve(t)
+      context: Le(s)
     },
     { name: "", type: "divider" },
     {
       name: "icon_tap_action",
       selector: { ui_action: { default_action: e } },
-      context: Ve(t)
+      context: Le(s)
     },
     {
       name: "",
@@ -3647,14 +3845,14 @@ const Ct = (t) => ({
         "icon_hold_action",
         "double_tap_action",
         "icon_double_tap_action"
-      ].map((s) => ({
-        name: s,
+      ].map((t) => ({
+        name: t,
         selector: { ui_action: { default_action: "none" } },
-        context: Ve(t)
+        context: Le(s)
       }))
     }
   ]
-}), T = {
+}), N = {
   appearance: "Внешний вид",
   interactions: "Взаимодействия",
   icon: "Иконка",
@@ -3668,21 +3866,30 @@ const Ct = (t) => ({
   icon_tap_action: "Тап по иконке",
   icon_hold_action: "Долгое нажатие на иконку",
   icon_double_tap_action: "Двойной тап по иконке"
-}, _ = (t, e) => ({
+}, R = {
+  appearance: "Appearance",
+  interactions: "Interactions",
+  icon: "Icon",
+  color: "Colour",
+  content_layout: "Layout",
+  show_entity_picture: "Entity picture",
+  hide_state: "Hide secondary line",
+  tap_action: "Tap on card",
+  hold_action: "Hold on card",
+  double_tap_action: "Double tap on card",
+  icon_tap_action: "Tap on icon",
+  icon_hold_action: "Hold on icon",
+  icon_double_tap_action: "Double tap on icon"
+}, _ = (s, e) => ({
   entity: {
-    filter: e ? { domain: t, device_class: e } : { domain: t }
+    filter: e ? { domain: s, device_class: e } : { domain: s }
   }
-}), te = (t, e, s) => ({
-  number: { min: t, max: e, mode: "box", unit_of_measurement: s }
-}), D = { text: {} }, ie = (t) => ({
-  select: { multiple: !0, mode: "list", options: t }
-}), Rn = { boolean: {} };
-var Nn = Object.getOwnPropertyDescriptor, Un = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Nn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let et = class extends Ae {
+}), ie = (s, e, t) => ({
+  number: { min: s, max: e, mode: "box", unit_of_measurement: t }
+}), M = { text: {} }, le = (s) => ({
+  select: { multiple: !0, mode: "list", options: s }
+}), Ai = { boolean: {} };
+class rs extends Oe {
   get entityField() {
     return "temperature";
   }
@@ -3706,43 +3913,44 @@ let et = class extends Ae {
       { name: "pm25", selector: _("sensor", "pm25") },
       {
         name: "big_values",
-        selector: ie([
+        selector: le([
           { value: "temperature", label: "Температура" },
           { value: "humidity", label: "Влажность" },
           { value: "illuminance", label: "Освещённость" },
           { value: "pm25", label: "PM2.5" }
         ])
       },
-      Ct("temperature"),
-      Ot("temperature", "none")
+      Ze("temperature"),
+      et("temperature", "none")
     ];
   }
   get labels() {
-    return {
-      name: "Название",
-      temperature: "Температура",
-      humidity: "Влажность",
-      illuminance: "Освещённость",
-      pm25: "PM2.5",
-      big_values: "Крупно справа (не больше двух)"
-    };
+    return this.pick({
+      ru: {
+        name: "Название",
+        temperature: "Температура",
+        humidity: "Влажность",
+        illuminance: "Освещённость",
+        pm25: "PM2.5",
+        big_values: "Крупно справа (не больше двух)"
+      },
+      en: {
+        name: "Name",
+        temperature: "Temperature",
+        humidity: "Humidity",
+        illuminance: "Illuminance",
+        pm25: "PM2.5",
+        big_values: "Large on the right (up to two)"
+      }
+    });
   }
-};
-et = Un([
-  g("horos-climate-tile-editor")
-], et);
-const kn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-climate-tile-editor", rs);
+const Ni = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosClimateTileEditor() {
-    return et;
-  }
+  HorosClimateTileEditor: rs
 }, Symbol.toStringTag, { value: "Module" }));
-var zn = Object.getOwnPropertyDescriptor, Vn = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? zn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let tt = class extends Ae {
+class os extends Oe {
   get entityField() {
     return "switch";
   }
@@ -3758,43 +3966,44 @@ let tt = class extends Ae {
       { name: "energy", selector: _("sensor", "energy") },
       {
         name: "big_values",
-        selector: ie([
+        selector: le([
           { value: "power", label: "Мощность" },
           { value: "energy", label: "Энергия" },
           { value: "switch", label: "Состояние" }
         ])
       },
-      { name: "toggle_button", selector: Rn },
-      Ct("switch"),
-      Ot("switch", "toggle")
+      { name: "toggle_button", selector: Ai },
+      Ze("switch"),
+      et("switch", "toggle")
     ];
   }
   get labels() {
-    return {
-      name: "Название",
-      switch: "Выключатель",
-      power: "Мощность",
-      energy: "Энергия",
-      big_values: "Крупно справа (не больше двух)",
-      toggle_button: "Кнопка переключения под строкой"
-    };
+    return this.pick({
+      ru: {
+        name: "Название",
+        switch: "Выключатель",
+        power: "Мощность",
+        energy: "Энергия",
+        big_values: "Крупно справа (не больше двух)",
+        toggle_button: "Кнопка переключения под строкой"
+      },
+      en: {
+        name: "Name",
+        switch: "Switch",
+        power: "Power",
+        energy: "Energy",
+        big_values: "Large on the right (up to two)",
+        toggle_button: "Toggle button below the row"
+      }
+    });
   }
-};
-tt = Vn([
-  g("horos-plug-tile-editor")
-], tt);
-const Ln = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-plug-tile-editor", os);
+const Ri = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosPlugTileEditor() {
-    return tt;
-  }
+  HorosPlugTileEditor: os
 }, Symbol.toStringTag, { value: "Module" }));
-var Hn = Object.getOwnPropertyDescriptor, Wn = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Hn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let st = class extends Ae {
+class as extends Oe {
   get entityField() {
     return "moisture";
   }
@@ -3815,63 +4024,65 @@ let st = class extends Ae {
         selector: _("sensor", "temperature")
       },
       { name: "battery", selector: _("sensor", "battery") },
-      { name: "dry_below", selector: te(0, 100, "%") },
-      { name: "wet_above", selector: te(0, 100, "%") },
+      { name: "dry_below", selector: ie(0, 100, "%") },
+      { name: "wet_above", selector: ie(0, 100, "%") },
       {
         name: "big_values",
-        selector: ie([
+        selector: le([
           { value: "moisture", label: "Влажность почвы" },
           { value: "temperature", label: "Температура почвы" },
           { value: "battery", label: "Заряд датчика" }
         ])
       },
-      Ct("moisture"),
-      Ot("moisture", "none")
+      Ze("moisture"),
+      et("moisture", "none")
     ];
   }
   get labels() {
-    return {
-      name: "Название",
-      moisture: "Влажность почвы",
-      temperature: "Температура почвы",
-      battery: "Заряд датчика",
-      dry_below: "Ниже этого — сухо",
-      wet_above: "Выше этого — залито",
-      big_values: "Крупно справа (не больше двух)"
-    };
+    return this.pick({
+      ru: {
+        name: "Название",
+        moisture: "Влажность почвы",
+        temperature: "Температура почвы",
+        battery: "Заряд датчика",
+        dry_below: "Ниже этого — сухо",
+        wet_above: "Выше этого — залито",
+        big_values: "Крупно справа (не больше двух)"
+      },
+      en: {
+        name: "Name",
+        moisture: "Soil moisture",
+        temperature: "Soil temperature",
+        battery: "Sensor battery",
+        dry_below: "Dry below",
+        wet_above: "Wet above",
+        big_values: "Large on the right (up to two)"
+      }
+    });
   }
-};
-st = Wn([
-  g("horos-plant-tile-editor")
-], st);
-const Fn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  get HorosPlantTileEditor() {
-    return st;
-  }
-}, Symbol.toStringTag, { value: "Module" }));
-function P(t, e) {
-  const s = /* @__PURE__ */ new Map();
-  for (const n of t ?? [])
-    s.set(typeof n == "string" ? n : n.entity, n);
-  return e.map((n) => s.get(n) ?? n);
 }
-function E(t) {
-  return (t ?? []).map(
+C("horos-plant-tile-editor", as);
+const Mi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  HorosPlantTileEditor: as
+}, Symbol.toStringTag, { value: "Module" }));
+function S(s, e) {
+  const t = /* @__PURE__ */ new Map();
+  for (const i of s ?? [])
+    t.set(typeof i == "string" ? i : i.entity, i);
+  return e.map((i) => t.get(i) ?? i);
+}
+function x(s) {
+  return (s ?? []).map(
     (e) => typeof e == "string" ? e : e.entity
   );
 }
-var Bn = Object.getOwnPropertyDescriptor, qn = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Bn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let rt = class extends C {
+class ls extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "icon", selector: { icon: {} } },
-      { name: "columns", selector: te(1, 6) },
+      { name: "columns", selector: ie(1, 6) },
       {
         name: "buttons",
         required: !0,
@@ -3891,48 +4102,47 @@ let rt = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Заголовок",
-      columns: "Кнопок в ряд",
-      buttons: "Кнопки"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Заголовок",
+        columns: "Кнопок в ряд",
+        buttons: "Кнопки"
+      },
+      en: {
+        ...R,
+        name: "Heading",
+        columns: "Buttons per row",
+        buttons: "Buttons"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      buttons: E(t.buttons)
+      ...e,
+      buttons: x(e.buttons)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      buttons: P(
+      ...e,
+      buttons: S(
         this._config?.buttons,
-        t.buttons ?? []
+        e.buttons ?? []
       )
     };
   }
-};
-rt = qn([
-  g("horos-buttons-tile-editor")
-], rt);
-const Kn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-buttons-tile-editor", ls);
+const Ui = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosButtonsTileEditor() {
-    return rt;
-  }
+  HorosButtonsTileEditor: ls
 }, Symbol.toStringTag, { value: "Module" }));
-var Gn = Object.getOwnPropertyDescriptor, Yn = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Gn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let nt = class extends C {
+class cs extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "icon", selector: { icon: {} } },
       { name: "status", selector: _("sensor") },
       {
@@ -3951,115 +4161,118 @@ let nt = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название принтера",
-      status: "Состояние принтера",
-      cartridges: "Картриджи",
-      low_below: "Мало чернил ниже",
-      sensors: "Прочее про принтер"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название принтера",
+        status: "Состояние принтера",
+        cartridges: "Картриджи",
+        low_below: "Мало чернил ниже",
+        sensors: "Прочее про принтер"
+      },
+      en: {
+        ...R,
+        name: "Printer name",
+        status: "Printer status",
+        cartridges: "Cartridges",
+        low_below: "Low ink below",
+        sensors: "Other printer sensors"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      cartridges: E(
-        t.cartridges
+      ...e,
+      cartridges: x(
+        e.cartridges
       ),
-      sensors: E(t.sensors)
+      sensors: x(e.sensors)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      cartridges: P(
+      ...e,
+      cartridges: S(
         this._config?.cartridges,
-        t.cartridges ?? []
+        e.cartridges ?? []
       ),
-      sensors: P(
+      sensors: S(
         this._config?.sensors,
-        t.sensors ?? []
+        e.sensors ?? []
       )
     };
   }
-};
-nt = Yn([
-  g("horos-printer-tile-editor")
-], nt);
-const Jn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-printer-tile-editor", cs);
+const ji = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosPrinterTileEditor() {
-    return nt;
-  }
+  HorosPrinterTileEditor: cs
 }, Symbol.toStringTag, { value: "Module" }));
-var Qn = Object.getOwnPropertyDescriptor, Xn = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Qn(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let it = class extends C {
+class us extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "vacuum", required: !0, selector: _("vacuum") },
       { name: "battery", selector: _("sensor", "battery") },
       { name: "sensors", selector: { entity: { multiple: !0 } } },
       { name: "consumables", selector: { entity: { multiple: !0 } } },
-      { name: "low_below", selector: te(0, 100, "%") }
+      { name: "low_below", selector: ie(0, 100, "%") }
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      vacuum: "Пылесос",
-      battery: "Заряд",
-      sensors: "Что ещё сказать",
-      consumables: "Расходники",
-      low_below: "Просит замены ниже"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        vacuum: "Пылесос",
+        battery: "Заряд",
+        sensors: "Что ещё сказать",
+        consumables: "Расходники",
+        low_below: "Просит замены ниже"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        vacuum: "Vacuum",
+        battery: "Battery",
+        sensors: "What else to show",
+        consumables: "Consumables",
+        low_below: "Needs replacing below"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      sensors: E(t.sensors),
-      consumables: E(t.consumables)
+      ...e,
+      sensors: x(e.sensors),
+      consumables: x(e.consumables)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      sensors: P(
+      ...e,
+      sensors: S(
         this._config?.sensors,
-        t.sensors ?? []
+        e.sensors ?? []
       ),
-      consumables: P(
+      consumables: S(
         this._config?.consumables,
-        t.consumables ?? []
+        e.consumables ?? []
       )
     };
   }
-};
-it = Xn([
-  g("horos-vacuum-tile-editor")
-], it);
-const Zn = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-vacuum-tile-editor", us);
+const Li = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosVacuumTileEditor() {
-    return it;
-  }
+  HorosVacuumTileEditor: us
 }, Symbol.toStringTag, { value: "Module" }));
-var ei = Object.getOwnPropertyDescriptor, ti = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? ei(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let ot = class extends C {
+class ds extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       {
         name: "batteries",
         required: !0,
@@ -4070,52 +4283,51 @@ let ot = class extends C {
           }
         }
       },
-      { name: "low_below", selector: te(0, 100, "%") }
+      { name: "low_below", selector: ie(0, 100, "%") }
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      batteries: "Батарейки",
-      low_below: "Показывать ниже"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        batteries: "Батарейки",
+        low_below: "Показывать ниже"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        batteries: "Batteries",
+        low_below: "Show below"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      batteries: E(t.batteries)
+      ...e,
+      batteries: x(e.batteries)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      batteries: P(
+      ...e,
+      batteries: S(
         this._config?.batteries,
-        t.batteries ?? []
+        e.batteries ?? []
       )
     };
   }
-};
-ot = ti([
-  g("horos-batteries-tile-editor")
-], ot);
-const si = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-batteries-tile-editor", ds);
+const Di = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosBatteriesTileEditor() {
-    return ot;
-  }
+  HorosBatteriesTileEditor: ds
 }, Symbol.toStringTag, { value: "Module" }));
-var ri = Object.getOwnPropertyDescriptor, ni = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? ri(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let at = class extends C {
+class hs extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       {
         name: "sensors",
         required: !0,
@@ -4124,47 +4336,45 @@ let at = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      sensors: "Датчики"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        sensors: "Датчики"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        sensors: "Sensors"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      sensors: E(t.sensors)
+      ...e,
+      sensors: x(e.sensors)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      sensors: P(
+      ...e,
+      sensors: S(
         this._config?.sensors,
-        t.sensors ?? []
+        e.sensors ?? []
       )
     };
   }
-};
-at = ni([
-  g("horos-safety-tile-editor")
-], at);
-const ii = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-safety-tile-editor", hs);
+const zi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosSafetyTileEditor() {
-    return at;
-  }
+  HorosSafetyTileEditor: hs
 }, Symbol.toStringTag, { value: "Module" }));
-var oi = Object.getOwnPropertyDescriptor, ai = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? oi(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let lt = class extends C {
+class ms extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "status", selector: { entity: {} } },
       { name: "disk", selector: _("sensor", "data_size") },
       { name: "download", selector: _("sensor", "data_rate") },
@@ -4173,51 +4383,53 @@ let lt = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      status: "Состояние",
-      disk: "Свободное место",
-      download: "Скорость приёма",
-      upload: "Скорость отдачи",
-      services: "Что ещё сказать"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        status: "Состояние",
+        disk: "Свободное место",
+        download: "Скорость приёма",
+        upload: "Скорость отдачи",
+        services: "Что ещё сказать"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        status: "Status",
+        disk: "Free space",
+        download: "Download speed",
+        upload: "Upload speed",
+        services: "What else to show"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      services: E(t.services)
+      ...e,
+      services: x(e.services)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      services: P(
+      ...e,
+      services: S(
         this._config?.services,
-        t.services ?? []
+        e.services ?? []
       )
     };
   }
-};
-lt = ai([
-  g("horos-server-tile-editor")
-], lt);
-const li = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-server-tile-editor", ms);
+const Vi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosServerTileEditor() {
-    return lt;
-  }
+  HorosServerTileEditor: ms
 }, Symbol.toStringTag, { value: "Module" }));
-var ci = Object.getOwnPropertyDescriptor, ui = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? ci(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let ct = class extends C {
+class ps extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       {
         name: "person",
         required: !0,
@@ -4241,50 +4453,51 @@ let ct = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Имя",
-      person: "Человек",
-      battery: "Заряд основного устройства",
-      location: "Где именно",
-      devices: "Остальные устройства"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Имя",
+        person: "Человек",
+        battery: "Заряд основного устройства",
+        location: "Где именно",
+        devices: "Остальные устройства"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        person: "Person",
+        battery: "Main device battery",
+        location: "Location",
+        devices: "Other devices"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      devices: E(t.devices)
+      ...e,
+      devices: x(e.devices)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      devices: P(
+      ...e,
+      devices: S(
         this._config?.devices,
-        t.devices ?? []
+        e.devices ?? []
       )
     };
   }
-};
-ct = ui([
-  g("horos-person-tile-editor")
-], ct);
-const di = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-person-tile-editor", ps);
+const Wi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosPersonTileEditor() {
-    return ct;
-  }
+  HorosPersonTileEditor: ps
 }, Symbol.toStringTag, { value: "Module" }));
-var hi = Object.getOwnPropertyDescriptor, mi = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? hi(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let ut = class extends C {
+class fs extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "status", selector: { entity: {} } },
       { name: "cpu", selector: _("sensor") },
       { name: "memory", selector: _("sensor") },
@@ -4307,7 +4520,7 @@ let ut = class extends C {
       },
       {
         name: "big_values",
-        selector: ie([
+        selector: le([
           { value: "temperature", label: "Самая горячая точка" },
           { value: "cpu", label: "Процессор" },
           { value: "memory", label: "Память" },
@@ -4318,61 +4531,68 @@ let ut = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      status: "Состояние",
-      cpu: "Процессор",
-      memory: "Память",
-      gpu: "Видеокарта",
-      temperatures: "Датчики температуры",
-      disks: "Разделы диска (занято)",
-      disks_free: "Разделы диска (свободно)",
-      sensors: "Что ещё сказать",
-      alerts: "Сообщать, когда сработало",
-      big_values: "Крупно справа (не больше трёх)"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        status: "Состояние",
+        cpu: "Процессор",
+        memory: "Память",
+        gpu: "Видеокарта",
+        temperatures: "Датчики температуры",
+        disks: "Разделы диска (занято)",
+        disks_free: "Разделы диска (свободно)",
+        sensors: "Что ещё сказать",
+        alerts: "Сообщать, когда сработало",
+        big_values: "Крупно справа (не больше трёх)"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        status: "Status",
+        cpu: "CPU",
+        memory: "Memory",
+        gpu: "GPU",
+        temperatures: "Temperature sensors",
+        disks: "Disks (used)",
+        disks_free: "Disks (free)",
+        sensors: "What else to show",
+        alerts: "Report only when triggered",
+        big_values: "Large on the right (up to three)"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      sensors: E(t.sensors),
-      alerts: E(t.alerts)
+      ...e,
+      sensors: x(e.sensors),
+      alerts: x(e.alerts)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      sensors: P(
+      ...e,
+      sensors: S(
         this._config?.sensors,
-        t.sensors ?? []
+        e.sensors ?? []
       ),
-      alerts: P(
+      alerts: S(
         this._config?.alerts,
-        t.alerts ?? []
+        e.alerts ?? []
       )
     };
   }
-};
-ut = mi([
-  g("horos-computer-tile-editor")
-], ut);
-const pi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-computer-tile-editor", fs);
+const Hi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosComputerTileEditor() {
-    return ut;
-  }
+  HorosComputerTileEditor: fs
 }, Symbol.toStringTag, { value: "Module" }));
-var fi = Object.getOwnPropertyDescriptor, _i = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? fi(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let dt = class extends C {
+class gs extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       {
         name: "appliance",
         required: !0,
@@ -4397,7 +4617,7 @@ let dt = class extends C {
       },
       {
         name: "big_values",
-        selector: ie([
+        selector: le([
           { value: "pm25", label: "PM2.5" },
           { value: "humidity", label: "Влажность" },
           { value: "temperature", label: "Температура" },
@@ -4407,59 +4627,64 @@ let dt = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      appliance: "Прибор",
-      pm25: "PM2.5",
-      humidity: "Влажность",
-      temperature: "Температура",
-      power: "Мощность",
-      sensors: "Что ещё сказать",
-      alerts: "Сообщать, когда сработало",
-      big_values: "Крупно справа (не больше трёх)"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        appliance: "Прибор",
+        pm25: "PM2.5",
+        humidity: "Влажность",
+        temperature: "Температура",
+        power: "Мощность",
+        sensors: "Что ещё сказать",
+        alerts: "Сообщать, когда сработало",
+        big_values: "Крупно справа (не больше трёх)"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        appliance: "Appliance",
+        pm25: "PM2.5",
+        humidity: "Humidity",
+        temperature: "Temperature",
+        power: "Power",
+        sensors: "What else to show",
+        alerts: "Report only when triggered",
+        big_values: "Large on the right (up to three)"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      sensors: E(t.sensors),
-      alerts: E(t.alerts)
+      ...e,
+      sensors: x(e.sensors),
+      alerts: x(e.alerts)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      sensors: P(
+      ...e,
+      sensors: S(
         this._config?.sensors,
-        t.sensors ?? []
+        e.sensors ?? []
       ),
-      alerts: P(
+      alerts: S(
         this._config?.alerts,
-        t.alerts ?? []
+        e.alerts ?? []
       )
     };
   }
-};
-dt = _i([
-  g("horos-air-tile-editor")
-], dt);
-const gi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-air-tile-editor", gs);
+const Fi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosAirTileEditor() {
-    return dt;
-  }
+  HorosAirTileEditor: gs
 }, Symbol.toStringTag, { value: "Module" }));
-var yi = Object.getOwnPropertyDescriptor, bi = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? yi(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let ht = class extends C {
+class _s extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "cover", required: !0, selector: _("cover") },
       { name: "position", selector: _("sensor") },
       { name: "illuminance", selector: _("sensor", "illuminance") },
@@ -4467,7 +4692,7 @@ let ht = class extends C {
       { name: "controls", selector: { boolean: {} } },
       {
         name: "big_values",
-        selector: ie([
+        selector: le([
           { value: "illuminance", label: "Освещённость" },
           { value: "battery", label: "Заряд" }
         ])
@@ -4475,36 +4700,39 @@ let ht = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      cover: "Штора",
-      position: "Насколько открыто",
-      illuminance: "Освещённость",
-      battery: "Заряд",
-      controls: "Кнопки управления",
-      big_values: "Крупно справа (не больше трёх)"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        cover: "Штора",
+        position: "Насколько открыто",
+        illuminance: "Освещённость",
+        battery: "Заряд",
+        controls: "Кнопки управления",
+        big_values: "Крупно справа (не больше трёх)"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        cover: "Cover",
+        position: "Position",
+        illuminance: "Illuminance",
+        battery: "Battery",
+        controls: "Controls",
+        big_values: "Large on the right (up to three)"
+      }
+    });
   }
-};
-ht = bi([
-  g("horos-cover-tile-editor")
-], ht);
-const vi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-cover-tile-editor", _s);
+const Bi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosCoverTileEditor() {
-    return ht;
-  }
+  HorosCoverTileEditor: _s
 }, Symbol.toStringTag, { value: "Module" }));
-var wi = Object.getOwnPropertyDescriptor, $i = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? wi(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let mt = class extends C {
+class ys extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       { name: "total", selector: _("sensor", "power") },
       {
         name: "consumers",
@@ -4516,53 +4744,53 @@ let mt = class extends C {
           }
         }
       },
-      { name: "limit", selector: te(1, 12) }
+      { name: "limit", selector: ie(1, 12) }
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      total: "Общая мощность",
-      consumers: "Потребители",
-      limit: "Сколько показывать"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        total: "Общая мощность",
+        consumers: "Потребители",
+        limit: "Сколько показывать"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        total: "Total power",
+        consumers: "Consumers",
+        limit: "How many to show"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      consumers: E(t.consumers)
+      ...e,
+      consumers: x(e.consumers)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      consumers: P(
+      ...e,
+      consumers: S(
         this._config?.consumers,
-        t.consumers ?? []
+        e.consumers ?? []
       )
     };
   }
-};
-mt = $i([
-  g("horos-energy-tile-editor")
-], mt);
-const Pi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-energy-tile-editor", ys);
+const qi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosEnergyTileEditor() {
-    return mt;
-  }
+  HorosEnergyTileEditor: ys
 }, Symbol.toStringTag, { value: "Module" }));
-var Ei = Object.getOwnPropertyDescriptor, Ci = (t, e, s, n) => {
-  for (var r = n > 1 ? void 0 : n ? Ei(e, s) : e, i = t.length - 1, o; i >= 0; i--)
-    (o = t[i]) && (r = o(r) || r);
-  return r;
-};
-let pt = class extends C {
+class bs extends T {
   get schema() {
     return [
-      { name: "name", selector: D },
+      { name: "name", selector: M },
       {
         name: "areas",
         required: !0,
@@ -4580,35 +4808,38 @@ let pt = class extends C {
     ];
   }
   get labels() {
-    return {
-      ...T,
-      name: "Название",
-      areas: "Зоны"
-    };
+    return this.pick({
+      ru: {
+        ...N,
+        name: "Название",
+        areas: "Зоны"
+      },
+      en: {
+        ...R,
+        name: "Name",
+        areas: "Areas"
+      }
+    });
   }
   get formData() {
-    const t = this._config ?? {};
+    const e = this._config ?? {};
     return {
-      ...t,
-      areas: E(t.areas)
+      ...e,
+      areas: x(e.areas)
     };
   }
-  fromForm(t) {
+  fromForm(e) {
     return {
-      ...t,
-      areas: P(
+      ...e,
+      areas: S(
         this._config?.areas,
-        t.areas ?? []
+        e.areas ?? []
       )
     };
   }
-};
-pt = Ci([
-  g("horos-presence-tile-editor")
-], pt);
-const Oi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}
+C("horos-presence-tile-editor", bs);
+const Ki = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  get HorosPresenceTileEditor() {
-    return pt;
-  }
+  HorosPresenceTileEditor: bs
 }, Symbol.toStringTag, { value: "Module" }));

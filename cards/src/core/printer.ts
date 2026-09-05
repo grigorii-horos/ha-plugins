@@ -4,13 +4,7 @@
  */
 
 import { stripDeviceName } from "./labels";
-
-export interface CartridgeConfig {
-  entity: string;
-  name?: string;
-  color?: string;
-  icon?: string;
-}
+import { normalizeItem, type EntityItem } from "./entity-item";
 
 /**
  * Цвет картриджа по имени сущности. У HA нет палитрового «magenta», ближайший
@@ -47,11 +41,9 @@ export function cartridgeCssColor(color: string): string {
 /** Имя картриджа без имени принтера — оно уже сказано заголовком карточки. */
 export const cartridgeLabel = stripDeviceName;
 
-export function normalizeCartridge(
-  cartridge: CartridgeConfig | string
-): CartridgeConfig {
-  return typeof cartridge === "string" ? { entity: cartridge } : cartridge;
-}
+/** Прежние имена: картридж — частный случай элемента списка. */
+export type CartridgeConfig = EntityItem;
+export const normalizeCartridge = normalizeItem;
 
 /**
  * Разбор маркера принтера.

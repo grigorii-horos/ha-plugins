@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import {
   cardName,
@@ -11,6 +11,7 @@ import {
 } from "../core/format";
 import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
 import {
   DEFAULT_DRY_BELOW,
   DEFAULT_WET_ABOVE,
@@ -40,7 +41,6 @@ export interface PlantTileConfig extends TileBaseConfig {
  * Растение. Влажность почвы — крупным значением справа и она же в штатной
  * полосе под строкой. Пороги задают только цвет полосы и иконки.
  */
-@customElement("horos-plant-tile")
 export class HorosPlantTile extends BaseTileCard {
   @state() private _config?: PlantTileConfig;
 
@@ -114,12 +114,11 @@ export class HorosPlantTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-plant-tile", HorosPlantTile, {
   type: "horos-plant-tile",
-  name: "Растение",
+  name: "Plant",
   description:
-    "Влажность почвы шкалой, температура почвы и заряд датчика в одной плитке",
+    "Soil moisture with dryness thresholds, soil temperature and sensor battery",
   preview: true,
 });
 

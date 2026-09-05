@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileColor } from "../core/state-color";
 import {
@@ -11,8 +11,10 @@ import {
 } from "../core/format";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import { stripDeviceName } from "../core/labels";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 /** Порядок ролей во вторичной строке. */
 export const AIR_ROLES = ["pm25", "humidity", "temperature", "power"] as const;
@@ -28,9 +30,9 @@ export interface AirTileConfig extends TileBaseConfig {
   temperature?: string;
   power?: string;
   /** Что ещё сказать: скорость, режим. */
-  sensors?: (CartridgeConfig | string)[];
+  sensors?: (EntityItem | string)[];
   /** Сообщать, только когда сработало: пора менять фильтр. */
-  alerts?: (CartridgeConfig | string)[];
+  alerts?: (EntityItem | string)[];
   /** Что показать крупно справа. По умолчанию PM2.5. */
   big_values?: AirRole[];
 }
@@ -44,7 +46,6 @@ export interface AirTileConfig extends TileBaseConfig {
  * годится и для `fan`, и для `humidifier`, и для розетки, к которой прибор
  * просто подключён.
  */
-@customElement("horos-air-tile")
 export class HorosAirTile extends BaseTileCard {
   @state() private _config?: AirTileConfig;
 
@@ -85,7 +86,7 @@ export class HorosAirTile extends BaseTileCard {
       return { key, role };
     });
     const extras = (config.sensors ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((sensor) => resolveRole(this.hass, sensor.entity));
 
     const warning = this.missingRolesWarning([
@@ -96,7 +97,7 @@ export class HorosAirTile extends BaseTileCard {
     if (warning) return this.renderWarning(warning);
 
     const alerts = (config.alerts ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((alert) => ({ alert, role: resolveRole(this.hass, alert.entity) }))
       .filter(({ role }) => role?.stateObj?.state === "on")
       .map(({ alert, role }) => ({
@@ -118,7 +119,7 @@ export class HorosAirTile extends BaseTileCard {
       primary:
         config.name ??
         appliance?.stateObj?.attributes.friendly_name ??
-        "Воздух",
+        t(this.hass, "air.title"),
       mainEntityId: appliance?.entityId,
       secondary: composeSegments([
         unavailableSegment(this.hass, appliance),
@@ -132,11 +133,10 @@ export class HorosAirTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-air-tile", HorosAirTile, {
   type: "horos-air-tile",
-  name: "Воздух",
-  description: "Очиститель, рекуператор, увлажнитель — прибор и что с воздухом",
+  name: "Air",
+  description: "Purifier, recuperator, humidifier — the appliance and the air",
   preview: true,
 });
 

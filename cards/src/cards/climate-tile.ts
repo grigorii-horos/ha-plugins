@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileColor } from "../core/state-color";
 import {
@@ -12,6 +12,7 @@ import {
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
 
 /** Порядок ролей во вторичной строке зашит и не настраивается. */
 export const CLIMATE_ROLES = [
@@ -37,7 +38,6 @@ export interface ClimateTileConfig extends TileBaseConfig {
  * Климат комнаты. Крупно справа — температура, при желании ещё одно значение
  * через косую черту. Остальное во вторичной строке в порядке CLIMATE_ROLES.
  */
-@customElement("horos-climate-tile")
 export class HorosClimateTile extends BaseTileCard {
   @state() private _config?: ClimateTileConfig;
 
@@ -98,12 +98,11 @@ export class HorosClimateTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-climate-tile", HorosClimateTile, {
   type: "horos-climate-tile",
-  name: "Климат комнаты",
+  name: "Room climate",
   description:
-    "Температура, влажность, освещённость и PM2.5 одной комнаты в одной плитке",
+    "Temperature, humidity, illuminance and PM2.5 of one room in a single tile",
   preview: true,
 });
 

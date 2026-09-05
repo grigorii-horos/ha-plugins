@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import type { HomeAssistant, LovelaceCardEditor } from "../core/types";
 import { ensureFeaturesEditor } from "../core/ha-internals";
+import { languageOf } from "../core/i18n";
 
 export interface SchemaItem {
   name: string;
@@ -54,8 +55,20 @@ export abstract class FormCardEditor
     return data;
   }
 
+  /**
+   * Подписи на языке пользователя. Держим их парой прямо у карточки, а не в
+   * общем словаре: одно и то же поле в разных карточках называется по-разному —
+   * «Заряд», «Заряд датчика», «Заряд основного устройства».
+   */
+  protected pick(dicts: {
+    ru: Record<string, string>;
+    en: Record<string, string>;
+  }): Record<string, string> {
+    return languageOf(this.hass) === "ru" ? dicts.ru : dicts.en;
+  }
+
   private _computeLabel = (item: SchemaItem): string =>
-    this.labels[item.name] ?? COMMON_LABELS[item.name] ?? item.name;
+    this.labels[item.name] ?? item.name;
 
   protected fireConfigChanged(config: Record<string, unknown>): void {
     this.dispatchEvent(
@@ -269,7 +282,7 @@ export const interactionsSection = (
   ],
 });
 
-export const COMMON_LABELS: Record<string, string> = {
+export const COMMON_LABELS_RU: Record<string, string> = {
   appearance: "Внешний вид",
   interactions: "Взаимодействия",
   icon: "Иконка",
@@ -284,6 +297,25 @@ export const COMMON_LABELS: Record<string, string> = {
   icon_hold_action: "Долгое нажатие на иконку",
   icon_double_tap_action: "Двойной тап по иконке",
 };
+
+export const COMMON_LABELS_EN: Record<string, string> = {
+  appearance: "Appearance",
+  interactions: "Interactions",
+  icon: "Icon",
+  color: "Colour",
+  content_layout: "Layout",
+  show_entity_picture: "Entity picture",
+  hide_state: "Hide secondary line",
+  tap_action: "Tap on card",
+  hold_action: "Hold on card",
+  double_tap_action: "Double tap on card",
+  icon_tap_action: "Tap on icon",
+  icon_hold_action: "Hold on icon",
+  icon_double_tap_action: "Double tap on icon",
+};
+
+/** Прежнее имя: подписи по умолчанию для тех, кто ещё не переведён. */
+export const COMMON_LABELS = COMMON_LABELS_RU;
 
 /** Селектор сущности, суженный до домена и класса устройства. */
 export const entitySelector = (

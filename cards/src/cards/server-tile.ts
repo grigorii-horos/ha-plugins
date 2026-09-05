@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileColor } from "../core/state-color";
 import {
@@ -9,8 +9,10 @@ import {
   unavailableSegment,
 } from "../core/format";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 /** Порядок ролей во вторичной строке. */
 export const SERVER_ROLES = ["disk", "download", "upload"] as const;
@@ -25,7 +27,7 @@ export interface ServerTileConfig extends TileBaseConfig {
   download?: string;
   upload?: string;
   /** Что ещё сказать во второй строке: блокировки, торренты, синхронизация. */
-  services?: (CartridgeConfig | string)[];
+  services?: (EntityItem | string)[];
   /** Что показать крупно справа. По умолчанию свободное место. */
   big_values?: ServerRole[];
 }
@@ -34,7 +36,6 @@ export interface ServerTileConfig extends TileBaseConfig {
  * Домашний сервер: место на диске, скорости и состояние сервисов в одной
  * плитке вместо трёх интеграций, разбросанных по дашборду.
  */
-@customElement("horos-server-tile")
 export class HorosServerTile extends BaseTileCard {
   @state() private _config?: ServerTileConfig;
 
@@ -72,7 +73,7 @@ export class HorosServerTile extends BaseTileCard {
     }));
     const status = resolveRole(this.hass, config.status);
     const services = (config.services ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((service) => resolveRole(this.hass, service.entity));
 
     const warning = this.missingRolesWarning([
@@ -87,7 +88,7 @@ export class HorosServerTile extends BaseTileCard {
     return this.renderTile({
       icon: "mdi:server",
       color: status ? tileColor(status.stateObj) : "var(--state-icon-color)",
-      primary: config.name ?? "Домашний сервер",
+      primary: config.name ?? t(this.hass, "server.title"),
       mainEntityId: status?.entityId ?? roles[0].role?.entityId,
       secondary: composeSegments([
         unavailableSegment(this.hass, status),
@@ -107,11 +108,10 @@ export class HorosServerTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-server-tile", HorosServerTile, {
   type: "horos-server-tile",
-  name: "Домашний сервер",
-  description: "Диск, скорости и состояние сервисов в одной плитке",
+  name: "Home server",
+  description: "Disk, speeds and service status in a single tile",
   preview: true,
 });
 

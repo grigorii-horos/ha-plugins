@@ -1,4 +1,3 @@
-import { customElement } from "lit/decorators.js";
 import {
   BaseCardEditor,
   appearanceSection,
@@ -7,8 +6,8 @@ import {
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 
-@customElement("horos-climate-tile-editor")
 export class HorosClimateTileEditor extends BaseCardEditor {
   protected get entityField(): string {
     return "temperature";
@@ -47,16 +46,28 @@ export class HorosClimateTileEditor extends BaseCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      name: "Название",
-      temperature: "Температура",
-      humidity: "Влажность",
-      illuminance: "Освещённость",
-      pm25: "PM2.5",
-      big_values: "Крупно справа (не больше двух)",
-    };
+    return this.pick({
+      ru: {
+        name: "Название",
+        temperature: "Температура",
+        humidity: "Влажность",
+        illuminance: "Освещённость",
+        pm25: "PM2.5",
+        big_values: "Крупно справа (не больше двух)",
+      },
+      en: {
+        name: "Name",
+        temperature: "Temperature",
+        humidity: "Humidity",
+        illuminance: "Illuminance",
+        pm25: "PM2.5",
+        big_values: "Large on the right (up to two)",
+      },
+    });
   }
 }
+
+registerEditor("horos-climate-tile-editor", HorosClimateTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

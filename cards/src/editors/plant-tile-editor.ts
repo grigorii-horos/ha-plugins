@@ -1,4 +1,3 @@
-import { customElement } from "lit/decorators.js";
 import {
   BaseCardEditor,
   appearanceSection,
@@ -8,8 +7,8 @@ import {
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 
-@customElement("horos-plant-tile-editor")
 export class HorosPlantTileEditor extends BaseCardEditor {
   protected get entityField(): string {
     return "moisture";
@@ -48,17 +47,30 @@ export class HorosPlantTileEditor extends BaseCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      name: "Название",
-      moisture: "Влажность почвы",
-      temperature: "Температура почвы",
-      battery: "Заряд датчика",
-      dry_below: "Ниже этого — сухо",
-      wet_above: "Выше этого — залито",
-      big_values: "Крупно справа (не больше двух)",
-    };
+    return this.pick({
+      ru: {
+        name: "Название",
+        moisture: "Влажность почвы",
+        temperature: "Температура почвы",
+        battery: "Заряд датчика",
+        dry_below: "Ниже этого — сухо",
+        wet_above: "Выше этого — залито",
+        big_values: "Крупно справа (не больше двух)",
+      },
+      en: {
+        name: "Name",
+        moisture: "Soil moisture",
+        temperature: "Soil temperature",
+        battery: "Sensor battery",
+        dry_below: "Dry below",
+        wet_above: "Wet above",
+        big_values: "Large on the right (up to two)",
+      },
+    });
   }
 }
+
+registerEditor("horos-plant-tile-editor", HorosPlantTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

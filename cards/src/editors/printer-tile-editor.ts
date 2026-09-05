@@ -1,15 +1,15 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   entitySelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
-import type { CartridgeConfig } from "../core/printer";
+import type { EntityItem } from "../core/entity-item";
 
-@customElement("horos-printer-tile-editor")
 export class HorosPrinterTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -33,14 +33,24 @@ export class HorosPrinterTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Название принтера",
-      status: "Состояние принтера",
-      cartridges: "Картриджи",
-      low_below: "Мало чернил ниже",
-      sensors: "Прочее про принтер",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Название принтера",
+        status: "Состояние принтера",
+        cartridges: "Картриджи",
+        low_below: "Мало чернил ниже",
+        sensors: "Прочее про принтер",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Printer name",
+        status: "Printer status",
+        cartridges: "Cartridges",
+        low_below: "Low ink below",
+        sensors: "Other printer sensors",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
@@ -48,9 +58,9 @@ export class HorosPrinterTileEditor extends FormCardEditor {
     return {
       ...config,
       cartridges: entityIdsOf(
-        config.cartridges as (CartridgeConfig | string)[]
+        config.cartridges as (EntityItem | string)[]
       ),
-      sensors: entityIdsOf(config.sensors as (CartridgeConfig | string)[]),
+      sensors: entityIdsOf(config.sensors as (EntityItem | string)[]),
     };
   }
 
@@ -59,17 +69,19 @@ export class HorosPrinterTileEditor extends FormCardEditor {
   ): Record<string, unknown> {
     return {
       ...data,
-      cartridges: mergeEntityList<CartridgeConfig>(
-        this._config?.cartridges as (CartridgeConfig | string)[] | undefined,
+      cartridges: mergeEntityList<EntityItem>(
+        this._config?.cartridges as (EntityItem | string)[] | undefined,
         (data.cartridges as string[]) ?? []
       ),
-      sensors: mergeEntityList<CartridgeConfig>(
-        this._config?.sensors as (CartridgeConfig | string)[] | undefined,
+      sensors: mergeEntityList<EntityItem>(
+        this._config?.sensors as (EntityItem | string)[] | undefined,
         (data.sensors as string[]) ?? []
       ),
     };
   }
 }
+
+registerEditor("horos-printer-tile-editor", HorosPrinterTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

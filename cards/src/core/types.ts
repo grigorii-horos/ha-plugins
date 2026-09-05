@@ -22,6 +22,9 @@ export interface HomeAssistant {
   formatEntityState: (stateObj: HassEntity, state?: string) => string;
   /** Абсолютный адрес по относительному пути HA — нужен для картинок сущностей. */
   hassUrl: (path?: string) => string;
+  /** Язык интерфейса пользователя. */
+  language?: string;
+  locale?: { language?: string };
   callService: (
     domain: string,
     service: string,
@@ -59,4 +62,14 @@ declare global {
     "hass-more-info": { entityId: string };
     "config-changed": { config: Record<string, unknown> };
   }
+}
+
+/** То, чем HA размечает карточку в сеточном дашборде. */
+export interface LovelaceGridOptions {
+  columns?: number | "full";
+  rows?: number | "auto";
+  min_columns?: number;
+  min_rows?: number;
+  max_columns?: number;
+  max_rows?: number;
 }

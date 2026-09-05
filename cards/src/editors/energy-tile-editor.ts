@@ -1,16 +1,16 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   entitySelector,
   numberSelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
-import type { CartridgeConfig } from "../core/printer";
+import type { EntityItem } from "../core/entity-item";
 
-@customElement("horos-energy-tile-editor")
 export class HorosEnergyTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -31,20 +31,29 @@ export class HorosEnergyTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Название",
-      total: "Общая мощность",
-      consumers: "Потребители",
-      limit: "Сколько показывать",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Название",
+        total: "Общая мощность",
+        consumers: "Потребители",
+        limit: "Сколько показывать",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Name",
+        total: "Total power",
+        consumers: "Consumers",
+        limit: "How many to show",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
     const config = this._config ?? {};
     return {
       ...config,
-      consumers: entityIdsOf(config.consumers as (CartridgeConfig | string)[]),
+      consumers: entityIdsOf(config.consumers as (EntityItem | string)[]),
     };
   }
 
@@ -53,13 +62,15 @@ export class HorosEnergyTileEditor extends FormCardEditor {
   ): Record<string, unknown> {
     return {
       ...data,
-      consumers: mergeEntityList<CartridgeConfig>(
-        this._config?.consumers as (CartridgeConfig | string)[] | undefined,
+      consumers: mergeEntityList<EntityItem>(
+        this._config?.consumers as (EntityItem | string)[] | undefined,
         (data.consumers as string[]) ?? []
       ),
     };
   }
 }
+
+registerEditor("horos-energy-tile-editor", HorosEnergyTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

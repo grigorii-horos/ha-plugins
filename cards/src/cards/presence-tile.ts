@@ -1,14 +1,16 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { composeSegments, resolveRole, type Segment } from "../core/format";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 export interface PresenceTileConfig extends TileBaseConfig {
   type: string;
   /** Датчики присутствия по зонам. */
-  areas: (CartridgeConfig | string)[];
+  areas: (EntityItem | string)[];
 }
 
 /**
@@ -18,7 +20,6 @@ export interface PresenceTileConfig extends TileBaseConfig {
  * восьми читать незачем. Потерявшие связь считаются отдельно: зона, о которой
  * нечего сказать, и пустая зона — разные вещи.
  */
-@customElement("horos-presence-tile")
 export class HorosPresenceTile extends BaseTileCard {
   @state() private _config?: PresenceTileConfig;
 
@@ -51,7 +52,7 @@ export class HorosPresenceTile extends BaseTileCard {
     let total = 0;
 
     for (const raw of config.areas) {
-      const area = normalizeCartridge(raw);
+      const area = normalizeItem(raw);
       const role = resolveRole(this.hass, area.entity);
       if (role?.missing) {
         missing.push(area.entity);
@@ -73,20 +74,21 @@ export class HorosPresenceTile extends BaseTileCard {
       }
     }
 
-    if (missing.length) {
-      return this.renderWarning(`Сущности не найдены: ${missing.join(", ")}`);
-    }
-
     return this.renderTile({
       icon: occupied.length ? "mdi:home-account" : "mdi:home-outline",
       color: occupied.length
         ? "var(--state-icon-color)"
         : "var(--state-inactive-color)",
-      primary: config.name ?? "Присутствие",
+      primary: config.name ?? t(this.hass, "presence.title"),
       mainEntityId: occupied[0]?.entityId,
       secondary: composeSegments([
-        ...(occupied.length ? occupied : [{ text: `Пусто, ${total} зон` }]),
-        offline ? { text: `${offline} без связи` } : undefined,
+        ...(occupied.length ? occupied : [{ text: t(this.hass, "presence.empty", { count: total }) }]),
+        offline
+          ? { text: t(this.hass, "offline.count", { count: offline }) }
+          : undefined,
+        missing.length
+          ? { text: t(this.hass, "list.missing", { count: missing.length }) }
+          : undefined,
       ]),
       values: [
         {
@@ -99,11 +101,10 @@ export class HorosPresenceTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-presence-tile", HorosPresenceTile, {
   type: "horos-presence-tile",
-  name: "Присутствие",
-  description: "В каких зонах сейчас есть кто-то",
+  name: "Presence",
+  description: "Which areas have someone in them right now",
   preview: true,
 });
 

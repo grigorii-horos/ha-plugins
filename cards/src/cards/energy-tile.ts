@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
 import { renderLevels, levelStyles, type LevelRow } from "../core/levels";
@@ -12,15 +12,17 @@ import {
   type Segment,
 } from "../core/format";
 import { stripDeviceName } from "../core/labels";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 export interface EnergyTileConfig extends TileBaseConfig {
   type: string;
   /** Общая мощность дома, идёт крупно. */
   total?: string;
   /** Сенсоры мощности отдельных потребителей. */
-  consumers: (CartridgeConfig | string)[];
+  consumers: (EntityItem | string)[];
   /** Сколько потребителей показывать. */
   limit?: number;
 }
@@ -38,11 +40,15 @@ export const DEFAULT_CONSUMER_LIMIT = 5;
  * говорит, а место занимает. Потерявшие связь наоборот пересчитываются вслух —
  * молчащий ваттметр легко принять за выключенный прибор.
  */
-@customElement("horos-energy-tile")
 export class HorosEnergyTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: EnergyTileConfig;
+
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  protected override contentRows(): number {
+    return Math.ceil((Math.min(this._config?.consumers.length ?? 0, this._config?.limit ?? 5)) / 2);
+  }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editors/energy-tile-editor");
@@ -73,7 +79,7 @@ export class HorosEnergyTile extends BaseTileCard {
     const active: { row: Omit<LevelRow, "level">; watts: number }[] = [];
 
     for (const raw of config.consumers) {
-      const consumer = normalizeCartridge(raw);
+      const consumer = normalizeItem(raw);
       const role = resolveRole(this.hass, consumer.entity);
       if (role?.missing) {
         missing.push(consumer.entity);
@@ -101,10 +107,6 @@ export class HorosEnergyTile extends BaseTileCard {
       });
     }
 
-    if (missing.length) {
-      return this.renderWarning(`Сущности не найдены: ${missing.join(", ")}`);
-    }
-
     active.sort((a, b) => b.watts - a.watts);
     const shown = active.slice(0, config.limit ?? DEFAULT_CONSUMER_LIMIT);
     const peak = shown[0]?.watts ?? 0;
@@ -118,15 +120,20 @@ export class HorosEnergyTile extends BaseTileCard {
     const notes: (Segment | undefined)[] = [
       unavailableSegment(this.hass, total),
       active.length
-        ? { text: `${active.length} потребляют` }
-        : { text: "Никто не потребляет" },
-      offline.length ? { text: `${offline.length} без связи` } : undefined,
+        ? { text: t(this.hass, "energy.consuming", { count: active.length }) }
+        : { text: t(this.hass, "energy.idle") },
+      offline.length
+        ? { text: t(this.hass, "offline.count", { count: offline.length }) }
+        : undefined,
+      missing.length
+        ? { text: t(this.hass, "list.missing", { count: missing.length }) }
+        : undefined,
     ];
 
     return this.renderTile({
       icon: "mdi:flash",
       color: "var(--amber-color, #ffc107)",
-      primary: config.name ?? "Энергия",
+      primary: config.name ?? t(this.hass, "energy.title"),
       mainEntityId: total?.entityId ?? shown[0]?.row.entityId,
       secondary: composeSegments([roleSegment(this.hass, total), ...notes]),
       values: total ? this.bigValues([{ key: "total", role: total }]) : [],
@@ -137,11 +144,10 @@ export class HorosEnergyTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-energy-tile", HorosEnergyTile, {
   type: "horos-energy-tile",
-  name: "Энергия",
-  description: "Кто в доме ест электричество, от самого прожорливого",
+  name: "Energy",
+  description: "Who in the house draws power, hungriest first",
   preview: true,
 });
 

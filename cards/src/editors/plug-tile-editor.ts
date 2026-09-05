@@ -1,4 +1,3 @@
-import { customElement } from "lit/decorators.js";
 import {
   BaseCardEditor,
   appearanceSection,
@@ -8,8 +7,8 @@ import {
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 
-@customElement("horos-plug-tile-editor")
 export class HorosPlugTileEditor extends BaseCardEditor {
   protected get entityField(): string {
     return "switch";
@@ -40,16 +39,28 @@ export class HorosPlugTileEditor extends BaseCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      name: "Название",
-      switch: "Выключатель",
-      power: "Мощность",
-      energy: "Энергия",
-      big_values: "Крупно справа (не больше двух)",
-      toggle_button: "Кнопка переключения под строкой",
-    };
+    return this.pick({
+      ru: {
+        name: "Название",
+        switch: "Выключатель",
+        power: "Мощность",
+        energy: "Энергия",
+        big_values: "Крупно справа (не больше двух)",
+        toggle_button: "Кнопка переключения под строкой",
+      },
+      en: {
+        name: "Name",
+        switch: "Switch",
+        power: "Power",
+        energy: "Energy",
+        big_values: "Large on the right (up to two)",
+        toggle_button: "Toggle button below the row",
+      },
+    });
   }
 }
+
+registerEditor("horos-plug-tile-editor", HorosPlugTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

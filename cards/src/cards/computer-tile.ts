@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
 import { renderLevels, levelStyles, type LevelRow } from "../core/levels";
@@ -15,8 +15,10 @@ import {
 import { levelColor, loadColor, stripDeviceName } from "../core/labels";
 import { pickExtreme } from "../core/reduce";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 /** Порядок ролей во вторичной строке. */
 export const COMPUTER_ROLES = [
@@ -48,9 +50,9 @@ export interface ComputerTileConfig extends TileBaseConfig {
    */
   disks_free?: string[];
   /** Что ещё сказать во второй строке: кто за компом, что играет. */
-  sensors?: (CartridgeConfig | string)[];
+  sensors?: (EntityItem | string)[];
   /** Бинарные сенсоры, о которых стоит сказать, только когда они сработали. */
-  alerts?: (CartridgeConfig | string)[];
+  alerts?: (EntityItem | string)[];
   /** Что показать крупно справа. По умолчанию температура. */
   big_values?: ComputerRole[];
 }
@@ -66,11 +68,15 @@ export interface ComputerTileConfig extends TileBaseConfig {
  * Загрузка показана колбами — тем же приёмом, что чернила и расходники, но
  * цвет обратный: у нагрузки высокий уровень это плохо.
  */
-@customElement("horos-computer-tile")
 export class HorosComputerTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: ComputerTileConfig;
+
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  protected override contentRows(): number {
+    return Math.ceil((4) / 2);
+  }
 
   private _bigKeys: string[] = ["temperature"];
 
@@ -135,7 +141,10 @@ export class HorosComputerTile extends BaseTileCard {
     return {
       entityId: role.entityId,
       name,
-      text: level === undefined ? "нет данных" : `${Math.round(level)}%`,
+      text:
+        level === undefined
+          ? t(this.hass, "value.unknown")
+          : `${Math.round(level)}%`,
       ink: loadColor(level),
       level: level ?? 0,
       alarm: level !== undefined && level >= 90,
@@ -150,7 +159,7 @@ export class HorosComputerTile extends BaseTileCard {
     const roles = this._roles();
     const status = resolveRole(this.hass, config.status);
     const extras = (config.sensors ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((sensor) => resolveRole(this.hass, sensor.entity));
 
     const warning = this.missingRolesWarning([
@@ -162,7 +171,7 @@ export class HorosComputerTile extends BaseTileCard {
 
     // О перезагрузке и обновлениях говорим, только когда они действительно нужны.
     const alerts = (config.alerts ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((alert) => ({ alert, role: resolveRole(this.hass, alert.entity) }))
       .filter(({ role }) => role?.stateObj?.state === "on")
       .map(({ alert, role }) => ({
@@ -182,17 +191,20 @@ export class HorosComputerTile extends BaseTileCard {
     const freeLevel = numericState(freeDisk);
 
     const levels = [
-      this._levelRow("CPU", roles[1].role),
-      this._levelRow("Память", roles[2].role),
-      this._levelRow("GPU", roles[3].role),
-      this._levelRow("Диск", roles[4].role),
+      this._levelRow(t(this.hass, "level.cpu"), roles[1].role),
+      this._levelRow(t(this.hass, "level.memory"), roles[2].role),
+      this._levelRow(t(this.hass, "level.gpu"), roles[3].role),
+      this._levelRow(t(this.hass, "level.disk"), roles[4].role),
       // Свободное место — ресурс, который кончается, поэтому и цвет, и тревога
       // здесь как у батарейки, а не как у загрузки.
       freeDisk
         ? {
             entityId: freeDisk.entityId,
-            name: "Свободно",
-            text: freeLevel === undefined ? "нет данных" : `${Math.round(freeLevel)}%`,
+            name: t(this.hass, "level.diskFree"),
+            text:
+              freeLevel === undefined
+                ? t(this.hass, "value.unknown")
+                : `${Math.round(freeLevel)}%`,
             ink: levelColor(freeLevel),
             level: freeLevel ?? 0,
             alarm: freeLevel !== undefined && freeLevel < 10,
@@ -204,7 +216,7 @@ export class HorosComputerTile extends BaseTileCard {
     return this.renderTile({
       icon: "mdi:desktop-tower-monitor",
       color: status ? tileColor(status.stateObj) : "var(--state-icon-color)",
-      primary: config.name ?? "Компьютер",
+      primary: config.name ?? t(this.hass, "computer.title"),
       mainEntityId:
         status?.entityId ?? roles[0].role?.entityId ?? freeDisk?.entityId,
       secondary: composeSegments([
@@ -224,11 +236,10 @@ export class HorosComputerTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-computer-tile", HorosComputerTile, {
   type: "horos-computer-tile",
-  name: "Компьютер",
-  description: "Самая горячая точка, загрузка и диски одной плиткой",
+  name: "Computer",
+  description: "Hottest spot, load and disks in a single tile",
   preview: true,
 });
 

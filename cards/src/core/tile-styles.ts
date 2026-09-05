@@ -85,7 +85,8 @@ export const tileStyles = css`
 
   /* Иконка называет величину; число остаётся главным, иконка приглушена. */
   .values .clickable,
-  .values > span {
+  .values > span,
+  .values > button {
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -120,11 +121,22 @@ export const tileStyles = css`
    * поэтому цели тапа включают их обратно.
    */
   .clickable {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
     cursor: pointer;
     pointer-events: auto;
   }
   .clickable:hover {
     opacity: 0.7;
+  }
+  .clickable:focus-visible {
+    outline: 2px solid var(--tile-color);
+    outline-offset: 2px;
+    border-radius: var(--ha-border-radius-sm, 6px);
   }
 
   /* Своя линия features: те же отступы, что у штатного ряда. */

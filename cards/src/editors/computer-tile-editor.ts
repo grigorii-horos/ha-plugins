@@ -1,16 +1,16 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   bigValuesSelector,
   entitySelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
-import type { CartridgeConfig } from "../core/printer";
+import type { EntityItem } from "../core/entity-item";
 
-@customElement("horos-computer-tile-editor")
 export class HorosComputerTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -49,28 +49,44 @@ export class HorosComputerTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Название",
-      status: "Состояние",
-      cpu: "Процессор",
-      memory: "Память",
-      gpu: "Видеокарта",
-      temperatures: "Датчики температуры",
-      disks: "Разделы диска (занято)",
-      disks_free: "Разделы диска (свободно)",
-      sensors: "Что ещё сказать",
-      alerts: "Сообщать, когда сработало",
-      big_values: "Крупно справа (не больше трёх)",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Название",
+        status: "Состояние",
+        cpu: "Процессор",
+        memory: "Память",
+        gpu: "Видеокарта",
+        temperatures: "Датчики температуры",
+        disks: "Разделы диска (занято)",
+        disks_free: "Разделы диска (свободно)",
+        sensors: "Что ещё сказать",
+        alerts: "Сообщать, когда сработало",
+        big_values: "Крупно справа (не больше трёх)",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Name",
+        status: "Status",
+        cpu: "CPU",
+        memory: "Memory",
+        gpu: "GPU",
+        temperatures: "Temperature sensors",
+        disks: "Disks (used)",
+        disks_free: "Disks (free)",
+        sensors: "What else to show",
+        alerts: "Report only when triggered",
+        big_values: "Large on the right (up to three)",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
     const config = this._config ?? {};
     return {
       ...config,
-      sensors: entityIdsOf(config.sensors as (CartridgeConfig | string)[]),
-      alerts: entityIdsOf(config.alerts as (CartridgeConfig | string)[]),
+      sensors: entityIdsOf(config.sensors as (EntityItem | string)[]),
+      alerts: entityIdsOf(config.alerts as (EntityItem | string)[]),
     };
   }
 
@@ -79,17 +95,19 @@ export class HorosComputerTileEditor extends FormCardEditor {
   ): Record<string, unknown> {
     return {
       ...data,
-      sensors: mergeEntityList<CartridgeConfig>(
-        this._config?.sensors as (CartridgeConfig | string)[] | undefined,
+      sensors: mergeEntityList<EntityItem>(
+        this._config?.sensors as (EntityItem | string)[] | undefined,
         (data.sensors as string[]) ?? []
       ),
-      alerts: mergeEntityList<CartridgeConfig>(
-        this._config?.alerts as (CartridgeConfig | string)[] | undefined,
+      alerts: mergeEntityList<EntityItem>(
+        this._config?.alerts as (EntityItem | string)[] | undefined,
         (data.alerts as string[]) ?? []
       ),
     };
   }
 }
+
+registerEditor("horos-computer-tile-editor", HorosComputerTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

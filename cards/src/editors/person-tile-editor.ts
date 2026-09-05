@@ -1,15 +1,15 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   entitySelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
-import type { CartridgeConfig } from "../core/printer";
+import type { EntityItem } from "../core/entity-item";
 
-@customElement("horos-person-tile-editor")
 export class HorosPersonTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -38,21 +38,31 @@ export class HorosPersonTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Имя",
-      person: "Человек",
-      battery: "Заряд основного устройства",
-      location: "Где именно",
-      devices: "Остальные устройства",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Имя",
+        person: "Человек",
+        battery: "Заряд основного устройства",
+        location: "Где именно",
+        devices: "Остальные устройства",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Name",
+        person: "Person",
+        battery: "Main device battery",
+        location: "Location",
+        devices: "Other devices",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
     const config = this._config ?? {};
     return {
       ...config,
-      devices: entityIdsOf(config.devices as (CartridgeConfig | string)[]),
+      devices: entityIdsOf(config.devices as (EntityItem | string)[]),
     };
   }
 
@@ -61,13 +71,15 @@ export class HorosPersonTileEditor extends FormCardEditor {
   ): Record<string, unknown> {
     return {
       ...data,
-      devices: mergeEntityList<CartridgeConfig>(
-        this._config?.devices as (CartridgeConfig | string)[] | undefined,
+      devices: mergeEntityList<EntityItem>(
+        this._config?.devices as (EntityItem | string)[] | undefined,
         (data.devices as string[]) ?? []
       ),
     };
   }
 }
+
+registerEditor("horos-person-tile-editor", HorosPersonTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

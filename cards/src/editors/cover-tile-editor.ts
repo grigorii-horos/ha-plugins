@@ -1,14 +1,14 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   bigValuesSelector,
   entitySelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 
-@customElement("horos-cover-tile-editor")
 export class HorosCoverTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -29,18 +29,32 @@ export class HorosCoverTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Название",
-      cover: "Штора",
-      position: "Насколько открыто",
-      illuminance: "Освещённость",
-      battery: "Заряд",
-      controls: "Кнопки управления",
-      big_values: "Крупно справа (не больше трёх)",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Название",
+        cover: "Штора",
+        position: "Насколько открыто",
+        illuminance: "Освещённость",
+        battery: "Заряд",
+        controls: "Кнопки управления",
+        big_values: "Крупно справа (не больше трёх)",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Name",
+        cover: "Cover",
+        position: "Position",
+        illuminance: "Illuminance",
+        battery: "Battery",
+        controls: "Controls",
+        big_values: "Large on the right (up to three)",
+      },
+    });
   }
 }
+
+registerEditor("horos-cover-tile-editor", HorosCoverTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,14 +1,16 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { composeSegments, numericState, resolveRole } from "../core/format";
 import { batteryColor, stripBatterySuffix } from "../core/labels";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 export interface BatteriesTileConfig extends TileBaseConfig {
   type: string;
-  batteries: (CartridgeConfig | string)[];
+  batteries: (EntityItem | string)[];
   /** Ниже этого заряда батарейка попадает в список. */
   low_below?: number;
 }
@@ -28,7 +30,6 @@ interface BatteryEntry {
  * список из сорока строк никто не читает, а вопрос у неё ровно один — что
  * пора менять. Когда менять нечего, она так и говорит.
  */
-@customElement("horos-batteries-tile")
 export class HorosBatteriesTile extends BaseTileCard {
   @state() private _config?: BatteriesTileConfig;
 
@@ -60,7 +61,7 @@ export class HorosBatteriesTile extends BaseTileCard {
     const missing: string[] = [];
 
     for (const raw of config.batteries) {
-      const battery = normalizeCartridge(raw);
+      const battery = normalizeItem(raw);
       const role = resolveRole(this.hass, battery.entity);
       if (role?.missing) {
         missing.push(battery.entity);
@@ -78,10 +79,6 @@ export class HorosBatteriesTile extends BaseTileCard {
       });
     }
 
-    if (missing.length) {
-      return this.renderWarning(`Сущности не найдены: ${missing.join(", ")}`);
-    }
-
     const draining = entries
       .filter((entry) => entry.level < low)
       .sort((a, b) => a.level - b.level);
@@ -90,16 +87,28 @@ export class HorosBatteriesTile extends BaseTileCard {
     return this.renderTile({
       icon: worst ? "mdi:battery-alert-variant-outline" : "mdi:battery",
       color: batteryColor(worst?.level),
-      primary: config.name ?? "Батарейки",
+      primary: config.name ?? t(this.hass, "batteries.title"),
       mainEntityId: worst?.entityId,
-      secondary: composeSegments(
-        draining.length
+      secondary: composeSegments([
+        ...(draining.length
           ? draining.map((entry) => ({
               text: `${entry.name} ${entry.level}%`,
               entityId: entry.entityId,
             }))
-          : [{ text: `Все заряжены, ${entries.length} шт.` }]
-      ),
+          : [
+              {
+                text: t(this.hass, "batteries.allFull", {
+                  count: entries.length,
+                }),
+              },
+            ]),
+        // Пропавшую строку выбрасываем, но молчать о ней нельзя: карточка со
+        // списком не должна гаснуть целиком из-за одной переименованной
+        // сущности, и не должна делать вид, что её там и не было.
+        ...(missing.length
+          ? [{ text: t(this.hass, "list.missing", { count: missing.length }) }]
+          : []),
+      ]),
       values: worst
         ? [
             {
@@ -114,11 +123,10 @@ export class HorosBatteriesTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-batteries-tile", HorosBatteriesTile, {
   type: "horos-batteries-tile",
-  name: "Батарейки",
-  description: "Только садящиеся батарейки, от самой пустой",
+  name: "Batteries",
+  description: "Only the batteries that are running down, emptiest first",
   preview: true,
 });
 

@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileColor } from "../core/state-color";
 import {
@@ -12,6 +12,7 @@ import {
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
 
 /** Порядок ролей во вторичной строке. Выключатель идёт первым. */
 export const PLUG_ROLES = ["switch", "power", "energy"] as const;
@@ -32,7 +33,6 @@ export interface PlugTileConfig extends TileBaseConfig {
  * Умная розетка. Мощность — крупным значением справа, во вторичной строке
  * состояние выключателя и накопленная энергия. Тап по иконке переключает.
  */
-@customElement("horos-plug-tile")
 export class HorosPlugTile extends BaseTileCard {
   @state() private _config?: PlugTileConfig;
 
@@ -92,11 +92,10 @@ export class HorosPlugTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-plug-tile", HorosPlugTile, {
   type: "horos-plug-tile",
-  name: "Розетка с потреблением",
-  description: "Выключатель, текущая мощность и накопленная энергия в одной плитке",
+  name: "Smart plug",
+  description: "Switch, current power draw and accumulated energy in a single tile",
   preview: true,
 });
 

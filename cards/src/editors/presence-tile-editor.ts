@@ -1,14 +1,14 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
-import type { CartridgeConfig } from "../core/printer";
+import type { EntityItem } from "../core/entity-item";
 
-@customElement("horos-presence-tile-editor")
 export class HorosPresenceTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -31,18 +31,25 @@ export class HorosPresenceTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Название",
-      areas: "Зоны",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Название",
+        areas: "Зоны",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Name",
+        areas: "Areas",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
     const config = this._config ?? {};
     return {
       ...config,
-      areas: entityIdsOf(config.areas as (CartridgeConfig | string)[]),
+      areas: entityIdsOf(config.areas as (EntityItem | string)[]),
     };
   }
 
@@ -51,13 +58,15 @@ export class HorosPresenceTileEditor extends FormCardEditor {
   ): Record<string, unknown> {
     return {
       ...data,
-      areas: mergeEntityList<CartridgeConfig>(
-        this._config?.areas as (CartridgeConfig | string)[] | undefined,
+      areas: mergeEntityList<EntityItem>(
+        this._config?.areas as (EntityItem | string)[] | undefined,
         (data.areas as string[]) ?? []
       ),
     };
   }
 }
+
+registerEditor("horos-presence-tile-editor", HorosPresenceTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

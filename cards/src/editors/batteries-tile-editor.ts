@@ -1,15 +1,15 @@
-import { customElement } from "lit/decorators.js";
 import {
-  COMMON_LABELS,
+  COMMON_LABELS_EN,
+  COMMON_LABELS_RU,
   FormCardEditor,
   numberSelector,
   textSelector,
   type SchemaItem,
 } from "./base-editor";
+import { registerEditor } from "../core/register";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
-import type { CartridgeConfig } from "../core/printer";
+import type { EntityItem } from "../core/entity-item";
 
-@customElement("horos-batteries-tile-editor")
 export class HorosBatteriesTileEditor extends FormCardEditor {
   protected get schema(): SchemaItem[] {
     return [
@@ -29,19 +29,27 @@ export class HorosBatteriesTileEditor extends FormCardEditor {
   }
 
   protected get labels(): Record<string, string> {
-    return {
-      ...COMMON_LABELS,
-      name: "Название",
-      batteries: "Батарейки",
-      low_below: "Показывать ниже",
-    };
+    return this.pick({
+      ru: {
+        ...COMMON_LABELS_RU,
+        name: "Название",
+        batteries: "Батарейки",
+        low_below: "Показывать ниже",
+      },
+      en: {
+        ...COMMON_LABELS_EN,
+        name: "Name",
+        batteries: "Batteries",
+        low_below: "Show below",
+      },
+    });
   }
 
   protected override get formData(): Record<string, unknown> {
     const config = this._config ?? {};
     return {
       ...config,
-      batteries: entityIdsOf(config.batteries as (CartridgeConfig | string)[]),
+      batteries: entityIdsOf(config.batteries as (EntityItem | string)[]),
     };
   }
 
@@ -50,13 +58,15 @@ export class HorosBatteriesTileEditor extends FormCardEditor {
   ): Record<string, unknown> {
     return {
       ...data,
-      batteries: mergeEntityList<CartridgeConfig>(
-        this._config?.batteries as (CartridgeConfig | string)[] | undefined,
+      batteries: mergeEntityList<EntityItem>(
+        this._config?.batteries as (EntityItem | string)[] | undefined,
         (data.batteries as string[]) ?? []
       ),
     };
   }
 }
+
+registerEditor("horos-batteries-tile-editor", HorosBatteriesTileEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

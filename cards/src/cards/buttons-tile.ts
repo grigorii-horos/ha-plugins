@@ -1,6 +1,7 @@
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseGridCard } from "../core/base-grid-card";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
 import {
   buttonLabel,
   normalizeButton,
@@ -24,7 +25,6 @@ export interface ButtonsTileConfig {
  * Своей вёрстки нет: карточка нужна затем, чтобы вместо десятка блоков в
  * конфиге был один список.
  */
-@customElement("horos-buttons-tile")
 export class HorosButtonsTile extends BaseGridCard {
   @state() private _config?: ButtonsTileConfig;
 
@@ -79,11 +79,10 @@ export class HorosButtonsTile extends BaseGridCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-buttons-tile", HorosButtonsTile, {
   type: "horos-buttons-tile",
-  name: "Кнопки скриптов",
-  description: "Сетка кнопок, вызывающих скрипты, с общим заголовком",
+  name: "Script buttons",
+  description: "A grid of buttons running scripts, under one heading",
   preview: true,
 });
 

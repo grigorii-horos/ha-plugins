@@ -19,6 +19,7 @@ import {
 } from "../src/core/printer";
 import { buttonLabel } from "../src/core/buttons";
 import { mergeEntityList } from "../src/core/entity-lists";
+import { languageOf, t } from "../src/core/i18n";
 import {
   levelColor,
   loadColor,
@@ -54,6 +55,7 @@ const fakeHass = (entities: HassEntity[]): HomeAssistant => ({
       ? `${stateObj.state} ${stateObj.attributes.unit_of_measurement}`
       : stateObj.state,
   hassUrl: (path) => `http://ha.local${path ?? ""}`,
+  language: "ru",
   callService: async () => undefined,
 });
 
@@ -645,5 +647,46 @@ describe("хвост «Battery level» в имени", () => {
   it("посторонние имена не трогает", () => {
     expect(stripBatterySuffix("Часы")).toBe("Часы");
     expect(stripBatterySuffix(undefined)).toBeUndefined();
+  });
+});
+
+describe("язык карточек", () => {
+  const ru = fakeHass([]);
+  const en = { ...fakeHass([]), language: "en" };
+
+  it("берётся из hass", () => {
+    expect(languageOf(ru)).toBe("ru");
+    expect(languageOf(en)).toBe("en");
+  });
+
+  it("región отбрасывается: en-GB это en", () => {
+    expect(languageOf({ ...ru, language: "en-GB" })).toBe("en");
+  });
+
+  it("незнакомый язык — английский, а не пустая строка", () => {
+    expect(languageOf({ ...ru, language: "uk" })).toBe("en");
+    expect(languageOf(undefined)).toBe("en");
+  });
+
+  it("подставляет числа в строку", () => {
+    expect(t(ru, "batteries.allFull", { count: 43 })).toBe("Все заряжены, 43 шт.");
+    expect(t(en, "batteries.allFull", { count: 43 })).toBe("All charged, 43 total");
+  });
+
+  it("русские формы множественного числа", () => {
+    expect(t(ru, "presence.empty", { count: 1 })).toBe("Пусто, 1 зона");
+    expect(t(ru, "presence.empty", { count: 3 })).toBe("Пусто, 3 зоны");
+    expect(t(ru, "presence.empty", { count: 8 })).toBe("Пусто, 8 зон");
+    expect(t(ru, "presence.empty", { count: 11 })).toBe("Пусто, 11 зон");
+    expect(t(ru, "presence.empty", { count: 22 })).toBe("Пусто, 22 зоны");
+  });
+
+  it("английские формы", () => {
+    expect(t(en, "safety.calm", { count: 1 })).toBe("All clear, 1 sensor");
+    expect(t(en, "safety.calm", { count: 4 })).toBe("All clear, 4 sensors");
+  });
+
+  it("неизвестный ключ не роняет карточку", () => {
+    expect(t(ru, "нет.такого")).toBe("нет.такого");
   });
 });

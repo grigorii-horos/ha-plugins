@@ -1,6 +1,6 @@
 import { LitElement, html, nothing, css, type TemplateResult } from "lit";
 import { property, state } from "lit/decorators.js";
-import type { HomeAssistant } from "./types";
+import type { HomeAssistant, LovelaceGridOptions } from "./types";
 
 interface CardHelpers {
   createCardElement: (config: Record<string, unknown>) => HTMLElement;
@@ -62,6 +62,11 @@ export abstract class BaseGridCard extends LitElement {
   public getCardSize(): number {
     const rows = Math.ceil(this._children.length / Math.max(1, this.columns()));
     return 1 + rows;
+  }
+
+  /** Высота зависит от числа ячеек, поэтому её считает сама HA. */
+  public getGridOptions(): LovelaceGridOptions {
+    return { columns: 12, rows: "auto", min_columns: 6, min_rows: 2 };
   }
 
   /** Наследник обязан позвать это в конце setConfig. */

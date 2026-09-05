@@ -1,14 +1,16 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { composeSegments, resolveRole, type Segment } from "../core/format";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 export interface SafetyTileConfig extends TileBaseConfig {
   type: string;
   /** Датчики протечки, дыма, газа — всё, что должно молчать. */
-  sensors: (CartridgeConfig | string)[];
+  sensors: (EntityItem | string)[];
 }
 
 /**
@@ -19,7 +21,6 @@ export interface SafetyTileConfig extends TileBaseConfig {
  * охраняет. Молчание сломанного датчика неотличимо от молчания исправного,
  * если об этом не сказать.
  */
-@customElement("horos-safety-tile")
 export class HorosSafetyTile extends BaseTileCard {
   @state() private _config?: SafetyTileConfig;
 
@@ -52,7 +53,7 @@ export class HorosSafetyTile extends BaseTileCard {
     let total = 0;
 
     for (const raw of config.sensors) {
-      const sensor = normalizeCartridge(raw);
+      const sensor = normalizeItem(raw);
       const role = resolveRole(this.hass, sensor.entity);
       if (role?.missing) {
         missing.push(sensor.entity);
@@ -65,14 +66,10 @@ export class HorosSafetyTile extends BaseTileCard {
         sensor.entity;
 
       if (role?.unavailable) {
-        silent.push({ text: `${name}: нет связи`, entityId: sensor.entity });
+        silent.push({ text: t(this.hass, "safety.offline", { name }), entityId: sensor.entity });
       } else if (role?.stateObj?.state === "on") {
         triggered.push({ text: name, entityId: sensor.entity });
       }
-    }
-
-    if (missing.length) {
-      return this.renderWarning(`Сущности не найдены: ${missing.join(", ")}`);
     }
 
     const alarm = triggered.length > 0;
@@ -89,22 +86,24 @@ export class HorosSafetyTile extends BaseTileCard {
         : silent.length
           ? "var(--warning-color, #ffa600)"
           : "var(--success-color, #43a047)",
-      primary: config.name ?? "Безопасность",
+      primary: config.name ?? t(this.hass, "safety.title"),
       mainEntityId: problems[0]?.entityId,
-      secondary: composeSegments(
-        problems.length
+      secondary: composeSegments([
+        ...(problems.length
           ? problems
-          : [{ text: `Всё спокойно, ${total} датч.` }]
-      ),
+          : [{ text: t(this.hass, "safety.calm", { count: total }) }]),
+        ...(missing.length
+          ? [{ text: t(this.hass, "list.missing", { count: missing.length }) }]
+          : []),
+      ]),
     });
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-safety-tile", HorosSafetyTile, {
   type: "horos-safety-tile",
-  name: "Безопасность",
-  description: "Протечка, дым, газ — и датчики, потерявшие связь",
+  name: "Safety",
+  description: "Leak, smoke, gas — and sensors that lost connection",
   preview: true,
 });
 

@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
 import { renderLevels, levelStyles, type LevelRow } from "../core/levels";
@@ -14,6 +14,8 @@ import {
 import { levelColor } from "../core/labels";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 /** Порядок ролей во вторичной строке. */
 export const COVER_ROLES = ["illuminance", "battery"] as const;
@@ -52,11 +54,15 @@ export interface CoverTileConfig extends TileBaseConfig {
  * остальных её работу делает слайдер, и рисовать обе значит показать одно и
  * то же дважды.
  */
-@customElement("horos-cover-tile")
 export class HorosCoverTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: CoverTileConfig;
+
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  protected override contentRows(): number {
+    return Math.ceil((2) / 2);
+  }
 
   private _bigKeys: string[] = ["illuminance"];
 
@@ -119,8 +125,11 @@ export class HorosCoverTile extends BaseTileCard {
         ? [
             {
               entityId: position.entityId,
-              name: "Открыто",
-              text: open === undefined ? "нет данных" : `${Math.round(open)}%`,
+              name: t(this.hass, "level.open"),
+              text:
+                open === undefined
+                  ? t(this.hass, "value.unknown")
+                  : `${Math.round(open)}%`,
               ink: levelColor(open),
               level: open ?? 0,
             },
@@ -131,7 +140,7 @@ export class HorosCoverTile extends BaseTileCard {
       icon: "mdi:curtains",
       color: tileColor(cover?.stateObj),
       primary:
-        config.name ?? cover?.stateObj?.attributes.friendly_name ?? "Шторы",
+        config.name ?? cover?.stateObj?.attributes.friendly_name ?? t(this.hass, "cover.title"),
       mainEntityId: cover?.entityId,
       secondary: composeSegments([
         unavailableSegment(this.hass, cover),
@@ -147,11 +156,10 @@ export class HorosCoverTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-cover-tile", HorosCoverTile, {
   type: "horos-cover-tile",
-  name: "Шторы",
-  description: "Насколько открыты, светло ли снаружи и сколько заряда",
+  name: "Curtains",
+  description: "How far open, how bright outside, and battery",
   preview: true,
 });
 

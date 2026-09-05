@@ -1,5 +1,5 @@
 import { nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
 import { renderLevels, levelStyles } from "../core/levels";
@@ -16,8 +16,10 @@ import {
   stripBatterySuffix,
   stripDeviceName,
 } from "../core/labels";
-import { normalizeCartridge, type CartridgeConfig } from "../core/printer";
+import { normalizeItem, type EntityItem } from "../core/entity-item";
 import type { LovelaceCardEditor } from "../core/types";
+import { registerCard } from "../core/register";
+import { t } from "../core/i18n";
 
 export interface PersonTileConfig extends TileBaseConfig {
   type: string;
@@ -28,7 +30,7 @@ export interface PersonTileConfig extends TileBaseConfig {
   /** Где именно: геокодированный адрес или зона. */
   location?: string;
   /** Заряд остальных устройств: часы, планшет, читалка. */
-  devices?: (CartridgeConfig | string)[];
+  devices?: (EntityItem | string)[];
 }
 
 /**
@@ -37,11 +39,15 @@ export interface PersonTileConfig extends TileBaseConfig {
  * Заряды устройств показаны колбами — тем же приёмом, что расходники и
  * чернила: несколько однородных уровней, которые надо увидеть вместе.
  */
-@customElement("horos-person-tile")
 export class HorosPersonTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: PersonTileConfig;
+
+  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  protected override contentRows(): number {
+    return Math.ceil((this._config?.devices?.length ?? 0) / 2);
+  }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editors/person-tile-editor");
@@ -76,7 +82,7 @@ export class HorosPersonTile extends BaseTileCard {
     if (warning) return this.renderWarning(warning);
 
     const devices = (config.devices ?? [])
-      .map((raw) => normalizeCartridge(raw))
+      .map((raw) => normalizeItem(raw))
       .map((item) => {
         const role = resolveRole(this.hass, item.entity);
         const level = numericState(role);
@@ -92,7 +98,7 @@ export class HorosPersonTile extends BaseTileCard {
         return {
           entityId: item.entity,
           name,
-          text: level === undefined ? "нет данных" : `${level}%`,
+          text: level === undefined ? t(this.hass, "value.unknown") : `${level}%`,
           ink: item.color ?? levelColor(level),
           level: level ?? 0,
           alarm: level !== undefined && level < 20,
@@ -104,7 +110,7 @@ export class HorosPersonTile extends BaseTileCard {
       icon: "mdi:account",
       color: tileColor(person?.stateObj),
       primary:
-        config.name ?? person?.stateObj?.attributes.friendly_name ?? "Человек",
+        config.name ?? person?.stateObj?.attributes.friendly_name ?? t(this.hass, "person.title"),
       mainEntityId: person?.entityId,
       imageUrl: this.entityImage(person?.stateObj),
       secondary: composeSegments([
@@ -120,11 +126,10 @@ export class HorosPersonTile extends BaseTileCard {
   }
 }
 
-window.customCards = window.customCards ?? [];
-window.customCards.push({
+registerCard("horos-person-tile", HorosPersonTile, {
   type: "horos-person-tile",
-  name: "Человек",
-  description: "Дома ли, где именно и заряд его устройств",
+  name: "Person",
+  description: "Whether they are home, where exactly, and their devices' battery",
   preview: true,
 });
 
