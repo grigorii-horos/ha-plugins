@@ -14,7 +14,7 @@ import {
 } from "../core/printer";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
 
-/** Внутреннее представление одного картриджа перед отрисовкой. */
+/** The internal shape of one cartridge before rendering. */
 interface PrinterTank {
   entityId: string;
   name?: string;
@@ -28,37 +28,37 @@ import { t } from "../core/i18n";
 
 export interface PrinterTileConfig extends TileBaseConfig {
   type: string;
-  /** Сущность состояния принтера: печатает, простаивает, ошибка. */
+  /** The printer state entity: printing, idle, error. */
   status?: string;
-  /** Сенсоры уровня чернил. */
+  /** Ink level sensors. */
   cartridges: (EntityItem | string)[];
-  /** Что угодно ещё про принтер: наработка, счётчик страниц, ошибки. */
+  /** Anything else about the printer: uptime, page counter, errors. */
   sensors?: (EntityItem | string)[];
   /**
-   * Свой порог «мало чернил». Не задан — берётся marker_low_level самого
-   * принтера. На поглотитель отработки не влияет: у него тревога наоборот,
-   * когда он полон.
+   * A custom "ink low" threshold. Unset means the printer's own
+   * marker_low_level is used. It does not affect the waste ink absorber: its
+   * alarm is the other way round, when it is full.
    */
   low_below?: number;
 }
 
 /**
- * Принтер обычной плиткой: строка с именем и состоянием, под ней одна линия
- * features с уровнями чернил.
+ * A printer as an ordinary tile: a line with the name and state, and below it
+ * one features line with the ink levels.
  *
- * Уровень показан колбами, а не полоской: Canon G-серии — баковый принтер,
- * у него спереди прозрачные ёмкости, и они стоят как раз рядком. Полоса
- * features и есть этот рядок, каждая колба залита своими чернилами снизу.
+ * The level is drawn as bars rather than one strip: the Canon G series is a tank
+ * printer, its transparent tanks sit on the front in exactly such a row. The
+ * features line is that row, each tank filled from the bottom with its own ink.
  *
- * Крупным значением справа стоят самые кончающиеся чернила — то, ради чего на
- * принтер вообще смотрят: пора ли покупать.
+ * The large value on the right is the ink closest to running out — the thing a
+ * printer is looked at for at all: is it time to buy more.
  */
 export class HorosPrinterTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: PrinterTileConfig;
 
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
     return Math.ceil(((this._config?.cartridges.length ?? 0) + (this._config?.sensors?.length ?? 0)) / 2);
   }
@@ -76,7 +76,7 @@ export class HorosPrinterTile extends BaseTileCard {
 
   public setConfig(config: PrinterTileConfig): void {
     if (!config.cartridges?.length) {
-      throw new Error("Нужно указать хотя бы один картридж (cartridges)");
+      throw new Error("At least one cartridge is required (cartridges)");
     }
     this.base = config;
     this._config = config;
@@ -125,11 +125,11 @@ export class HorosPrinterTile extends BaseTileCard {
     const missing = tanks.filter((tank) => !tank.marker && tank.text === "—");
     if (missing.length) {
       return this.renderWarning(
-        `Сущности не найдены: ${missing.map((t) => t.entityId).join(", ")}`
+        `Entities not found: ${missing.map((t) => t.entityId).join(", ")}`
       );
     }
 
-    // Крупно — самые кончающиеся расходуемые чернила: ради этого и смотрят.
+    // Large: the consumable ink closest to running out — the reason for looking.
     const consumable = tanks.filter((tank) => tank.marker && !tank.marker.fills);
     const worst = consumable.reduce<PrinterTank | undefined>(
       (lowest, tank) =>

@@ -18,33 +18,33 @@ import { t } from "../core/i18n";
 
 export interface EnergyTileConfig extends TileBaseConfig {
   type: string;
-  /** Общая мощность дома, идёт крупно. */
+  /** The whole house's power, shown large. */
   total?: string;
-  /** Сенсоры мощности отдельных потребителей. */
+  /** Power sensors of individual consumers. */
   consumers: (EntityItem | string)[];
-  /** Сколько потребителей показывать. */
+  /** How many consumers to show. */
   limit?: number;
 }
 
 export const DEFAULT_CONSUMER_LIMIT = 5;
 
 /**
- * Кто в доме ест электричество.
+ * Who in the house is eating electricity.
  *
- * Потребители показаны строками уровней, но уровень здесь не «сколько
- * осталось», а доля от самого прожорливого: длина полосы отвечает на вопрос
- * «кто больше», а не «сколько процентов». Поэтому шкала общая и относительная.
+ * Consumers are shown as level rows, but the level here is not "how much is
+ * left" — it is a share of the hungriest one: the bar length answers "who draws
+ * more", not "what per cent". Hence one shared, relative scale.
  *
- * Нулевые потребители не показываются: строка с пустой полосой ничего не
- * говорит, а место занимает. Потерявшие связь наоборот пересчитываются вслух —
- * молчащий ваттметр легко принять за выключенный прибор.
+ * Consumers drawing nothing are not shown: a row with an empty bar says nothing
+ * and takes room. The ones that lost connection are counted out loud instead —
+ * a silent power meter is easy to mistake for a switched-off appliance.
  */
 export class HorosEnergyTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: EnergyTileConfig;
 
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
     return Math.ceil((Math.min(this._config?.consumers.length ?? 0, this._config?.limit ?? 5)) / 2);
   }
@@ -62,7 +62,7 @@ export class HorosEnergyTile extends BaseTileCard {
 
   public setConfig(config: EnergyTileConfig): void {
     if (!config.consumers?.length) {
-      throw new Error("Нужно указать хотя бы одного потребителя (consumers)");
+      throw new Error("At least one consumer is required (consumers)");
     }
     this.base = config;
     this._config = config;
@@ -110,7 +110,7 @@ export class HorosEnergyTile extends BaseTileCard {
     const shown = active.slice(0, config.limit ?? DEFAULT_CONSUMER_LIMIT);
     const peak = shown[0]?.watts ?? 0;
 
-    // Полоса — доля от самого прожорливого, а не процент от чего-то.
+    // The bar is a share of the hungriest one, not a per cent of anything.
     const levels: LevelRow[] = shown.map(({ row, watts }) => ({
       ...row,
       level: peak > 0 ? (watts / peak) * 100 : 0,

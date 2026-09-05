@@ -21,7 +21,7 @@ import {
 } from "../core/moisture";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
 
-/** Порядок ролей во вторичной строке. Влажность почвы идёт первой. */
+/** The order of roles in the secondary line. Soil moisture goes first. */
 export const PLANT_ROLES = ["moisture", "temperature", "battery"] as const;
 
 export type PlantRole = (typeof PLANT_ROLES)[number];
@@ -33,13 +33,13 @@ export interface PlantTileConfig extends TileBaseConfig {
   battery?: string;
   dry_below?: number;
   wet_above?: number;
-  /** Что показать крупно справа. По умолчанию одна влажность почвы. */
+  /** What to show large on the right. Soil moisture alone by default. */
   big_values?: PlantRole[];
 }
 
 /**
- * Растение. Влажность почвы — крупным значением справа и она же в штатной
- * полосе под строкой. Пороги задают только цвет полосы и иконки.
+ * A plant. Soil moisture as the large value on the right, and the same moisture
+ * in the stock bar below the line. The thresholds only set the colour of the bar
  */
 export class HorosPlantTile extends BaseTileCard {
   @state() private _config?: PlantTileConfig;
@@ -59,12 +59,12 @@ export class HorosPlantTile extends BaseTileCard {
 
   public setConfig(config: PlantTileConfig): void {
     if (!config.moisture) {
-      throw new Error("Нужно указать сущность влажности почвы (moisture)");
+      throw new Error("A soil moisture entity is required (moisture)");
     }
     const dryBelow = config.dry_below ?? DEFAULT_DRY_BELOW;
     const wetAbove = config.wet_above ?? DEFAULT_WET_ABOVE;
     if (dryBelow >= wetAbove) {
-      throw new Error("dry_below должен быть меньше wet_above");
+      throw new Error("dry_below must be smaller than wet_above");
     }
     this._bigKeys = resolveBigKeys(config.big_values, "moisture", PLANT_ROLES);
     this.base = config;
@@ -86,7 +86,7 @@ export class HorosPlantTile extends BaseTileCard {
     const { big, rest } = splitRoles(roles, this._bigKeys);
     const moisture = roles[0].role;
 
-    // Шкала всегда про влажность почвы, что бы ни стояло крупно справа.
+    // The gauge is always about soil moisture, whatever stands large on the right.
     const value = numericState(moisture);
     const status = moistureStatus(
       value,
@@ -106,8 +106,8 @@ export class HorosPlantTile extends BaseTileCard {
       ]),
       mainEntityId: moisture?.entityId,
       values: this.bigValues(big),
-      // Шкала — штатная feature HA, а не своя полоса. Цвет она берёт из
-      // --tile-color, то есть из наших порогов сухости.
+      // The gauge is a stock HA feature, not a bar of our own. It takes its
+      // colour from --tile-color, that is, from our dryness thresholds.
       ownFeatures:
         value === undefined ? undefined : [{ type: "bar-gauge", min: 0, max: 100 }],
     });

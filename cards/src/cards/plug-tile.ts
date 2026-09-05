@@ -14,7 +14,7 @@ import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 
-/** Порядок ролей во вторичной строке. Выключатель идёт первым. */
+/** The order of roles in the secondary line. The switch goes first. */
 export const PLUG_ROLES = ["switch", "power", "energy"] as const;
 
 export type PlugRole = (typeof PLUG_ROLES)[number];
@@ -25,13 +25,13 @@ export interface PlugTileConfig extends TileBaseConfig {
   power?: string;
   energy?: string;
   toggle_button?: boolean;
-  /** Что показать крупно справа. По умолчанию одна мощность. */
+  /** What to show large on the right. Power alone by default. */
   big_values?: PlugRole[];
 }
 
 /**
- * Умная розетка. Мощность — крупным значением справа, во вторичной строке
- * состояние выключателя и накопленная энергия. Тап по иконке переключает.
+ * A smart plug. Power as the large value on the right, the switch state and the
+ * accumulated energy in the secondary line. A tap on the icon toggles it.
  */
 export class HorosPlugTile extends BaseTileCard {
   @state() private _config?: PlugTileConfig;
@@ -49,7 +49,7 @@ export class HorosPlugTile extends BaseTileCard {
 
   public setConfig(config: PlugTileConfig): void {
     if (!config.switch) {
-      throw new Error("Нужно указать выключатель (switch)");
+      throw new Error("A switch is required (switch)");
     }
     this._bigKeys = resolveBigKeys(config.big_values, "power", PLUG_ROLES);
     this.base = config;
@@ -77,11 +77,11 @@ export class HorosPlugTile extends BaseTileCard {
       color: tileColor(sw.stateObj),
       primary: cardName(config.name, sw),
       secondary: composeSegments([
-        // Одна из двух вернёт кусок: доступный выключатель даёт своё
-        // состояние, недоступный — статус недоступности.
+        // One of the two returns a piece: an available switch gives its state,
+        // an unavailable one its unavailability status.
         unavailableSegment(this.hass, sw),
-        // Выключатель — главная сущность карточки, поэтому его состояние
-        // может показываться через state_content, как у штатной плитки.
+        // The switch is the card's main entity, so its state can be shown
+        // through state_content, just like on the stock tile.
         ...rest.map((item) =>
           item.key === "switch"
             ? this.mainStateSegment(item.role)
@@ -92,7 +92,7 @@ export class HorosPlugTile extends BaseTileCard {
       imageUrl: this.entityImage(sw.stateObj),
       defaultIconAction: defaultIconAction(entityId),
       values: this.bigValues(big),
-      // Кнопка — штатная feature HA, своей вёрстки для неё больше нет.
+      // The button is a stock HA feature; there is no markup of our own left for it.
       ownFeatures: config.toggle_button ? [{ type: "toggle" }] : undefined,
     });
   }

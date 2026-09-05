@@ -1,79 +1,81 @@
-# Horos cards для Home Assistant
+# Horos cards for Home Assistant
 
-Карточки, которые собирают несколько сущностей в одну плитку — по устройству или
-по смыслу.
+Lovelace cards that pack several entities into a single tile — grouped by device or
+by meaning.
 
-![Карточки](docs/images/hero.png)
+![Cards](docs/images/hero.png)
 
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
 [![Home Assistant 2026.9+](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-41BDF5.svg)](https://www.home-assistant.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Зачем
+## Why
 
-Одна физическая вещь в HA рассыпается на десяток сущностей: Zigbee-розетка даёт 13,
-робот-пылесос — 78, компьютер через lnxlink — все 100. Штатная плитка показывает ровно
-одну из них, и чтобы увидеть устройство целиком, приходится ставить пять плиток в ряд.
+One physical thing turns into a dozen entities in Home Assistant: a Zigbee plug gives
+you 13, a robot vacuum 78, a computer reporting through lnxlink all 100. The stock tile
+shows exactly one of them, so seeing the whole device means lining up five tiles in a
+row.
 
-Эти карточки собирают из сущностей то, ради чего на устройство смотрят: принтер —
-уровни всех картриджей, пылесос — заряд и ресурс расходников, человек — дома ли он и
-не сели ли его часы.
+These cards pull out of those entities the thing you actually look at the device for:
+a printer — the level of every cartridge, a vacuum — its battery and how much life is
+left in the consumables, a person — whether they are home and whether their watch is
+about to die.
 
-Карточки не универсальный конструктор: в конфиге указывается, **какая сущность играет
-какую роль**, а раскладку карточка выбирает сама.
+The cards are not a generic builder. The config says **which entity plays which role**,
+and the card decides the layout itself.
 
-## Как устроено
+## How it works
 
-Карточки **не повторяют вёрстку штатной плитки, а собираются из её компонентов** —
-`ha-tile-container`, `ha-tile-icon`, `ha-tile-info`, `hui-card-features`. Оттуда же
-приходят ripple, распознавание жестов, кольцо фокуса, `state_content`, штатные
-features и все шесть действий (tap/hold/double tap, отдельно по иконке).
+The cards **don't reimplement the stock tile's markup — they are assembled from its
+components**: `ha-tile-container`, `ha-tile-icon`, `ha-tile-info`, `hui-card-features`.
+Ripple, gesture recognition, the focus ring, `state_content`, stock features and all six
+actions (tap/hold/double tap, and the same three on the icon) come from there too.
 
-Своего в карточке только то, чего у плитки нет: правая колонка с крупными значениями,
-отдельная цель тапа у каждой величины и строки уровней.
+Only what the tile does not have is written here: the right-hand column of large values,
+a separate tap target per value, and the level rows.
 
-Интерфейс и редакторы переведены на русский и английский, язык берётся из настроек
-пользователя HA.
+The interface and the editors are translated into English and Russian; the language
+follows the user's Home Assistant setting.
 
-Подробности, включая обоснование решений и то, чего против штатной плитки нет, —
-в [спецификации](docs/superpowers/specs/2026-09-04-ha-tile-cards-design.md).
+The rationale behind the decisions, and the list of what is missing compared to the
+stock tile, are in the [design spec](docs/superpowers/specs/2026-09-04-ha-tile-cards-design.md).
 
-## Установка
+## Installation
 
-HACS → ⋮ → Custom repositories → адрес этого репозитория, категория **Dashboard**.
-Дальше — «Install» и перезагрузка страницы.
+HACS → ⋮ → Custom repositories → the address of this repository, category **Dashboard**.
+Then "Install" and reload the page.
 
-Собранный `dist/ha-plugins-cards.js` лежит в репозитории, поэтому доступ к файловой
-системе Home Assistant не нужен.
+The built `dist/ha-plugins-cards.js` is committed to the repository, so no access to the
+Home Assistant filesystem is needed.
 
-Вручную: положить `dist/ha-plugins-cards.js` в `config/www/` и добавить его в
-Settings → Dashboards → ⋮ → Resources как JavaScript module `/local/ha-plugins-cards.js`.
+Manually: drop `dist/ha-plugins-cards.js` into `config/www/` and add it under
+Settings → Dashboards → ⋮ → Resources as a JavaScript module `/local/ha-plugins-cards.js`.
 
-Все карточки есть в списке добавления карточки — искать по названию, и у каждой свой
-графический редактор, YAML писать не обязательно.
+Every card shows up in the card picker, and each one has its own visual editor — writing
+YAML is optional.
 
-## Карточки
+## Cards
 
-Поля, общие для всех карточек (кроме `horos-buttons-tile`), — те же, что у штатной
-плитки: `name`, `icon`, `color`, `vertical`, `hide_state`, `state_content`,
-`time_format`, `features`, `features_position`, `tap_action`, `hold_action`,
-`double_tap_action` и три таких же действия по иконке.
+The fields shared by every card (except `horos-buttons-tile`) are the stock tile's own:
+`name`, `icon`, `color`, `vertical`, `hide_state`, `state_content`, `time_format`,
+`features`, `features_position`, `tap_action`, `hold_action`, `double_tap_action` and the
+same three actions on the icon.
 
-Там, где в поле ждут список, элементом может быть либо `entity_id` строкой, либо
-`{entity, name, icon, color}` — если хочется своё имя или цвет строки.
+Wherever a field takes a list, an item can be either an `entity_id` string or
+`{entity, name, icon, color}` if you want your own label or row colour.
 
-Поле `big_values` выбирает, какие величины уйдут в правую колонку крупным шрифтом
-(до трёх).
+`big_values` picks which values move into the right-hand column in a large font (up to
+three).
 
-### Комната — `horos-climate-tile`
+### Room — `horos-climate-tile`
 
-![Климат](docs/images/climate.png)
+![Climate](docs/images/climate.png)
 
-Температура, влажность, освещённость и PM2.5 одной комнаты.
+Temperature, humidity, illuminance and PM2.5 of a single room.
 
 ```yaml
 type: custom:horos-climate-tile
-name: Спальня
+name: Bedroom
 temperature: sensor.bedroom_temperature
 humidity: sensor.bedroom_humidity
 illuminance: sensor.bedroom_illuminance
@@ -81,12 +83,12 @@ pm25: sensor.bedroom_pm25
 big_values: [temperature]
 ```
 
-### Розетка — `horos-plug-tile`
+### Plug — `horos-plug-tile`
 
-![Розетка](docs/images/plug.png)
+![Plug](docs/images/plug.png)
 
-Выключатель, текущая мощность и накопленная энергия. `toggle_button: true` добавляет
-кнопку включения во всю ширину.
+Switch, current power draw and accumulated energy. `toggle_button: true` adds a
+full-width toggle.
 
 ```yaml
 type: custom:horos-plug-tile
@@ -95,26 +97,26 @@ power: sensor.boiler_power
 energy: sensor.boiler_energy
 ```
 
-### Растение — `horos-plant-tile`
+### Plant — `horos-plant-tile`
 
-![Растение](docs/images/plant.png)
+![Plant](docs/images/plant.png)
 
-Влажность почвы полосой, с порогами сухости и перелива (`dry_below`, `wet_above`).
+Soil moisture as a bar, with dry and overwatered thresholds (`dry_below`, `wet_above`).
 
 ```yaml
 type: custom:horos-plant-tile
-name: Апельсин
+name: Orange tree
 moisture: sensor.orange_moisture
 temperature: sensor.orange_temperature
 battery: sensor.orange_battery
 dry_below: 25
 ```
 
-### Штора — `horos-cover-tile`
+### Cover — `horos-cover-tile`
 
-![Штора](docs/images/cover.png)
+![Cover](docs/images/cover.png)
 
-Положение шторы ползунком и кнопки вверх/стоп/вниз (`controls: true`).
+Cover position on a slider plus up/stop/down buttons (`controls: true`).
 
 ```yaml
 type: custom:horos-cover-tile
@@ -124,11 +126,11 @@ illuminance: sensor.balcony_illuminance
 battery: sensor.balcony_battery
 ```
 
-### Воздух — `horos-air-tile`
+### Air — `horos-air-tile`
 
-![Воздух](docs/images/air.png)
+![Air](docs/images/air.png)
 
-Очиститель, рекуператор, увлажнитель: сам прибор плюс то, что он меряет.
+Purifier, recuperator, humidifier: the appliance itself plus what it measures.
 
 ```yaml
 type: custom:horos-air-tile
@@ -138,13 +140,13 @@ humidity: sensor.purifier_humidity
 power: sensor.purifier_power
 ```
 
-### Принтер — `horos-printer-tile`
+### Printer — `horos-printer-tile`
 
-![Принтер](docs/images/printer.png)
+![Printer](docs/images/printer.png)
 
-Уровни картриджей в их собственных цветах и состояние принтера. Пороги берутся из
-маркеров самого принтера, а бак отработанных чернил считается наоборот — он
-заполняется, а не расходуется.
+Cartridge levels in their own colours, plus the printer state. Thresholds come from the
+printer's own markers, and the waste ink tank is counted the other way round — it fills
+up rather than runs out.
 
 ```yaml
 type: custom:horos-printer-tile
@@ -156,11 +158,11 @@ cartridges:
   - sensor.printer_yellow
 ```
 
-### Пылесос — `horos-vacuum-tile`
+### Vacuum — `horos-vacuum-tile`
 
-![Пылесос](docs/images/vacuum.png)
+![Vacuum](docs/images/vacuum.png)
 
-Заряд и остаток ресурса щёток, фильтра и швабры.
+Battery and the remaining life of brushes, filter and mop.
 
 ```yaml
 type: custom:horos-vacuum-tile
@@ -168,17 +170,16 @@ vacuum: vacuum.robot
 battery: sensor.robot_battery
 consumables:
   - entity: sensor.robot_main_brush_left
-    name: Осн. щётка
+    name: Main brush
   - sensor.robot_side_brush_left
   - sensor.robot_filter_left
 ```
 
-### Компьютер — `horos-computer-tile`
+### Computer — `horos-computer-tile`
 
-![Компьютер](docs/images/computer.png)
+![Computer](docs/images/computer.png)
 
-Загрузка CPU, памяти, GPU и дисков; крупно — самая горячая точка из всех датчиков
-температуры.
+CPU, memory, GPU and disk load; in large type — the hottest of all temperature sensors.
 
 ```yaml
 type: custom:horos-computer-tile
@@ -190,11 +191,11 @@ temperatures: [sensor.desktop_cpu_temp, sensor.desktop_gpu_temp]
 disks: [sensor.desktop_disk_use]
 ```
 
-### Сервер — `horos-server-tile`
+### Server — `horos-server-tile`
 
-![Сервер](docs/images/server.png)
+![Server](docs/images/server.png)
 
-Свободное место, скорости сети и состояние сервисов.
+Free space, network throughput and the state of services.
 
 ```yaml
 type: custom:horos-server-tile
@@ -205,11 +206,11 @@ upload: sensor.server_upload
 services: [binary_sensor.syncthing, binary_sensor.jellyfin]
 ```
 
-### Человек — `horos-person-tile`
+### Person — `horos-person-tile`
 
-![Человек](docs/images/person.png)
+![Person](docs/images/person.png)
 
-Дома ли человек, где именно, и заряд его устройств.
+Whether someone is home, where exactly, and the battery of their devices.
 
 ```yaml
 type: custom:horos-person-tile
@@ -218,15 +219,15 @@ battery: sensor.alice_phone_battery
 location: sensor.alice_phone_geocoded_location
 devices:
   - entity: sensor.alice_watch_battery
-    name: Часы
+    name: Watch
   - sensor.alice_tablet_battery
 ```
 
-### Присутствие — `horos-presence-tile`
+### Presence — `horos-presence-tile`
 
-![Присутствие](docs/images/presence.png)
+![Presence](docs/images/presence.png)
 
-В каких зонах сейчас кто-то есть.
+Which areas currently have someone in them.
 
 ```yaml
 type: custom:horos-presence-tile
@@ -235,11 +236,11 @@ areas:
   - binary_sensor.kitchen_presence
 ```
 
-### Энергия — `horos-energy-tile`
+### Energy — `horos-energy-tile`
 
-![Энергия](docs/images/energy.png)
+![Energy](docs/images/energy.png)
 
-Кто в доме ест электричество прямо сейчас. `limit` — сколько потребителей показывать.
+Who in the house is drawing power right now. `limit` caps how many consumers are shown.
 
 ```yaml
 type: custom:horos-energy-tile
@@ -248,11 +249,11 @@ consumers: [sensor.boiler_power, sensor.recuperator_power]
 limit: 4
 ```
 
-### Батарейки — `horos-batteries-tile`
+### Batteries — `horos-batteries-tile`
 
-![Батарейки](docs/images/batteries.png)
+![Batteries](docs/images/batteries.png)
 
-Только те батарейки, что садятся: ниже `low_below` (по умолчанию 30%).
+Only the batteries that are running low: below `low_below` (30% by default).
 
 ```yaml
 type: custom:horos-batteries-tile
@@ -260,23 +261,23 @@ batteries: [sensor.motion_kitchen_battery, sensor.door_battery]
 low_below: 30
 ```
 
-### Безопасность — `horos-safety-tile`
+### Safety — `horos-safety-tile`
 
-![Безопасность](docs/images/safety.png)
+![Safety](docs/images/safety.png)
 
-Протечка, дым, газ — и отдельно те датчики, что молчат.
+Leak, smoke, gas — and, separately, the sensors that have gone quiet.
 
 ```yaml
 type: custom:horos-safety-tile
 sensors: [binary_sensor.leak_kitchen, binary_sensor.smoke_hall]
 ```
 
-### Что не отвечает — `horos-offline-tile`
+### Not responding — `horos-offline-tile`
 
-![Что не отвечает](docs/images/offline.png)
+![Not responding](docs/images/offline.png)
 
-Сущности без связи, сгруппированные по устройствам: одно устройство — одна строка, а
-не двадцать. Ничего перечислять не нужно, карточка сама обходит все сущности.
+Unavailable entities grouped by device: one device, one line, not twenty. Nothing to
+list — the card walks every entity itself.
 
 ```yaml
 type: custom:horos-offline-tile
@@ -285,57 +286,58 @@ ignore: [sensor.flaky_one]
 ignore_domains: [update]
 ```
 
-### Кнопки — `horos-buttons-tile`
+### Buttons — `horos-buttons-tile`
 
-![Кнопки](docs/images/buttons.png)
+![Buttons](docs/images/buttons.png)
 
-Сетка кнопок, запускающих скрипты и сцены.
+A grid of buttons that run scripts and scenes.
 
 ```yaml
 type: custom:horos-buttons-tile
-name: Свет
+name: Light
 icon: mdi:lamp
 columns: 3
 buttons:
   - entity: script.light_bright
-    name: Ярко
+    name: Bright
     icon: mdi:brightness-7
   - script.light_dim
   - scene.night
 ```
 
-## Разработка
+## Development
 
 ```sh
 cd cards
 npm install
-npm run dev     # http://<этот-хост>:5188
+npm run dev     # http://<this-host>:5188
 npm test
-npm run build   # ../dist/ha-plugins-cards.js — его и ставит HACS
+npm run build   # ../dist/ha-plugins-cards.js — the file HACS installs
 ```
 
-Dev-режим нужен, только пока карточки правятся: дашборд тогда грузит их прямо с машины
-разработчика — в ресурсы дашборда добавляется модуль `http://<хост>:5188/src/main.ts`.
-Дашборд при этом открывается по **http**, иначе браузер зарубит http-модуль как mixed
-content. Обновление — F5: переопределить зарегистрированный custom element в живой
-странице нельзя.
+Dev mode is only for while the cards are being edited: the dashboard then loads them
+straight off the development machine, with `http://<host>:5188/src/main.ts` added to the
+dashboard resources. The dashboard has to be opened over **http** for that, otherwise the
+browser blocks the http module as mixed content. Reloading means F5: a custom element
+that is already registered cannot be redefined in a live page.
 
-Папка `frontend/` — клон исходников home-assistant/frontend. Она не часть проекта и не
-версионируется, но нужна как справочник по вёрстке и токенам.
+The `frontend/` folder is a clone of the home-assistant/frontend sources. It is not part
+of the project and is not committed, but it is the reference for markup and design tokens.
 
-### Обновление своего Home Assistant
+### Deploying to your own Home Assistant
 
 ```sh
 script/publish.py
 ```
 
-Собирает бандл, кладёт его в `www/` на хосте HA и обновляет ресурс дашборда, добавляя к
-адресу хеш содержимого. Версия в адресе обязательна: без неё HA продолжает отдавать
-закешированный старый файл, и обновление проходит незаметно для браузера.
+Builds the bundle, copies it into `www/` on the Home Assistant host and updates the
+dashboard resource, appending a hash of the contents to the URL. That version in the URL
+is mandatory: without it HA keeps serving the cached old file and the update silently
+never reaches the browser.
 
-Хост и путь берутся из `HA_SSH_HOST` и `HA_WWW`, адрес и токен — из
-`HOME_ASSISTANT_URL` и `HOME_ASSISTANT_KEY`.
+The host and path come from `HA_SSH_HOST` and `HA_WWW`, the URL and token from
+`HOME_ASSISTANT_URL` and `HOME_ASSISTANT_KEY`.
 
-## Лицензия
+## License
 
 [MIT](LICENSE)

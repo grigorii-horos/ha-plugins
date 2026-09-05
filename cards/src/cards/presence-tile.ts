@@ -9,16 +9,16 @@ import { t } from "../core/i18n";
 
 export interface PresenceTileConfig extends TileBaseConfig {
   type: string;
-  /** Датчики присутствия по зонам. */
+  /** Presence sensors, one per area. */
   areas: (EntityItem | string)[];
 }
 
 /**
- * Присутствие по зонам.
+ * Presence by area.
  *
- * Карточка называет только занятые зоны — их обычно одна-две, а список всех
- * восьми читать незачем. Потерявшие связь считаются отдельно: зона, о которой
- * нечего сказать, и пустая зона — разные вещи.
+ * The card names only the occupied areas — usually one or two — instead of
+ * listing all eight. The ones that lost connection are counted separately: an
+ * area with nothing to say and an empty area are different things.
  */
 export class HorosPresenceTile extends BaseTileCard {
   @state() private _config?: PresenceTileConfig;
@@ -36,7 +36,7 @@ export class HorosPresenceTile extends BaseTileCard {
 
   public setConfig(config: PresenceTileConfig): void {
     if (!config.areas?.length) {
-      throw new Error("Нужно указать хотя бы одну зону (areas)");
+      throw new Error("At least one area is required (areas)");
     }
     this.base = config;
     this._config = config;

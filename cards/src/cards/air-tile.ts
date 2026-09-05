@@ -16,35 +16,35 @@ import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { t } from "../core/i18n";
 
-/** Порядок ролей во вторичной строке. */
+/** The order of roles in the secondary line. */
 export const AIR_ROLES = ["pm25", "humidity", "temperature", "power"] as const;
 
 export type AirRole = (typeof AIR_ROLES)[number];
 
 export interface AirTileConfig extends TileBaseConfig {
   type: string;
-  /** Сам прибор: fan, humidifier или switch. Тап по иконке его переключает. */
+  /** The appliance itself: fan, humidifier or switch. A tap on the icon toggles it. */
   appliance: string;
   pm25?: string;
   humidity?: string;
   temperature?: string;
   power?: string;
-  /** Что ещё сказать: скорость, режим. */
+  /** What else to say: speed, mode. */
   sensors?: (EntityItem | string)[];
-  /** Сообщать, только когда сработало: пора менять фильтр. */
+  /** Report only once it fires: time to change the filter. */
   alerts?: (EntityItem | string)[];
-  /** Что показать крупно справа. По умолчанию PM2.5. */
+  /** What to show large on the right. PM2.5 by default. */
   big_values?: AirRole[];
 }
 
 /**
- * Приборы, которые занимаются воздухом: очиститель, рекуператор, увлажнитель,
- * осушитель. У всех разный домен, но вопрос один — работает ли и что с
- * воздухом.
+ * Appliances that deal with air: purifier, recuperator, humidifier,
+ * dehumidifier. Different domains, one question — is it running and what is
+ * happening to the air.
  *
- * Прибор задаётся одной ролью `appliance` любого домена, поэтому карточка
- * годится и для `fan`, и для `humidifier`, и для розетки, к которой прибор
- * просто подключён.
+ * The appliance is one `appliance` role of any domain, so the card fits a `fan`,
+ * a `humidifier`, and equally a plug the appliance simply happens to be plugged
+ * into.
  */
 export class HorosAirTile extends BaseTileCard {
   @state() private _config?: AirTileConfig;
@@ -62,7 +62,7 @@ export class HorosAirTile extends BaseTileCard {
 
   public setConfig(config: AirTileConfig): void {
     if (!config.appliance) {
-      throw new Error("Нужно указать прибор (appliance)");
+      throw new Error("An appliance is required (appliance)");
     }
     this._bigKeys = resolveBigKeys(config.big_values, "pm25", AIR_ROLES);
     this.base = config;
@@ -76,9 +76,9 @@ export class HorosAirTile extends BaseTileCard {
     const appliance = resolveRole(this.hass, config.appliance);
     const roles: KeyedRole[] = AIR_ROLES.map((key) => {
       const role = resolveRole(this.hass, config[key]);
-      // Выключенный очиститель IKEA отдаёт PM2.5 равным -1. Концентрация не
-      // бывает отрицательной, поэтому это не «ноль», а «нет данных», и
-      // выносить такую цифру заголовком карточки нельзя.
+      // A switched-off IKEA purifier reports PM2.5 as -1. A concentration is
+      // never negative, so that is not "zero" but "no data", and a figure like
+      // that must not be put in the card's headline.
       if (key === "pm25") {
         const value = numericState(role);
         if (value !== undefined && value < 0) return { key, role: undefined };

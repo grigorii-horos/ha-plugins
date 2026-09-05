@@ -9,25 +9,25 @@ import { t } from "../core/i18n";
 
 export interface OfflineTileConfig extends TileBaseConfig {
   type: string;
-  /** Сколько устройств называть поимённо. */
+  /** How many devices to name explicitly. */
   limit?: number;
-  /** Сущности, чьё молчание считается нормой. */
+  /** Entities whose silence is normal. */
   ignore?: string[];
-  /** Домены, которые не считаются вовсе. Не задан — служебные. */
+  /** Domains not counted at all. Unset means the service ones. */
   ignore_domains?: string[];
 }
 
 export const DEFAULT_OFFLINE_LIMIT = 4;
 
 /**
- * Что в доме перестало отвечать.
+ * What in the house stopped responding.
  *
- * Сквозная тема: газовый датчик молчал месяцами, четыре ваттметра нашлись
- * случайно, лампы и кондиционеры — при разборе устройств. Молчание сломанного
- * устройства неотличимо от молчания исправного, если о нём не сказать.
+ * A recurring theme: the gas sensor was silent for months, four power meters
+ * turned up by accident, lamps and air conditioners while going through the
+ * devices. A broken device's silence is indistinguishable from a healthy one's.
  *
- * Единственная карточка, которая сама перебирает состояния: перечислить руками
- * девятьсот сущностей невозможно, а правило отбора объективное.
+ * The one card that walks the states itself: listing nine hundred entities by
+ * hand is not possible, and the selection rule is objective.
  */
 export class HorosOfflineTile extends BaseTileCard {
   @state() private _config?: OfflineTileConfig;

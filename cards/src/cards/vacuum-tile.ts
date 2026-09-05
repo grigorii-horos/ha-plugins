@@ -21,29 +21,29 @@ export interface VacuumTileConfig extends TileBaseConfig {
   type: string;
   vacuum: string;
   battery?: string;
-  /** Режим уборки, статус зарядки — что ещё сказать во второй строке. */
+  /** Cleaning mode, charging status — what else to say on the second line. */
   sensors?: (EntityItem | string)[];
-  /** Ресурс расходников в процентах: щётки, фильтр, швабра. */
+  /** Consumable life in per cent: brushes, filter, mop. */
   consumables?: (EntityItem | string)[];
-  /** Ниже этого ресурса расходник просит замены. */
+  /** Below this level a consumable is asking to be replaced. */
   low_below?: number;
 }
 
 export const DEFAULT_CONSUMABLE_LOW = 20;
 
 /**
- * Робот-пылесос. В строке — что он сейчас делает и сколько заряда, в линии
- * features — ресурс расходников колбами.
+ * A robot vacuum. On the line — what it is doing right now and how much charge
+ * is left; in the features line — consumable life as bars.
  *
- * Расходники и чернила принтера — одна и та же задача: несколько однородных
- * уровней, которые надо увидеть вместе и понять, что скоро кончится.
+ * Consumables and printer ink are the same task: several homogeneous levels that
+ * have to be seen together to tell what is about to run out.
  */
 export class HorosVacuumTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: VacuumTileConfig;
 
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
     return Math.ceil((this._config?.consumables?.length ?? 0) / 2);
   }
@@ -61,7 +61,7 @@ export class HorosVacuumTile extends BaseTileCard {
 
   public setConfig(config: VacuumTileConfig): void {
     if (!config.vacuum) {
-      throw new Error("Нужно указать пылесос (vacuum)");
+      throw new Error("A vacuum is required (vacuum)");
     }
     this.base = config;
     this._config = config;
@@ -95,9 +95,9 @@ export class HorosVacuumTile extends BaseTileCard {
           entityId: item.entity,
           name: name ?? item.entity,
           text: `${level}%`,
-          // Цветом плитки красить нельзя: у стоящего на базе пылесоса он
-          // неактивный, и все колбы выходят одинаково серыми. Красим по
-          // уровню — вопрос у расходника тот же, что у батарейки.
+          // Painting them in the tile colour is wrong: a docked vacuum's colour
+          // is the inactive one and every bar comes out the same grey. We paint
+          // by level — a consumable asks the same question a battery does.
           ink: item.color ?? levelColor(level),
           level,
           alarm: level < low,

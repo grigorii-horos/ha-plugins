@@ -1,13 +1,13 @@
 /**
- * Строки карточек на языке пользователя.
+ * Card strings in the user's language.
  *
- * Home Assistant переводит состояния сам, а наши подписи были жёстко русскими.
- * На английском интерфейсе получалось «Всё спокойно, 1 датч.» рядом с
- * «Docked · Standard · Charging» — половина карточки на одном языке, половина
- * на другом.
+ * Home Assistant translates states itself, while our labels used to be hard-coded
+ * Russian. On an English interface that produced a Russian "all clear, 1 sensor"
+ * next to "Docked · Standard · Charging" — half the card in one language, half
+ * in the other.
  *
- * Названия карточек в списке добавления остаются английскими: этот список
- * заполняется при загрузке бандла, когда языка пользователя ещё нет.
+ * Card names in the picker stay English: that list is filled while the bundle
+ * loads, before the user's language is known.
  */
 import type { HomeAssistant } from "./types";
 
@@ -111,7 +111,7 @@ const EN: Dict = {
 
 const DICTS: Record<string, Dict> = { ru: RU, en: EN };
 
-/** Язык пользователя из hass; на неизвестном языке говорим по-английски. */
+/** The user's language from hass; for an unknown language we speak English. */
 export function languageOf(hass: HomeAssistant | undefined): string {
   const language = hass?.language ?? hass?.locale?.language ?? "en";
   const base = language.split("-")[0].toLowerCase();
@@ -119,8 +119,8 @@ export function languageOf(hass: HomeAssistant | undefined): string {
 }
 
 /**
- * Форма множественного числа. У русского их три, у английского две — «1
- * sensors» и «2 зона» одинаково режут глаз.
+ * Plural form. Russian has three of them, English two — a form that does not
+ * match the count grates in both.
  */
 function pluralForm(language: string, count: number): "one" | "few" | "many" {
   if (language !== "ru") return count === 1 ? "one" : "many";
@@ -139,7 +139,7 @@ export function t(
   const language = languageOf(hass);
   const dict = DICTS[language] ?? EN;
 
-  // Ключ со счётчиком может иметь формы: safety.calm.one / .few / .many
+  // A key with a counter can have forms: safety.calm.one / .few / .many
   const count = params.count;
   const form =
     typeof count === "number"

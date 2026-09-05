@@ -1,9 +1,9 @@
 /**
- * Действия по тапу — та же семантика, что в
+ * Tap actions — the same semantics as in
  * home-assistant/frontend: src/panels/lovelace/common/handle-action.ts.
  *
- * Их модуль наружу не публикуется, поэтому повторяем поведение: те же имена
- * действий, те же сервисы переключения по доменам, то же подтверждение.
+ * That module is not published, so we mirror the behaviour: the same action
+ * names, the same per-domain toggle services, the same confirmation.
  */
 import { computeDomain } from "./state-color";
 import type { HomeAssistant } from "./types";
@@ -24,7 +24,7 @@ export interface ActionConfig extends BaseActionConfig {
   navigation_replace?: boolean;
   url_path?: string;
   perform_action?: string;
-  /** @deprecated оставлено для старых конфигов, заменено на perform_action */
+  /** @deprecated kept for old configs, replaced by perform_action */
   service?: string;
   target?: Record<string, unknown>;
   data?: Record<string, unknown>;
@@ -40,14 +40,14 @@ export interface ActionsConfig {
 
 export type ActionType = "tap" | "hold" | "double_tap";
 
-/** Жест вооружается только если действие задано и это не "none". */
+/** A gesture is armed only if an action is set and it is not "none". */
 export function hasAction(config?: ActionConfig): boolean {
   return config !== undefined && config.action !== "none";
 }
 
 const STATES_OFF = ["closed", "locked", "off"];
 
-/** Домены, которые штатная плитка считает переключаемыми. */
+/** Domains the stock tile treats as toggleable. */
 const DOMAINS_TOGGLE = new Set([
   "fan",
   "input_boolean",
@@ -60,9 +60,9 @@ const DOMAINS_TOGGLE = new Set([
 ]);
 
 /**
- * Действие иконки по умолчанию — копия getEntityDefaultTileIconAction из HA.
- * Переключаемое переключается, всё остальное иконкой не реагирует: тап всё
- * равно провалится на подложку карточки и откроет more-info.
+ * The default icon action — a copy of getEntityDefaultTileIconAction from HA.
+ * Toggleables toggle, everything else ignores the icon: the tap falls through
+ * to the card body anyway and opens more-info.
  */
 export function defaultIconAction(entityId: string | undefined): ActionConfig {
   if (!entityId) return { action: "none" };
@@ -73,7 +73,7 @@ export function defaultIconAction(entityId: string | undefined): ActionConfig {
   return { action: toggleable ? "toggle" : "none" };
 }
 
-/** Домены с нестандартным переключением — копия SPECIAL_TOGGLE_ACTIONS из HA. */
+/** Domains with non-standard toggling — a copy of SPECIAL_TOGGLE_ACTIONS from HA. */
 const SPECIAL_TOGGLE_ACTIONS: Record<string, { on: string; off?: string }> = {
   button: { on: "press" },
   camera: { on: "turn_on", off: "turn_off" },
@@ -110,7 +110,7 @@ function fire(node: HTMLElement, type: string, detail: unknown): void {
   );
 }
 
-/** Переход внутри HA: тем же способом, что common/navigate.ts. */
+/** Navigation inside HA: the same way common/navigate.ts does it. */
 function navigate(path: string, replace?: boolean): void {
   if (replace) {
     window.history.replaceState(null, "", path);
@@ -121,8 +121,8 @@ function navigate(path: string, replace?: boolean): void {
 }
 
 /**
- * Подтверждение действия. Диалог берём у HA через loadCardHelpers — это
- * единственный официально доступный custom-картам путь к их диалогам.
+ * Action confirmation. The dialog comes from HA through loadCardHelpers — the
+ * only path to their dialogs officially open to custom cards.
  */
 async function confirmed(
   node: HTMLElement,
@@ -132,7 +132,7 @@ async function confirmed(
   const loader = (
     window as unknown as { loadCardHelpers?: () => Promise<unknown> }
   ).loadCardHelpers;
-  if (!loader) return window.confirm(config.confirmation.text ?? "Подтвердить?");
+  if (!loader) return window.confirm(config.confirmation.text ?? "Are you sure?");
 
   const helpers = (await loader()) as {
     showConfirmationDialog?: (
@@ -141,7 +141,7 @@ async function confirmed(
     ) => Promise<boolean>;
   };
   if (!helpers.showConfirmationDialog) {
-    return window.confirm(config.confirmation.text ?? "Подтвердить?");
+    return window.confirm(config.confirmation.text ?? "Are you sure?");
   }
   return helpers.showConfirmationDialog(node, {
     text: config.confirmation.text,
@@ -162,7 +162,7 @@ export async function handleAction(
   else if (action === "hold") actionConfig = config.hold_action;
   else actionConfig = config.tap_action;
 
-  // Как в HA: отсутствие настройки означает more-info, а не бездействие.
+  // As in HA: no setting means more-info, not doing nothing.
   if (!actionConfig) actionConfig = { action: "more-info" };
 
   if (!(await confirmed(node, actionConfig))) return;
@@ -212,11 +212,11 @@ export async function handleAction(
       break;
 
     default:
-      // assist и прочие диалоги HA наружу не отдаёт — молча не делаем вид,
-      // что сработало.
+      // assist and HA's other dialogs are not exposed — better than silently
+      // pretending it worked.
       // eslint-disable-next-line no-console
       console.warn(
-        `horos-cards: действие "${actionConfig.action}" не поддержано`
+        `horos-cards: action "${actionConfig.action}" is not supported`
       );
   }
 }

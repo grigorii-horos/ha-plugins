@@ -17,12 +17,12 @@ import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { t } from "../core/i18n";
 
-/** Порядок ролей во вторичной строке. */
+/** The order of roles in the secondary line. */
 export const COVER_ROLES = ["illuminance", "battery"] as const;
 
 export type CoverRole = (typeof COVER_ROLES)[number];
 
-/** Биты supported_features домена cover. */
+/** supported_features bits of the cover domain. */
 const COVER_OPEN = 1;
 const COVER_CLOSE = 2;
 const COVER_SET_POSITION = 4;
@@ -31,35 +31,35 @@ export interface CoverTileConfig extends TileBaseConfig {
   type: string;
   cover: string;
   /**
-   * Отдельный сенсор положения. Нужен только тем шторам, которые не умеют
-   * задавать положение сами: у остальных его показывает штатный слайдер.
+   * A separate position sensor. Only covers that cannot set a position themselves
+   * need it: on the rest the stock slider shows it.
    */
   position?: string;
-  /** Кнопки открыть/закрыть и слайдер положения. По умолчанию включены. */
+  /** Open/close buttons and the position slider. On by default. */
   controls?: boolean;
   illuminance?: string;
   battery?: string;
-  /** Что показать крупно справа. По умолчанию освещённость. */
+  /** What to show large on the right. Illuminance by default. */
   big_values?: CoverRole[];
 }
 
 /**
- * Шторы: открыть, закрыть, задать положение прямо с карточки.
+ * Covers: open, close and set a position straight from the card.
  *
- * Управление — штатные features HA (`cover-open-close`, `cover-position`),
- * своих кнопок не рисуем. Набор подбирается по `supported_features` самой
- * шторы: слайдер положения предлагается только той, что умеет его задавать.
+ * The controls are stock HA features (`cover-open-close`, `cover-position`); we
+ * draw no buttons of our own. The set is picked from the cover's own
+ * `supported_features`: the slider is only offered to a cover that can set one.
  *
- * Своя полоса положения остаётся лишь для штор без такого умения — у
- * остальных её работу делает слайдер, и рисовать обе значит показать одно и
- * то же дважды.
+ * Our own position bar is left only for covers without that ability — on the
+ * rest the slider does its job, and drawing both would show the same thing
+ * twice.
  */
 export class HorosCoverTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: CoverTileConfig;
 
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
     return Math.ceil((2) / 2);
   }
@@ -79,7 +79,7 @@ export class HorosCoverTile extends BaseTileCard {
 
   public setConfig(config: CoverTileConfig): void {
     if (!config.cover) {
-      throw new Error("Нужно указать штору (cover)");
+      throw new Error("A cover is required (cover)");
     }
     this._bigKeys = resolveBigKeys(config.big_values, "illuminance", COVER_ROLES);
     this.base = config;
@@ -118,7 +118,7 @@ export class HorosCoverTile extends BaseTileCard {
       if (canOpenClose) controls.push({ type: "cover-open-close" });
     }
 
-    // Своя полоса нужна только там, где слайдера не будет.
+    // Our own bar is only needed where there will be no slider.
     const open = numericState(position);
     const levels: LevelRow[] =
       position && !canSetPosition

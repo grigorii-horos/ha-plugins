@@ -9,17 +9,17 @@ import { t } from "../core/i18n";
 
 export interface SafetyTileConfig extends TileBaseConfig {
   type: string;
-  /** Датчики протечки, дыма, газа — всё, что должно молчать. */
+  /** Leak, smoke and gas sensors — everything that is supposed to stay quiet. */
   sensors: (EntityItem | string)[];
 }
 
 /**
- * Безопасность.
+ * Safety.
  *
- * В норме карточка молчит одной строкой. Тревога — это не только сработавший
- * датчик: **недоступный датчик тоже тревога**, потому что он ничего не
- * охраняет. Молчание сломанного датчика неотличимо от молчания исправного,
- * если об этом не сказать.
+ * Normally the card keeps quiet in a single line. An alarm is not only a sensor
+ * that fired: **an unavailable sensor is an alarm too**, because it guards
+ * nothing. A broken sensor's silence is indistinguishable from a healthy one's
+ * unless something says so.
  */
 export class HorosSafetyTile extends BaseTileCard {
   @state() private _config?: SafetyTileConfig;
@@ -37,7 +37,7 @@ export class HorosSafetyTile extends BaseTileCard {
 
   public setConfig(config: SafetyTileConfig): void {
     if (!config.sensors?.length) {
-      throw new Error("Нужно указать хотя бы один датчик (sensors)");
+      throw new Error("At least one sensor is required (sensors)");
     }
     this.base = config;
     this._config = config;

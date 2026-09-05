@@ -1,14 +1,14 @@
 import { css } from "lit";
 
 /**
- * Своих стилей здесь минимум.
+ * There is a minimum of our own styles here.
  *
- * Геометрия, типографика, ripple, кольцо фокуса и раскладка приходят из
- * компонентов HA — `ha-tile-container`, `ha-tile-icon`, `ha-tile-info`.
- * Ниже только то, чего у плитки нет: правая колонка с крупными значениями,
- * отдельные цели тапа и плашка ошибки.
+ * Geometry, typography, ripple, the focus ring and the layout come from HA's
+ * components — `ha-tile-container`, `ha-tile-icon`, `ha-tile-info`.
+ * Below is only what the tile does not have: the right-hand column of large
+ * values, separate tap targets and the error banner.
  *
- * Блок про фокус и цвет иконки — из `tile-card-style.ts` штатной плитки.
+ * The focus and icon colour block comes from the stock tile's `tile-card-style.ts`.
  */
 export const tileStyles = css`
   :host {
@@ -38,7 +38,7 @@ export const tileStyles = css`
     --feature-color: var(--tile-color);
   }
 
-  /* Тексты и правая колонка стоят в одной строке слота info. */
+  /* The texts and the right-hand column share one row of the info slot. */
   .info {
     display: flex;
     flex-direction: row;
@@ -59,9 +59,9 @@ export const tileStyles = css`
   }
 
   /*
-   * Единственное отступление от канона tile: главные значения вынесены в
-   * правую колонку крупным шрифтом. Каждое следующее значение опускает шрифт
-   * на ступень, иначе колонка съедает имя карточки.
+   * The one departure from the tile canon: the main values are moved into the
+   * right-hand column in a large font. Each next value drops the font a step,
+   * otherwise the column eats the card name.
    */
   .values {
     flex: none;
@@ -83,7 +83,7 @@ export const tileStyles = css`
     gap: 2px;
   }
 
-  /* Иконка называет величину; число остаётся главным, иконка приглушена. */
+  /* The icon names the quantity; the number stays the star, the icon is muted. */
   .values .clickable,
   .values > span,
   .values > button {
@@ -116,9 +116,9 @@ export const tileStyles = css`
   }
 
   /*
-   * Второе отступление: величины кликабельны по отдельности, тап по каждой
-   * открывает more-info её сущности. Содержимое плитки событий не принимает,
-   * поэтому цели тапа включают их обратно.
+   * The second departure: values are clickable one by one, and a tap on each
+   * opens more-info for its entity. Tile content does not take events, so the
+   * tap targets switch them back on.
    */
   .clickable {
     padding: 0;
@@ -139,7 +139,7 @@ export const tileStyles = css`
     border-radius: var(--ha-border-radius-sm, 6px);
   }
 
-  /* Своя линия features: те же отступы, что у штатного ряда. */
+  /* Our own features line: the same padding as the stock row. */
   .custom-features {
     display: block;
     padding: 0 var(--ha-space-3, 12px) var(--ha-space-3, 12px);

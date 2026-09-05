@@ -12,12 +12,12 @@ interface ChildCard extends HTMLElement {
 }
 
 /**
- * Каркас карточек вида «заголовок и сетка».
+ * The skeleton for "heading plus grid" cards.
  *
- * Ничего не рисует сама: заголовок — штатная карточка `heading`, ячейки —
- * штатные карточки HA (`tile`, `button`). Мы отвечаем только за состав сетки
- * и разумные значения по умолчанию, чтобы вместо десятка карточек в конфиге
- * был один блок.
+ * It draws nothing itself: the heading is the stock `heading` card, the cells
+ * are stock HA cards (`tile`, `button`). We only decide what goes into the grid
+ * and pick sane defaults, so that a dozen cards in the config collapse into one
+ * block.
  */
 export abstract class BaseGridCard extends LitElement {
   static styles = css`
@@ -51,10 +51,10 @@ export abstract class BaseGridCard extends LitElement {
 
   @state() protected _error?: string;
 
-  /** Конфиг штатной карточки `heading`, либо undefined если заголовок не нужен. */
+  /** Config of the stock `heading` card, or undefined if no heading is needed. */
   protected abstract headingConfig(): Record<string, unknown> | undefined;
 
-  /** Конфиги штатных карточек, из которых складывается сетка. */
+  /** Configs of the stock cards the grid is made of. */
   protected abstract childConfigs(): Record<string, unknown>[];
 
   protected abstract columns(): number;
@@ -64,12 +64,12 @@ export abstract class BaseGridCard extends LitElement {
     return 1 + rows;
   }
 
-  /** Высота зависит от числа ячеек, поэтому её считает сама HA. */
+  /** Height depends on the number of cells, so HA computes it itself. */
   public getGridOptions(): LovelaceGridOptions {
     return { columns: 12, rows: "auto", min_columns: 6, min_rows: 2 };
   }
 
-  /** Наследник обязан позвать это в конце setConfig. */
+  /** A subclass must call this at the end of setConfig. */
   protected rebuild(): void {
     void this._build();
   }
@@ -79,7 +79,7 @@ export abstract class BaseGridCard extends LitElement {
       window as unknown as { loadCardHelpers?: () => Promise<CardHelpers> }
     ).loadCardHelpers;
     if (!loader) {
-      this._error = "Home Assistant не отдал помощники карточек";
+      this._error = "Home Assistant did not provide card helpers";
       return;
     }
 

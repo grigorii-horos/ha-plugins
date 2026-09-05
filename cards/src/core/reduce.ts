@@ -1,10 +1,10 @@
 /**
- * Сведение списка однородных сенсоров к одному.
+ * Reducing a list of homogeneous sensors to one.
  *
- * У компьютера двенадцать датчиков температуры и три раздела диска. Показывать
- * их списком бессмысленно: вопрос всегда один — насколько горячо и насколько
- * забито. Поэтому из списка выбирается крайний, и он же становится обычной
- * ролью: тап по нему откроет именно тот датчик, который сейчас крайний.
+ * A computer has twelve temperature sensors and three disk partitions. Listing
+ * them is pointless: the question is always the same — how hot and how full.
+ * So the extreme one is picked out of the list and becomes an ordinary role: a
+ * tap on it opens exactly the sensor that is extreme right now.
  */
 import { numericState, resolveRole, type ResolvedRole } from "./format";
 import type { HomeAssistant } from "./types";
@@ -34,7 +34,7 @@ export function pickExtreme(
     }
   }
 
-  // Ни одного числа: возвращаем первую роль, чтобы карточка сказала о проблеме,
-  // а не притворилась, что списка не было.
+  // Not a single number: return the first role so that the card reports the
+  // problem instead of pretending there was no list.
   return best ?? resolveRole(hass, entityIds[0]);
 }

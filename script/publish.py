@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Собирает бандл, кладёт его на хост HA и обновляет ресурс дашборда.
+"""Builds the bundle, puts it on the HA host and updates the dashboard resource.
 
-Ресурс версионируется хешем содержимого: без этого HA продолжает отдавать
-закешированный старый файл, и обновление проходит незаметно для браузера.
+The resource is versioned with a hash of its contents: without that HA keeps
+serving the cached old file and the update never reaches the browser.
 """
 import asyncio
 import hashlib
@@ -30,7 +30,7 @@ async def update_resource(url: str) -> None:
             json.dumps({"type": "auth", "access_token": os.environ["HOME_ASSISTANT_KEY"]})
         )
         if json.loads(await ws.recv())["type"] != "auth_ok":
-            sys.exit("аутентификация не прошла")
+            sys.exit("authentication failed")
 
         counter = [0]
 
@@ -54,12 +54,12 @@ async def update_resource(url: str) -> None:
                     "url": url,
                 }
             )
-            print("ресурс обновлён:", url)
+            print("resource updated:", url)
         else:
             await call(
                 {"type": "lovelace/resources/create", "res_type": "module", "url": url}
             )
-            print("ресурс создан:", url)
+            print("resource created:", url)
 
 
 def main() -> None:
@@ -68,7 +68,7 @@ def main() -> None:
     )
 
     version = hashlib.sha256(BUNDLE.read_bytes()).hexdigest()[:8]
-    print("версия:", version)
+    print("version:", version)
 
     subprocess.run(
         ["scp", "-o", "BatchMode=yes", str(BUNDLE), f"{SSH_HOST}:{REMOTE_WWW}/{BUNDLE.name}"],
@@ -76,7 +76,7 @@ def main() -> None:
     )
 
     asyncio.run(update_resource(f"/local/{BUNDLE.name}?v={version}"))
-    print("готово: обновите вкладку дашборда")
+    print("done: reload the dashboard tab")
 
 
 if __name__ == "__main__":

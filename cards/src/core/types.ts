@@ -1,7 +1,7 @@
 /**
- * Минимальный срез типов HA-фронтенда, который нам нужен. Полные типы живут в
- * home-assistant/frontend и наружу не публикуются, поэтому описываем сами —
- * только то, чем реально пользуемся.
+ * The minimal slice of HA frontend types that we need. The full ones live in
+ * home-assistant/frontend and are not published, so we describe them here —
+ * only what is actually used.
  */
 
 export interface HassEntity {
@@ -20,13 +20,13 @@ export interface HomeAssistant {
   states: Record<string, HassEntity | undefined>;
   localize: (key: string, ...args: unknown[]) => string;
   formatEntityState: (stateObj: HassEntity, state?: string) => string;
-  /** Абсолютный адрес по относительному пути HA — нужен для картинок сущностей. */
+  /** An absolute URL from an HA relative path — needed for entity pictures. */
   hassUrl: (path?: string) => string;
-  /** Реестр сущностей: нужен, чтобы понять, какому устройству принадлежит сущность. */
+  /** The entity registry: needed to tell which device an entity belongs to. */
   entities?: Record<string, { device_id?: string; hidden?: boolean }>;
-  /** Реестр устройств: имена для группировки. */
+  /** The device registry: names for grouping. */
   devices?: Record<string, { name?: string; name_by_user?: string }>;
-  /** Язык интерфейса пользователя. */
+  /** The user's interface language. */
   language?: string;
   locale?: { language?: string };
   callService: (
@@ -36,11 +36,11 @@ export interface HomeAssistant {
   ) => Promise<unknown>;
 }
 
-/** Роль в макете карточки: какая сущность каким смыслом заполняет слот. */
+/** A role in the card layout: which entity fills which slot with which meaning. */
 export interface Role {
-  /** Ключ роли в конфиге, например "humidity". */
+  /** The role key in the config, "humidity" for example. */
   key: string;
-  /** entity_id из конфига, если роль заполнена. */
+  /** The entity_id from the config, if the role is filled. */
   entityId?: string;
 }
 
@@ -68,7 +68,7 @@ declare global {
   }
 }
 
-/** То, чем HA размечает карточку в сеточном дашборде. */
+/** What HA lays a card out with on a sections dashboard. */
 export interface LovelaceGridOptions {
   columns?: number | "full";
   rows?: number | "auto";

@@ -1,9 +1,9 @@
 /**
- * Разрешение ролей конфига в готовые к отрисовке значения.
+ * Resolving config roles into values ready to render.
  *
- * Форматирование целиком отдано `hass.formatEntityState`: единицы, округление,
- * десятичный разделитель и локаль получаются те же, что во всём остальном HA.
- * Своего форматирования тут нет и быть не должно.
+ * Formatting is delegated entirely to `hass.formatEntityState`: units, rounding,
+ * decimal separator and locale then match the rest of Home Assistant.
+ * There is no formatting of our own here, and there should not be.
  */
 import type { HassEntity, HomeAssistant } from "./types";
 
@@ -14,9 +14,9 @@ export const SECONDARY_SEPARATOR = " · ";
 export interface ResolvedRole {
   entityId: string;
   stateObj?: HassEntity;
-  /** Сущности нет в HA — почти всегда опечатка в конфиге. */
+  /** The entity is not in HA — almost always a typo in the config. */
   missing: boolean;
-  /** Сущность есть, но данных нет: unavailable или unknown. */
+  /** The entity exists but has no data: unavailable or unknown. */
   unavailable: boolean;
 }
 
@@ -35,9 +35,9 @@ export function resolveRole(
 }
 
 /**
- * Готовая к показу строка для роли, либо undefined — если показывать нечего.
- * Необязательная роль без данных просто исчезает из вторичной строки, вся
- * карточка при этом продолжает работать.
+ * A string ready to show for a role, or undefined if there is nothing to show.
+ * An optional role without data simply disappears from the secondary line, and
+ * the card keeps working.
  */
 export function formatRole(
   hass: HomeAssistant | undefined,
@@ -50,17 +50,17 @@ export function formatRole(
 }
 
 /**
- * Кусок вторичной строки. Знает свою сущность, чтобы тап по нему открывал
- * more-info именно про неё, а не про главную сущность карточки.
+ * A piece of the secondary line. It knows its own entity, so a tap on it opens
+ * more-info for that entity rather than for the card's main one.
  */
 export interface Segment {
   text?: string;
-  /** Готовая разметка вместо текста: например, штатный state-display. */
+  /** Ready-made markup instead of text: the stock state-display, for example. */
   content?: unknown;
   entityId?: string;
 }
 
-/** Собирает вторичную строку, выбрасывая незаполненные роли. */
+/** Assembles the secondary line, dropping the roles that are not filled in. */
 export function composeSegments(parts: (Segment | undefined)[]): Segment[] {
   return parts.filter(
     (part): part is Segment =>
@@ -68,7 +68,7 @@ export function composeSegments(parts: (Segment | undefined)[]): Segment[] {
   );
 }
 
-/** Кусок строки для роли, либо undefined — если показывать нечего. */
+/** A line piece for a role, or undefined if there is nothing to show. */
 export function roleSegment(
   hass: HomeAssistant | undefined,
   role: ResolvedRole | undefined
@@ -77,7 +77,7 @@ export function roleSegment(
   return text ? { text, entityId: role?.entityId } : undefined;
 }
 
-/** Кусок строки со статусом недоступности сущности. */
+/** A line piece with the entity's unavailability status. */
 export function unavailableSegment(
   hass: HomeAssistant | undefined,
   role: ResolvedRole | undefined
@@ -87,9 +87,9 @@ export function unavailableSegment(
 }
 
 /**
- * Текст статуса для роли, которая недоступна. Нужен вторичной строке: главное
- * значение в правой колонке при этом не показывается вовсе, иначе длинное
- * слово вроде "Unavailable" встаёт на место числа и ломает строку.
+ * The status text for a role that is unavailable. The secondary line needs it:
+ * the large value is not shown at all in that case, otherwise a long word like
+ * "Unavailable" takes the number's place and breaks the line.
  */
 export function formatUnavailable(
   hass: HomeAssistant | undefined,
@@ -99,7 +99,7 @@ export function formatUnavailable(
   return hass.formatEntityState(role.stateObj);
 }
 
-/** Число из состояния сущности, либо undefined если оно нечисловое. */
+/** The number from an entity's state, or undefined if it is not numeric. */
 export function numericState(
   role: ResolvedRole | undefined
 ): number | undefined {
@@ -108,7 +108,7 @@ export function numericState(
   return Number.isFinite(value) ? value : undefined;
 }
 
-/** Имя карточки: из конфига, иначе имя главной сущности. */
+/** The card name: from the config, otherwise the main entity's name. */
 export function cardName(
   configName: string | undefined,
   role: ResolvedRole | undefined
@@ -117,7 +117,7 @@ export function cardName(
   return role?.stateObj?.attributes.friendly_name ?? role?.entityId ?? "";
 }
 
-/** Отделяет единицу измерения, чтобы показать её мельче основного числа. */
+/** Splits off the unit so it can be shown smaller than the number itself. */
 export function splitValueUnit(
   formatted: string,
   unit: string | undefined

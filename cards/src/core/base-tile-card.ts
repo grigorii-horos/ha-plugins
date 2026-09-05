@@ -34,18 +34,18 @@ import { t } from "./i18n";
 export interface FormattedValue {
   value: string;
   unit?: string;
-  /** Чья это величина: тап по ней открывает more-info именно этой сущности. */
+  /** Whose value it is: a tap on it opens more-info for that entity. */
   entityId?: string;
   /**
-   * Иконка величины. «63%» само по себе может быть влажностью, зарядом или
-   * местом на диске — иконка называет её, не занимая места под слово.
+   * The value icon. "63%" on its own could be humidity, battery or disk space —
+   * the icon names it without spending room on a word.
    */
   icon?: string;
 }
 
 export type FeaturesPosition = "bottom" | "inline";
 
-/** Общие для всех карточек поля конфига — те же имена, что у штатного tile. */
+/** Config fields shared by every card — the same names as the stock tile's. */
 export interface TileBaseConfig {
   name?: string;
   icon?: string;
@@ -54,12 +54,12 @@ export interface TileBaseConfig {
   hide_state?: boolean;
   show_entity_picture?: boolean;
   /**
-   * Что показывать про главную сущность: состояние, атрибут, время изменения.
-   * Ровно то же поле, что у штатной плитки, и отрисовывает его тот же
-   * компонент HA — `state-display`.
+   * What to show about the main entity: state, an attribute, last changed.
+   * Exactly the stock tile's field, rendered by the very same HA component —
+   * `state-display`.
    */
   state_content?: string | string[];
-  /** Как показывать время у временных значений. */
+  /** How to render time values. */
   time_format?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -73,49 +73,49 @@ export interface TileBaseConfig {
 
 export interface TileParts {
   icon: string;
-  /** CSS-цвет для --tile-color; undefined оставляет нейтральный. */
+  /** A CSS colour for --tile-color; undefined leaves it neutral. */
   color?: string;
   primary: string;
   secondary?: Segment[];
-  /** Главная сущность: к ней относятся действия карточки. */
+  /** The main entity: the card's actions apply to it. */
   mainEntityId?: string;
   imageUrl?: string;
-  /** Действие иконки по умолчанию, когда icon_tap_action не задан. */
+  /** The default icon action, used when icon_tap_action is not set. */
   defaultIconAction?: ActionConfig;
   values?: FormattedValue[];
   /**
-   * Features самой карточки — например шкала влажности у растения. Работают,
-   * пока пользователь не задал свои: его список полностью замещает наш.
+   * The card's own features — a moisture gauge on a plant, for example. They
+   * work until the user sets their own: their list replaces ours entirely.
    */
   ownFeatures?: Record<string, unknown>[];
   /**
-   * Своя линия features, когда штатной не хватает. Занимает то же место и ту
-   * же высоту, что ряд features у плитки.
+   * Our own features line, for when the stock one is not enough. It takes the
+   * same place and the same height as the tile's features row.
    */
   customFeatures?: TemplateResult;
 }
 
 /**
- * Общий каркас всех карточек.
+ * The shared skeleton of every card.
  *
- * Вёрстка не своя: карточка собирается из компонентов штатной плитки HA.
- * `ha-tile-container` даёт подложку, ripple, распознавание жестов, индикатор
- * долгого нажатия и кольцо фокуса; `ha-tile-icon` и `ha-tile-info` — иконку и
- * тексты; `hui-card-features` — ряд features.
+ * The markup is not ours: a card is assembled from the stock HA tile's
+ * components. `ha-tile-container` gives the body, ripple, gesture recognition,
+ * the hold indicator and the focus ring; `ha-tile-icon` and `ha-tile-info` the
+ * icon and the texts; `hui-card-features` the features row.
  *
- * Своего здесь только то, чего у плитки нет: правая колонка с крупными
- * значениями и отдельная цель тапа у каждой величины.
+ * The only things of our own are what the tile does not have: the right-hand
+ * column of large values and a separate tap target per value.
  */
 export abstract class BaseTileCard extends LitElement {
-  // Массив, а не одиночный CSSResult: наследники дописывают к нему свои стили.
+  // An array, not a single CSSResult: subclasses append their own styles to it.
   static styles: CSSResultGroup = [tileStyles];
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  /** Компоненты HA подгружаются асинхронно, отсюда перерисовка. */
+  /** HA components load asynchronously, hence the re-render. */
   @state() private _ready = false;
 
-  /** Общие поля конфига. Наследник обязан их сюда положить в setConfig. */
+  /** The shared config fields. A subclass must put them here in setConfig. */
   protected base: TileBaseConfig = {};
 
   private _entityId?: string;
@@ -123,8 +123,8 @@ export abstract class BaseTileCard extends LitElement {
   private _defaultIconAction?: ActionConfig;
 
   /**
-   * Сколько места под строкой занимает содержимое: строки уровней, features.
-   * Наследник переопределяет, если у него что-то есть.
+   * How much room the content below the line takes: level rows, features.
+   * A subclass overrides this if it has any.
    */
   protected contentRows(): number {
     return 0;
@@ -135,12 +135,12 @@ export abstract class BaseTileCard extends LitElement {
   }
 
   /**
-   * Разметка для сеточного дашборда.
+   * Layout hints for a sections dashboard.
    *
-   * `rows: "auto"` — потому что высота зависит от содержимого: у принтера пять
-   * строк чернил, у климата ни одной. Так же размечают себя штатные карточки с
-   * плавающей высотой, entities и heading. Без этого карточка заявляла бы одну
-   * строку независимо от того, что в ней.
+   * `rows: "auto"` because the height depends on the content: a printer has five
+   * ink rows, a climate card none. The stock cards with a floating height, entities
+   * and heading, describe themselves the same way. Without it the card would claim
+   * one row no matter what is in it.
    */
   public getGridOptions(): LovelaceGridOptions {
     return {
@@ -168,7 +168,7 @@ export abstract class BaseTileCard extends LitElement {
     );
   }
 
-  // ---- действия --------------------------------------------------------
+  // ---- actions ---------------------------------------------------------
 
   private _handleAction(ev: CustomEvent): void {
     this._runAction(ev.detail.action as ActionType, false);
@@ -197,19 +197,19 @@ export abstract class BaseTileCard extends LitElement {
     handleAction(this, this.hass, config, action);
   }
 
-  // ---- отрисовка -------------------------------------------------------
+  // ---- rendering -------------------------------------------------------
 
-  /** Плашка вместо карточки: конфиг невалиден или сущности нет в HA. */
+  /** A banner instead of the card: the config is invalid or the entity is gone. */
   protected renderWarning(message: string): TemplateResult {
     return html`<ha-card><div class="warning">${message}</div></ha-card>`;
   }
 
   /**
-   * Состояние главной сущности для вторичной строки.
+   * The main entity's state for the secondary line.
    *
-   * Когда задан `state_content` или `time_format`, отрисовкой занимается
-   * штатный `state-display`: он умеет и атрибуты, и время изменения, и формат
-   * времени — повторять это своими руками незачем.
+   * When `state_content` or `time_format` is set, the stock `state-display` does
+   * the rendering: it handles attributes, last changed and time formats — no
+   * reason to redo that by hand.
    */
   protected mainStateSegment(role: ResolvedRole | undefined): Segment | undefined {
     if (!role?.stateObj || role.unavailable) return undefined;
@@ -227,7 +227,7 @@ export abstract class BaseTileCard extends LitElement {
     };
   }
 
-  /** Сообщение о ненайденных сущностях, либо undefined если всё на месте. */
+  /** A message about entities that were not found, or undefined if all are there. */
   protected missingRolesWarning(
     roles: (ResolvedRole | undefined)[]
   ): string | undefined {
@@ -243,13 +243,13 @@ export abstract class BaseTileCard extends LitElement {
   }
 
   /**
-   * Оборачивает величину в собственную цель тапа. Клик не всплывает до
-   * подложки, поэтому открывается more-info этой сущности, а не главной.
+   * Wraps a value in its own tap target. The click does not bubble to the body,
+   * so more-info opens for that entity rather than for the main one.
    *
-   * Именно кнопка, а не span с обработчиком: величины — самостоятельные цели,
-   * и до них надо доходить табом и нажимать с клавиатуры. Имя сущности идёт в
-   * title и aria-label: «63%» само по себе не говорит, чьё оно, — ни глазу при
-   * наведении, ни скринридеру.
+   * A button rather than a span with a handler: values are targets in their own
+   * right, and one has to be able to tab to them and press them from the
+   * keyboard. The entity name goes into title and aria-label: "63%" on its own
+   * says nothing about whose it is — neither on hover nor to a screen reader.
    */
   protected renderClickable(
     content: unknown,
@@ -301,7 +301,7 @@ export abstract class BaseTileCard extends LitElement {
       hasAction(this.base.icon_hold_action) ||
       hasAction(this.base.icon_double_tap_action);
 
-    // Список пользователя полностью замещает собственные features карточки.
+    // The user's list replaces the card's own features entirely.
     const features = this.base.features?.length
       ? this.base.features
       : ownFeatures;
@@ -394,8 +394,8 @@ export abstract class BaseTileCard extends LitElement {
   }
 
   /**
-   * Значения правой колонки. `icons` называет величину по ключу роли: без неё
-   * два процента подряд неотличимы друг от друга.
+   * The values of the right-hand column. `icons` names a value by its role key:
+   * without it two percentages in a row are indistinguishable.
    */
   protected bigValues(
     big: KeyedRole[],
@@ -416,8 +416,8 @@ export abstract class BaseTileCard extends LitElement {
   }
 
   /**
-   * Адрес картинки сущности — та же логика, что в _getImageUrl штатной плитки.
-   * Камеры с их отдельным адресом по размеру не поддерживаются.
+   * The entity picture URL — the same logic as _getImageUrl in the stock tile.
+   * Cameras, with their separate size-aware URL, are not supported.
    */
   protected entityImage(stateObj: HassEntity | undefined): string | undefined {
     if (!this.base.show_entity_picture || !this.hass || !stateObj) {
@@ -429,7 +429,7 @@ export abstract class BaseTileCard extends LitElement {
     return picture ? this.hass.hassUrl(picture) : undefined;
   }
 
-  /** Готовое к показу крупное значение. У недоступной сущности его нет. */
+  /** A large value ready to show. An unavailable entity has none. */
   protected formatted(
     stateObj: HassEntity | undefined
   ): FormattedValue | undefined {
@@ -442,7 +442,7 @@ export abstract class BaseTileCard extends LitElement {
   }
 }
 
-/** Цвет из конфига: имя палитры HA, "primary" или готовый CSS-цвет. */
+/** A colour from the config: an HA palette name, "primary" or a ready CSS colour. */
 export function cssColor(color: string): string {
   if (/^(#|rgb|hsl|var\()/.test(color)) return color;
   if (color === "state") return "var(--state-icon-color)";

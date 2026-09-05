@@ -2,14 +2,14 @@ import type { CustomCardEntry, HomeAssistant } from "./types";
 import { languageOf } from "./i18n";
 
 /**
- * Регистрация карточек и редакторов, переживающая вторую загрузку бандла.
+ * Registering cards and editors in a way that survives a second bundle load.
  *
- * `customElements.define` на уже занятое имя бросает исключение, и модуль
- * умирает целиком. Случается это буднично: dev-ресурс остался в дашборде, а
- * рядом появился установленный через HACS. Работать будет тот, что загрузился
- * первым, — то есть можно смотреть на старый код, думая, что обновился.
+ * `customElements.define` on a name already taken throws, and the whole module
+ * dies with it. That happens routinely: the dev resource is still in the
+ * dashboard and one installed through HACS shows up next to it. Whichever loaded
+ * first wins — so you can end up looking at old code thinking it updated.
  *
- * Поэтому вторая копия молча уступает первой и говорит об этом в консоль.
+ * So the second copy quietly yields to the first and says so in the console.
  */
 
 let warned = false;
@@ -19,19 +19,18 @@ function alreadyLoaded(tag: string): void {
   warned = true;
   // eslint-disable-next-line no-console
   console.warn(
-    `horos-cards: карточка ${tag} уже зарегистрирована. Похоже, бандл ` +
-      `подключён к дашборду дважды — работает копия, загруженная первой. ` +
-      `Проверьте ресурсы дашборда.`
+    `horos-cards: card ${tag} is already registered. The bundle looks to be ` +
+      `attached to the dashboard twice — the copy that loaded first is the one ` +
+      `running. Check the dashboard resources.`
   );
 }
 
 /**
- * Язык пользователя в момент, когда список карточек читают.
+ * The user's language at the moment the card list is read.
  *
- * Список заполняется при загрузке бандла, когда `hass` ещё нет ни у одной
- * карточки. Поэтому название и описание — не строки, а геттеры: HA спрашивает
- * их, когда открывает окно добавления, и к этому моменту приложение уже на
- * странице.
+ * The list is filled while the bundle loads, when no card has `hass` yet. So the
+ * name and description are getters rather than strings: HA asks for them when it
+ * opens the picker, and by then the application is already on the page.
  */
 function currentLanguage(): string {
   const app = document.querySelector("home-assistant") as

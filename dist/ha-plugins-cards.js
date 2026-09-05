@@ -263,8 +263,8 @@ Y.elementStyles = [], Y.shadowRootOptions = { mode: "open" }, Y[ne("elementPrope
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const Ie = globalThis, Be = (s) => s, fe = Ie.trustedTypes, We = fe ? fe.createPolicy("lit-html", { createHTML: (s) => s }) : void 0, ht = "$lit$", L = `lit$${Math.random().toFixed(9).slice(2)}$`, dt = "?" + L, hs = `<${dt}>`, W = document, re = () => W.createComment(""), ie = (s) => s === null || typeof s != "object" && typeof s != "function", Me = Array.isArray, ds = (s) => Me(s) || typeof s?.[Symbol.iterator] == "function", Se = `[ 	
-\f\r]`, se = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Ve = /-->/g, Ke = />/g, D = RegExp(`>|${Se}(?:([^\\s"'>=/]+)(${Se}*=${Se}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), qe = /'/g, Ge = /"/g, mt = /^(?:script|style|textarea|title)$/i, ms = (s) => (e, ...t) => ({ _$litType$: s, strings: e, values: t }), _ = ms(1), Z = Symbol.for("lit-noChange"), d = Symbol.for("lit-nothing"), Ye = /* @__PURE__ */ new WeakMap(), z = W.createTreeWalker(W, 129);
+\f\r]`, se = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, qe = /-->/g, Ve = />/g, D = RegExp(`>|${Se}(?:([^\\s"'>=/]+)(${Se}*=${Se}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Ke = /'/g, Ge = /"/g, mt = /^(?:script|style|textarea|title)$/i, ms = (s) => (e, ...t) => ({ _$litType$: s, strings: e, values: t }), _ = ms(1), Z = Symbol.for("lit-noChange"), d = Symbol.for("lit-nothing"), Ye = /* @__PURE__ */ new WeakMap(), z = W.createTreeWalker(W, 129);
 function pt(s, e) {
   if (!Me(s) || !s.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return We !== void 0 ? We.createHTML(e) : e;
@@ -275,7 +275,7 @@ const ps = (s, e) => {
   for (let c = 0; c < t; c++) {
     const a = s[c];
     let l, h, u = -1, g = 0;
-    for (; g < a.length && (o.lastIndex = g, h = o.exec(a), h !== null); ) g = o.lastIndex, o === se ? h[1] === "!--" ? o = Ve : h[1] !== void 0 ? o = Ke : h[2] !== void 0 ? (mt.test(h[2]) && (n = RegExp("</" + h[2], "g")), o = D) : h[3] !== void 0 && (o = D) : o === D ? h[0] === ">" ? (o = n ?? se, u = -1) : h[1] === void 0 ? u = -2 : (u = o.lastIndex - h[2].length, l = h[1], o = h[3] === void 0 ? D : h[3] === '"' ? Ge : qe) : o === Ge || o === qe ? o = D : o === Ve || o === Ke ? o = se : (o = D, n = void 0);
+    for (; g < a.length && (o.lastIndex = g, h = o.exec(a), h !== null); ) g = o.lastIndex, o === se ? h[1] === "!--" ? o = qe : h[1] !== void 0 ? o = Ve : h[2] !== void 0 ? (mt.test(h[2]) && (n = RegExp("</" + h[2], "g")), o = D) : h[3] !== void 0 && (o = D) : o === D ? h[0] === ">" ? (o = n ?? se, u = -1) : h[1] === void 0 ? u = -2 : (u = o.lastIndex - h[2].length, l = h[1], o = h[3] === void 0 ? D : h[3] === '"' ? Ge : Ke) : o === Ge || o === Ke ? o = D : o === qe || o === Ve ? o = se : (o = D, n = void 0);
     const $ = o === D && s[c + 1].startsWith("/>") ? " " : "";
     i += o === se ? a + hs : u >= 0 ? (r.push(l), a.slice(0, u) + ht + a.slice(u) + L + $) : a + L + (u === -2 ? c : $);
   }
@@ -559,7 +559,7 @@ function ve(s) {
 function v(s) {
   return ve({ ...s, state: !0, attribute: !1 });
 }
-const K = Pe`
+const V = Pe`
   :host {
     --tile-color: var(--state-inactive-color, #7b7b7b);
     display: block;
@@ -587,7 +587,7 @@ const K = Pe`
     --feature-color: var(--tile-color);
   }
 
-  /* Тексты и правая колонка стоят в одной строке слота info. */
+  /* The texts and the right-hand column share one row of the info slot. */
   .info {
     display: flex;
     flex-direction: row;
@@ -608,9 +608,9 @@ const K = Pe`
   }
 
   /*
-   * Единственное отступление от канона tile: главные значения вынесены в
-   * правую колонку крупным шрифтом. Каждое следующее значение опускает шрифт
-   * на ступень, иначе колонка съедает имя карточки.
+   * The one departure from the tile canon: the main values are moved into the
+   * right-hand column in a large font. Each next value drops the font a step,
+   * otherwise the column eats the card name.
    */
   .values {
     flex: none;
@@ -632,7 +632,7 @@ const K = Pe`
     gap: 2px;
   }
 
-  /* Иконка называет величину; число остаётся главным, иконка приглушена. */
+  /* The icon names the quantity; the number stays the star, the icon is muted. */
   .values .clickable,
   .values > span,
   .values > button {
@@ -665,9 +665,9 @@ const K = Pe`
   }
 
   /*
-   * Второе отступление: величины кликабельны по отдельности, тап по каждой
-   * открывает more-info её сущности. Содержимое плитки событий не принимает,
-   * поэтому цели тапа включают их обратно.
+   * The second departure: values are clickable one by one, and a tap on each
+   * opens more-info for its entity. Tile content does not take events, so the
+   * tap targets switch them back on.
    */
   .clickable {
     padding: 0;
@@ -688,7 +688,7 @@ const K = Pe`
     border-radius: var(--ha-border-radius-sm, 6px);
   }
 
-  /* Своя линия features: те же отступы, что у штатного ряда. */
+  /* Our own features line: the same padding as the stock row. */
   .custom-features {
     display: block;
     padding: 0 var(--ha-space-3, 12px) var(--ha-space-3, 12px);
@@ -901,14 +901,14 @@ function zs(s, e) {
 async function Bs(s, e) {
   if (!e.confirmation) return !0;
   const t = window.loadCardHelpers;
-  if (!t) return window.confirm(e.confirmation.text ?? "Подтвердить?");
+  if (!t) return window.confirm(e.confirmation.text ?? "Are you sure?");
   const r = await t();
   return r.showConfirmationDialog ? r.showConfirmationDialog(s, {
     text: e.confirmation.text,
     title: e.confirmation.title,
     confirmText: e.confirmation.confirm_text,
     dismissText: e.confirmation.dismiss_text
-  }) : window.confirm(e.confirmation.text ?? "Подтвердить?");
+  }) : window.confirm(e.confirmation.text ?? "Are you sure?");
 }
 async function Ws(s, e, t, r) {
   let n;
@@ -948,7 +948,7 @@ async function Ws(s, e, t, r) {
         break;
       default:
         console.warn(
-          `horos-cards: действие "${n.action}" не поддержано`
+          `horos-cards: action "${n.action}" is not supported`
         );
     }
 }
@@ -965,7 +965,7 @@ function vt(s, e) {
     new Promise((t) => setTimeout(() => t(!1), e))
   ]);
 }
-async function Vs() {
+async function qs() {
   const s = window.loadCardHelpers;
   if (s)
     try {
@@ -974,11 +974,11 @@ async function Vs() {
     }
 }
 function yt() {
-  return ue || (ue = (async () => Je.every((e) => customElements.get(e)) ? !0 : (await Vs(), (await Promise.all(
+  return ue || (ue = (async () => Je.every((e) => customElements.get(e)) ? !0 : (await qs(), (await Promise.all(
     Je.map((e) => vt(e, _t))
   )).every(Boolean)))(), ue);
 }
-function Ks() {
+function Vs() {
   return he || (he = (async () => {
     if (customElements.get("hui-card-features-editor")) return !0;
     await yt();
@@ -990,7 +990,7 @@ function Ks() {
     return vt("hui-card-features-editor", _t);
   })(), he);
 }
-const qs = {
+const Ks = {
   temperature: "mdi:thermometer",
   humidity: "mdi:water-percent",
   moisture: "mdi:water-percent",
@@ -1111,11 +1111,11 @@ class w extends B {
     super(...arguments), this._ready = !1, this.base = {};
   }
   static {
-    this.styles = [K];
+    this.styles = [V];
   }
   /**
-   * Сколько места под строкой занимает содержимое: строки уровней, features.
-   * Наследник переопределяет, если у него что-то есть.
+   * How much room the content below the line takes: level rows, features.
+   * A subclass overrides this if it has any.
    */
   contentRows() {
     return 0;
@@ -1124,12 +1124,12 @@ class w extends B {
     return 1 + this.contentRows();
   }
   /**
-   * Разметка для сеточного дашборда.
+   * Layout hints for a sections dashboard.
    *
-   * `rows: "auto"` — потому что высота зависит от содержимого: у принтера пять
-   * строк чернил, у климата ни одной. Так же размечают себя штатные карточки с
-   * плавающей высотой, entities и heading. Без этого карточка заявляла бы одну
-   * строку независимо от того, что в ней.
+   * `rows: "auto"` because the height depends on the content: a printer has five
+   * ink rows, a climate card none. The stock cards with a floating height, entities
+   * and heading, describe themselves the same way. Without it the card would claim
+   * one row no matter what is in it.
    */
   getGridOptions() {
     return {
@@ -1153,7 +1153,7 @@ class w extends B {
       })
     );
   }
-  // ---- действия --------------------------------------------------------
+  // ---- actions ---------------------------------------------------------
   _handleAction(e) {
     this._runAction(e.detail.action, !1);
   }
@@ -1175,17 +1175,17 @@ class w extends B {
     };
     Ws(this, this.hass, r, e);
   }
-  // ---- отрисовка -------------------------------------------------------
-  /** Плашка вместо карточки: конфиг невалиден или сущности нет в HA. */
+  // ---- rendering -------------------------------------------------------
+  /** A banner instead of the card: the config is invalid or the entity is gone. */
   renderWarning(e) {
     return _`<ha-card><div class="warning">${e}</div></ha-card>`;
   }
   /**
-   * Состояние главной сущности для вторичной строки.
+   * The main entity's state for the secondary line.
    *
-   * Когда задан `state_content` или `time_format`, отрисовкой занимается
-   * штатный `state-display`: он умеет и атрибуты, и время изменения, и формат
-   * времени — повторять это своими руками незачем.
+   * When `state_content` or `time_format` is set, the stock `state-display` does
+   * the rendering: it handles attributes, last changed and time formats — no
+   * reason to redo that by hand.
    */
   mainStateSegment(e) {
     if (!(!e?.stateObj || e.unavailable))
@@ -1199,7 +1199,7 @@ class w extends B {
       ></state-display>`
       };
   }
-  /** Сообщение о ненайденных сущностях, либо undefined если всё на месте. */
+  /** A message about entities that were not found, or undefined if all are there. */
   missingRolesWarning(e) {
     const t = e.filter((r) => !!r && r.missing).map((r) => r.entityId);
     if (t.length)
@@ -1210,13 +1210,13 @@ class w extends B {
       );
   }
   /**
-   * Оборачивает величину в собственную цель тапа. Клик не всплывает до
-   * подложки, поэтому открывается more-info этой сущности, а не главной.
+   * Wraps a value in its own tap target. The click does not bubble to the body,
+   * so more-info opens for that entity rather than for the main one.
    *
-   * Именно кнопка, а не span с обработчиком: величины — самостоятельные цели,
-   * и до них надо доходить табом и нажимать с клавиатуры. Имя сущности идёт в
-   * title и aria-label: «63%» само по себе не говорит, чьё оно, — ни глазу при
-   * наведении, ни скринридеру.
+   * A button rather than a span with a handler: values are targets in their own
+   * right, and one has to be able to tab to them and press them from the
+   * keyboard. The entity name goes into title and aria-label: "63%" on its own
+   * says nothing about whose it is — neither on hover nor to a screen reader.
    */
   renderClickable(e, t) {
     if (!t) return _`<span>${e}</span>`;
@@ -1317,10 +1317,10 @@ class w extends B {
     `;
   }
   /**
-   * Значения правой колонки. `icons` называет величину по ключу роли: без неё
-   * два процента подряд неотличимы друг от друга.
+   * The values of the right-hand column. `icons` names a value by its role key:
+   * without it two percentages in a row are indistinguishable.
    */
-  bigValues(e, t = qs) {
+  bigValues(e, t = Ks) {
     return e.map((r) => {
       const n = this.formatted(r.role?.stateObj);
       return n ? {
@@ -1331,8 +1331,8 @@ class w extends B {
     }).filter((r) => !!r);
   }
   /**
-   * Адрес картинки сущности — та же логика, что в _getImageUrl штатной плитки.
-   * Камеры с их отдельным адресом по размеру не поддерживаются.
+   * The entity picture URL — the same logic as _getImageUrl in the stock tile.
+   * Cameras, with their separate size-aware URL, are not supported.
    */
   entityImage(e) {
     if (!this.base.show_entity_picture || !this.hass || !e)
@@ -1340,7 +1340,7 @@ class w extends B {
     const t = e.attributes.entity_picture_local || e.attributes.entity_picture;
     return t ? this.hass.hassUrl(t) : void 0;
   }
-  /** Готовое к показу крупное значение. У недоступной сущности его нет. */
+  /** A large value ready to show. An unavailable entity has none. */
   formatted(e) {
     if (!(!this.hass || !e) && !ft.has(e.state))
       return Os(
@@ -1359,22 +1359,22 @@ function Js(s) {
   return /^(#|rgb|hsl|var\()/.test(s) ? s : s === "state" ? "var(--state-icon-color)" : `var(--${s}-color, var(--state-icon-color))`;
 }
 const Qe = 3;
-function q(s, e, t) {
+function K(s, e, t) {
   if (!s || s.length === 0) return [e];
   if (s.length > Qe)
     throw new Error(
-      `Крупных значений может быть не больше ${Qe}, указано ${s.length}`
+      `At most ${Qe} large values are allowed, got ${s.length}`
     );
   const r = s.filter((i) => !t.includes(i));
   if (r.length)
     throw new Error(
-      `Неизвестные роли в big_values: ${r.join(", ")}. Допустимы: ${t.join(", ")}`
+      `Unknown roles in big_values: ${r.join(", ")}. Allowed: ${t.join(", ")}`
     );
   const n = s.filter(
     (i, o) => s.indexOf(i) !== o
   );
   if (n.length)
-    throw new Error(`Роль указана дважды: ${n.join(", ")}`);
+    throw new Error(`Role listed twice: ${n.join(", ")}`);
   return s;
 }
 function G(s, e) {
@@ -1384,7 +1384,7 @@ function G(s, e) {
 let Xe = !1;
 function Qs(s) {
   Xe || (Xe = !0, console.warn(
-    `horos-cards: карточка ${s} уже зарегистрирована. Похоже, бандл подключён к дашборду дважды — работает копия, загруженная первой. Проверьте ресурсы дашборда.`
+    `horos-cards: card ${s} is already registered. The bundle looks to be attached to the dashboard twice — the copy that loaded first is the one running. Check the dashboard resources.`
   ));
 }
 function et() {
@@ -1435,8 +1435,8 @@ class $t extends w {
   }
   setConfig(e) {
     if (!e.temperature)
-      throw new Error("Нужно указать сущность температуры (temperature)");
-    this._bigKeys = q(
+      throw new Error("A temperature entity is required (temperature)");
+    this._bigKeys = K(
       e.big_values,
       "temperature",
       tt
@@ -1495,8 +1495,8 @@ class Et extends w {
   }
   setConfig(e) {
     if (!e.switch)
-      throw new Error("Нужно указать выключатель (switch)");
-    this._bigKeys = q(e.big_values, "power", st), this.base = e, this._config = e;
+      throw new Error("A switch is required (switch)");
+    this._bigKeys = K(e.big_values, "power", st), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
@@ -1511,11 +1511,11 @@ class Et extends w {
       color: N(o.stateObj),
       primary: Re(e.name, o),
       secondary: k([
-        // Одна из двух вернёт кусок: доступный выключатель даёт своё
-        // состояние, недоступный — статус недоступности.
+        // One of the two returns a piece: an available switch gives its state,
+        // an unavailable one its unavailability status.
         U(this.hass, o),
-        // Выключатель — главная сущность карточки, поэтому его состояние
-        // может показываться через state_content, как у штатной плитки.
+        // The switch is the card's main entity, so its state can be shown
+        // through state_content, just like on the stock tile.
         ...i.map(
           (a) => a.key === "switch" ? this.mainStateSegment(a.role) : C(this.hass, a.role)
         )
@@ -1524,7 +1524,7 @@ class Et extends w {
       imageUrl: this.entityImage(o.stateObj),
       defaultIconAction: He(c),
       values: this.bigValues(n),
-      // Кнопка — штатная feature HA, своей вёрстки для неё больше нет.
+      // The button is a stock HA feature; there is no markup of our own left for it.
       ownFeatures: e.toggle_button ? [{ type: "toggle" }] : void 0
     });
   }
@@ -1576,11 +1576,11 @@ class St extends w {
   }
   setConfig(e) {
     if (!e.moisture)
-      throw new Error("Нужно указать сущность влажности почвы (moisture)");
+      throw new Error("A soil moisture entity is required (moisture)");
     const t = e.dry_below ?? nt, r = e.wet_above ?? rt;
     if (t >= r)
-      throw new Error("dry_below должен быть меньше wet_above");
-    this._bigKeys = q(e.big_values, "moisture", it), this.base = e, this._config = e;
+      throw new Error("dry_below must be smaller than wet_above");
+    this._bigKeys = K(e.big_values, "moisture", it), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
@@ -1606,8 +1606,8 @@ class St extends w {
       ]),
       mainEntityId: o?.entityId,
       values: this.bigValues(n),
-      // Шкала — штатная feature HA, а не своя полоса. Цвет она берёт из
-      // --tile-color, то есть из наших порогов сухости.
+      // The gauge is a stock HA feature, not a bar of our own. It takes its
+      // colour from --tile-color, that is, from our dryness thresholds.
       ownFeatures: c === void 0 ? void 0 : [{ type: "bar-gauge", min: 0, max: 100 }]
     });
   }
@@ -1660,18 +1660,18 @@ class le extends B {
   getCardSize() {
     return 1 + Math.ceil(this._children.length / Math.max(1, this.columns()));
   }
-  /** Высота зависит от числа ячеек, поэтому её считает сама HA. */
+  /** Height depends on the number of cells, so HA computes it itself. */
   getGridOptions() {
     return { columns: 12, rows: "auto", min_columns: 6, min_rows: 2 };
   }
-  /** Наследник обязан позвать это в конце setConfig. */
+  /** A subclass must call this at the end of setConfig. */
   rebuild() {
     this._build();
   }
   async _build() {
     const e = window.loadCardHelpers;
     if (!e) {
-      this._error = "Home Assistant не отдал помощники карточек";
+      this._error = "Home Assistant did not provide card helpers";
       return;
     }
     const t = await e(), r = this.headingConfig();
@@ -1734,7 +1734,7 @@ class xt extends le {
   }
   setConfig(e) {
     if (!e.buttons?.length)
-      throw new Error("Нужно указать хотя бы одну кнопку (buttons)");
+      throw new Error("At least one button is required (buttons)");
     this._config = e, this.rebuild();
   }
   columns() {
@@ -1802,8 +1802,8 @@ const Q = Pe`
   }
 
   /*
-   * Доля, а не автоширина: иначе имена разной длины растаскивают полосы, и
-   * ряд перестаёт читаться как одна шкала.
+   * A fraction, not auto width: otherwise names of different lengths drag the
+   * bars around and the row stops reading as one scale.
    */
   .level .name {
     flex: 0 0 34%;
@@ -1824,7 +1824,7 @@ const Q = Pe`
     --mdc-icon-size: 14px;
   }
 
-  /* Полоса как у штатной hui-bar-gauge-card-feature, только тоньше. */
+  /* The bar as in the stock hui-bar-gauge-card-feature, only thinner. */
   .level .bar {
     flex: 1 1 auto;
     display: flex;
@@ -1922,8 +1922,8 @@ const _n = [
   [/cyan/i, "cyan"],
   [/magenta/i, "purple"],
   [/yellow/i, "yellow"],
-  // MC — сервисный бак, а не чернила. Своим оттенком, иначе он
-  // неотличим от чёрного: тот красится цветом текста и тоже выходит серым.
+  // MC is the maintenance tank, not ink. It gets its own shade, otherwise it is
+  // indistinguishable from black: that one is painted in the text colour and
   [/_mc(_|$)|maintenance/i, "blue-grey"]
 ];
 function vn(s) {
@@ -1946,9 +1946,9 @@ var $n = Object.defineProperty, En = (s, e, t, r) => {
 };
 class At extends w {
   static {
-    this.styles = [K, Q];
+    this.styles = [V, Q];
   }
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil(((this._config?.cartridges.length ?? 0) + (this._config?.sensors?.length ?? 0)) / 2);
   }
@@ -1962,7 +1962,7 @@ class At extends w {
   }
   setConfig(e) {
     if (!e.cartridges?.length)
-      throw new Error("Нужно указать хотя бы один картридж (cartridges)");
+      throw new Error("At least one cartridge is required (cartridges)");
     this.base = e, this._config = e;
   }
   get _printerName() {
@@ -1993,7 +1993,7 @@ class At extends w {
     const e = this._tanks(), t = e.filter((a) => !a.marker && a.text === "—");
     if (t.length)
       return this.renderWarning(
-        `Сущности не найдены: ${t.map((a) => a.entityId).join(", ")}`
+        `Entities not found: ${t.map((a) => a.entityId).join(", ")}`
       );
     const n = e.filter((a) => a.marker && !a.marker.fills).reduce(
       (a, l) => !a || l.marker.fill < a.marker.fill ? l : a,
@@ -2051,9 +2051,9 @@ var Sn = Object.defineProperty, xn = (s, e, t, r) => {
 const Cn = 20;
 class Ot extends w {
   static {
-    this.styles = [K, Q];
+    this.styles = [V, Q];
   }
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil((this._config?.consumables?.length ?? 0) / 2);
   }
@@ -2067,7 +2067,7 @@ class Ot extends w {
   }
   setConfig(e) {
     if (!e.vacuum)
-      throw new Error("Нужно указать пылесос (vacuum)");
+      throw new Error("A vacuum is required (vacuum)");
     this.base = e, this._config = e;
   }
   render() {
@@ -2080,9 +2080,9 @@ class Ot extends w {
         entityId: l.entity,
         name: g ?? l.entity,
         text: `${u}%`,
-        // Цветом плитки красить нельзя: у стоящего на базе пылесоса он
-        // неактивный, и все колбы выходят одинаково серыми. Красим по
-        // уровню — вопрос у расходника тот же, что у батарейки.
+        // Painting them in the tile colour is wrong: a docked vacuum's colour
+        // is the inactive one and every bar comes out the same grey. We paint
+        // by level — a consumable asks the same question a battery does.
         ink: l.color ?? ce(u),
         level: u,
         alarm: u < c
@@ -2132,7 +2132,7 @@ class kt extends w {
   }
   setConfig(e) {
     if (!e.batteries?.length)
-      throw new Error("Нужно указать хотя бы одну батарейку (batteries)");
+      throw new Error("At least one battery is required (batteries)");
     this.base = e, this._config = e;
   }
   render() {
@@ -2168,9 +2168,9 @@ class kt extends w {
             })
           }
         ],
-        // Пропавшую строку выбрасываем, но молчать о ней нельзя: карточка со
-        // списком не должна гаснуть целиком из-за одной переименованной
-        // сущности, и не должна делать вид, что её там и не было.
+        // A row that disappeared is dropped, but staying silent about it is not
+        // an option: a list card must not go dark over one renamed entity, and
+        // must not pretend the entity was never there.
         ...n.length ? [{ text: m(this.hass, "list.missing", { count: n.length }) }] : []
       ]),
       values: o ? [
@@ -2212,7 +2212,7 @@ class Pt extends w {
   }
   setConfig(e) {
     if (!e.sensors?.length)
-      throw new Error("Нужно указать хотя бы один датчик (sensors)");
+      throw new Error("At least one sensor is required (sensors)");
     this.base = e, this._config = e;
   }
   render() {
@@ -2275,9 +2275,9 @@ class Tt extends w {
   setConfig(e) {
     if (!e.disk && !e.download && !e.status)
       throw new Error(
-        "Нужна хотя бы одна сущность: status, disk или download"
+        "At least one entity is required: status, disk or download"
       );
-    this._bigKeys = q(e.big_values, "disk", at), this.base = e, this._config = e;
+    this._bigKeys = K(e.big_values, "disk", at), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
@@ -2330,9 +2330,9 @@ var jn = Object.defineProperty, Rn = (s, e, t, r) => {
 };
 class It extends w {
   static {
-    this.styles = [K, Q];
+    this.styles = [V, Q];
   }
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil((this._config?.devices?.length ?? 0) / 2);
   }
@@ -2346,7 +2346,7 @@ class It extends w {
   }
   setConfig(e) {
     if (!e.person)
-      throw new Error("Нужно указать человека (person)");
+      throw new Error("A person is required (person)");
     this.base = { show_entity_picture: !0, ...e }, this._config = e;
   }
   render() {
@@ -2424,9 +2424,9 @@ class Mt extends w {
     super(...arguments), this._bigKeys = ["temperature"];
   }
   static {
-    this.styles = [K, Q];
+    this.styles = [V, Q];
   }
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil(4 / 2);
   }
@@ -2441,15 +2441,15 @@ class Mt extends w {
   setConfig(e) {
     if (!e.cpu && !e.memory && !e.temperatures?.length && !e.disks?.length && !e.disks_free?.length)
       throw new Error(
-        "Нужна хотя бы одна сущность: cpu, memory, temperatures или disks"
+        "At least one entity is required: cpu, memory, temperatures or disks"
       );
-    this._bigKeys = q(
+    this._bigKeys = K(
       e.big_values,
       "temperature",
       Nn
     ), this.base = e, this._config = e;
   }
-  /** Роли карточки: списки уже сведены к крайнему датчику. */
+  /** The card's roles: the lists are already reduced to their extreme sensor. */
   _roles() {
     const e = this._config;
     return [
@@ -2463,7 +2463,7 @@ class Mt extends w {
       { key: "disk", role: xe(this.hass, e.disks, "max") }
     ];
   }
-  /** Раздел с наименьшим запасом свободного места. */
+  /** The partition with the least free space left. */
   _freeDisk() {
     return xe(this.hass, this._config?.disks_free, "min");
   }
@@ -2499,8 +2499,8 @@ class Mt extends w {
       this._levelRow(m(this.hass, "level.memory"), t[2].role),
       this._levelRow(m(this.hass, "level.gpu"), t[3].role),
       this._levelRow(m(this.hass, "level.disk"), t[4].role),
-      // Свободное место — ресурс, который кончается, поэтому и цвет, и тревога
-      // здесь как у батарейки, а не как у загрузки.
+      // Free space is a resource that runs out, so both the colour and the alarm
+      // here behave like a battery's, not like load's.
       a ? {
         entityId: a.entityId,
         name: m(this.hass, "level.diskFree"),
@@ -2520,7 +2520,7 @@ class Mt extends w {
         U(this.hass, r),
         ...o,
         ...n.map((u) => C(this.hass, u)),
-        // Загрузка и диски уже показаны полосами со своими подписями.
+        // Load and disks are already shown as bars with their own labels.
         ...this._bigKeys.includes("temperature") ? [] : [C(this.hass, t[0].role)]
       ]),
       values: this.bigValues(c),
@@ -2558,8 +2558,8 @@ class jt extends w {
   }
   setConfig(e) {
     if (!e.appliance)
-      throw new Error("Нужно указать прибор (appliance)");
-    this._bigKeys = q(e.big_values, "pm25", lt), this.base = e, this._config = e;
+      throw new Error("An appliance is required (appliance)");
+    this._bigKeys = K(e.big_values, "pm25", lt), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
@@ -2616,15 +2616,15 @@ var Fn = Object.defineProperty, zn = (s, e, t, r) => {
     (o = s[i]) && (n = o(e, t, n) || n);
   return n && Fn(e, t, n), n;
 };
-const ct = ["illuminance", "battery"], Bn = 1, Wn = 2, Vn = 4;
+const ct = ["illuminance", "battery"], Bn = 1, Wn = 2, qn = 4;
 class Rt extends w {
   constructor() {
     super(...arguments), this._bigKeys = ["illuminance"];
   }
   static {
-    this.styles = [K, Q];
+    this.styles = [V, Q];
   }
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil(2 / 2);
   }
@@ -2638,8 +2638,8 @@ class Rt extends w {
   }
   setConfig(e) {
     if (!e.cover)
-      throw new Error("Нужно указать штору (cover)");
-    this._bigKeys = q(e.big_values, "illuminance", ct), this.base = e, this._config = e;
+      throw new Error("A cover is required (cover)");
+    this._bigKeys = K(e.big_values, "illuminance", ct), this.base = e, this._config = e;
   }
   render() {
     if (!this._config || !this.hass) return d;
@@ -2654,7 +2654,7 @@ class Rt extends w {
     if (i) return this.renderWarning(i);
     const { big: o, rest: c } = G(n, this._bigKeys), a = Number(
       t?.stateObj?.attributes.supported_features ?? 0
-    ), l = (a & Vn) !== 0, h = (a & (Bn | Wn)) !== 0, u = [];
+    ), l = (a & qn) !== 0, h = (a & (Bn | Wn)) !== 0, u = [];
     e.controls !== !1 && (l && u.push({ type: "cover-position" }), h && u.push({ type: "cover-open-close" }));
     const g = H(r), $ = r && !l ? [
       {
@@ -2693,7 +2693,7 @@ E("horos-cover-tile", Rt, {
   },
   preview: !0
 });
-const Kn = [
+const Vn = [
   "update",
   "select",
   "text",
@@ -2702,10 +2702,10 @@ const Kn = [
   "event",
   "notify"
 ];
-function qn(s, e = {}) {
+function Kn(s, e = {}) {
   if (!s) return [];
   const t = new Set(e.ignore ?? []), r = new Set(
-    e.ignoreDomains ?? Kn
+    e.ignoreDomains ?? Vn
   ), n = /* @__PURE__ */ new Map();
   for (const [i, o] of Object.entries(s.states)) {
     if (!o || o.state !== "unavailable" || t.has(i) || r.has(i.split(".")[0])) continue;
@@ -2738,7 +2738,7 @@ class Ht extends w {
   }
   render() {
     if (!this._config || !this.hass) return d;
-    const e = this._config, t = qn(this.hass, {
+    const e = this._config, t = Kn(this.hass, {
       ignore: e.ignore,
       ignoreDomains: e.ignore_domains
     }), r = e.limit ?? Zn, n = t.slice(0, r), i = t.length - n.length;
@@ -2786,9 +2786,9 @@ var Jn = Object.defineProperty, Qn = (s, e, t, r) => {
 const Xn = 5;
 class Ut extends w {
   static {
-    this.styles = [K, Q];
+    this.styles = [V, Q];
   }
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil(Math.min(this._config?.consumers.length ?? 0, this._config?.limit ?? 5) / 2);
   }
@@ -2802,7 +2802,7 @@ class Ut extends w {
   }
   setConfig(e) {
     if (!e.consumers?.length)
-      throw new Error("Нужно указать хотя бы одного потребителя (consumers)");
+      throw new Error("At least one consumer is required (consumers)");
     this.base = e, this._config = e;
   }
   render() {
@@ -2879,7 +2879,7 @@ class Nt extends w {
   }
   setConfig(e) {
     if (!e.areas?.length)
-      throw new Error("Нужно указать хотя бы одну зону (areas)");
+      throw new Error("At least one area is required (areas)");
     this.base = e, this._config = e;
   }
   render() {
@@ -2957,18 +2957,18 @@ class we extends B {
   setConfig(e) {
     this._config = e;
   }
-  /** Что показать форме. По умолчанию — сам конфиг. */
+  /** What to show the form. The config itself by default. */
   get formData() {
     return this._config ?? {};
   }
-  /** Что положить в конфиг из формы. */
+  /** What to put into the config from the form. */
   fromForm(e) {
     return e;
   }
   /**
-   * Подписи на языке пользователя. Держим их парой прямо у карточки, а не в
-   * общем словаре: одно и то же поле в разных карточках называется по-разному —
-   * «Заряд», «Заряд датчика», «Заряд основного устройства».
+   * Labels in the user's language. They are kept as a pair right next to the card
+   * rather than in a shared dictionary: the same field is called differently on
+   * different cards — "Battery", "Sensor battery", "Main device battery".
    */
   pick(e) {
     return b(this.hass) === "ru" ? e.ru : e.en;
@@ -3014,13 +3014,13 @@ class x extends we {
     super(...arguments), this._featuresEditorReady = !1;
   }
   connectedCallback() {
-    super.connectedCallback(), Ks().then((e) => {
+    super.connectedCallback(), Vs().then((e) => {
       this._featuresEditorReady = e;
     });
   }
   /**
-   * Форма показывает раскладку картинками (content_layout), а в конфиге лежит
-   * булево vertical — ровно как в редакторе штатной плитки.
+   * The form shows the layout as pictures (content_layout) while the config holds
+   * a boolean vertical — exactly as in the stock tile's editor.
    */
   get formData() {
     const { vertical: e, ...t } = this._config ?? {};
@@ -3044,7 +3044,7 @@ class x extends we {
     const { content_layout: t, ...r } = e, n = { ...r };
     return t === "vertical" && (n.vertical = !0), n;
   }
-  /** Раздел features повторяет разметку редактора штатной плитки. */
+  /** The features section repeats the markup of the stock tile's editor. */
   _renderFeatures() {
     const e = this.entityField ? this._config?.[this.entityField] : void 0;
     if (!e) return d;
@@ -3122,8 +3122,8 @@ const P = (s, e, t = []) => ({
         },
         {
           name: "color",
-          // include_state обязателен: без него значение "state" считается
-          // недопустимым и поле подсвечивается как ошибочное.
+          // include_state is mandatory: without it the value "state" counts as
+          // invalid and the field is highlighted as an error.
           selector: { ui_color: { default_color: "state", include_state: !0 } }
         },
         { name: "show_entity_picture", selector: { boolean: {} } },
@@ -3242,7 +3242,7 @@ const P = (s, e, t = []) => ({
   entity: {
     filter: e ? { domain: s, device_class: e } : { domain: s }
   }
-}), V = (s, e, t) => ({
+}), q = (s, e, t) => ({
   number: { min: s, max: e, mode: "box", unit_of_measurement: t }
 }), nr = { text: {} }, te = (s) => ({
   select: { multiple: !0, mode: "list", options: s }
@@ -3372,8 +3372,8 @@ class Ft extends x {
         selector: f("sensor", "temperature")
       },
       { name: "battery", selector: f("sensor", "battery") },
-      { name: "dry_below", selector: V(0, 100, "%") },
-      { name: "wet_above", selector: V(0, 100, "%") },
+      { name: "dry_below", selector: q(0, 100, "%") },
+      { name: "wet_above", selector: q(0, 100, "%") },
       P("moisture", e, [
         {
           name: "big_values",
@@ -3431,7 +3431,7 @@ class zt extends we {
     return [
       { name: "name", selector: nr },
       { name: "icon", selector: { icon: {} } },
-      { name: "columns", selector: V(1, 6) },
+      { name: "columns", selector: q(1, 6) },
       {
         name: "buttons",
         required: !0,
@@ -3574,7 +3574,7 @@ class Wt extends x {
       { name: "battery", selector: f("sensor", "battery") },
       { name: "sensors", selector: { entity: { multiple: !0 } } },
       { name: "consumables", selector: { entity: { multiple: !0 } } },
-      { name: "low_below", selector: V(0, 100, "%") },
+      { name: "low_below", selector: q(0, 100, "%") },
       P("vacuum", e),
       T("vacuum", "none")
     ];
@@ -3628,7 +3628,7 @@ const ur = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   HorosVacuumTileEditor: Wt
 }, Symbol.toStringTag, { value: "Module" }));
-class Vt extends x {
+class qt extends x {
   get entityField() {
   }
   get schema() {
@@ -3644,7 +3644,7 @@ class Vt extends x {
           }
         }
       },
-      { name: "low_below", selector: V(0, 100, "%") },
+      { name: "low_below", selector: q(0, 100, "%") },
       P(void 0, e),
       T(void 0, "none")
     ];
@@ -3682,12 +3682,12 @@ class Vt extends x {
     };
   }
 }
-S("horos-batteries-tile-editor", Vt);
+S("horos-batteries-tile-editor", qt);
 const hr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  HorosBatteriesTileEditor: Vt
+  HorosBatteriesTileEditor: qt
 }, Symbol.toStringTag, { value: "Module" }));
-class Kt extends x {
+class Vt extends x {
   get entityField() {
   }
   get schema() {
@@ -3733,12 +3733,12 @@ class Kt extends x {
     };
   }
 }
-S("horos-safety-tile-editor", Kt);
+S("horos-safety-tile-editor", Vt);
 const dr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  HorosSafetyTileEditor: Kt
+  HorosSafetyTileEditor: Vt
 }, Symbol.toStringTag, { value: "Module" }));
-class qt extends x {
+class Kt extends x {
   get entityField() {
     return "status";
   }
@@ -3793,10 +3793,10 @@ class qt extends x {
     };
   }
 }
-S("horos-server-tile-editor", qt);
+S("horos-server-tile-editor", Kt);
 const mr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  HorosServerTileEditor: qt
+  HorosServerTileEditor: Kt
 }, Symbol.toStringTag, { value: "Module" }));
 class Gt extends x {
   get entityField() {
@@ -4130,7 +4130,7 @@ class Qt extends x {
   get schema() {
     const e = b(this.hass);
     return [
-      { name: "limit", selector: V(1, 12) },
+      { name: "limit", selector: q(1, 12) },
       { name: "ignore", selector: { entity: { multiple: !0 } } },
       P(void 0, e),
       T(void 0, "none")
@@ -4174,7 +4174,7 @@ class Xt extends x {
           }
         }
       },
-      { name: "limit", selector: V(1, 12) },
+      { name: "limit", selector: q(1, 12) },
       P("total", e),
       T("total", "none")
     ];

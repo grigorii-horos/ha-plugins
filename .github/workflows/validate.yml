@@ -22,9 +22,9 @@ jobs:
         working-directory: cards
       - run: npm run build
         working-directory: cards
-      # Собранный бандл лежит в репозитории: HACS ставит плагин прямо из него,
-      # поэтому расхождение с исходниками — сломанная установка у пользователя.
-      - name: dist соответствует исходникам
+      # The built bundle lives in the repository: HACS installs the plugin straight
+      # from it, so drifting from the sources means a broken install for users.
+      - name: dist matches the sources
         run: git diff --exit-code -- dist
 
   hacs:

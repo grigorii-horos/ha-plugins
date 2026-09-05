@@ -1,145 +1,148 @@
-# Кастомные tile-карточки для Home Assistant
+# Custom tile cards for Home Assistant
 
-Дата: 2026-09-04
-Статус: реализовано и проверено на живом HA 2026.9.0
+Date: 2026-09-04
+Status: implemented and verified against a live HA 2026.9.0
 
-## Задача
+## The problem
 
-В Home Assistant одна физическая вещь превращается в десяток плиток. Zigbee-розетка
-даёт 13 сущностей, из которых интересны три. Термостатический клапан — 30. Дашборд
-приходится собирать вручную, и он всё равно шумит.
+In Home Assistant one physical thing turns into a dozen tiles. A Zigbee plug gives 13
+entities, three of which are interesting. A thermostatic valve gives 30. The dashboard
+has to be assembled by hand and is noisy anyway.
 
-Нужен набор карточек, где несколько сущностей собраны в одну плитку по смыслу.
+What is needed is a set of cards where several entities are packed into one tile by
+meaning.
 
-## Главное решение
+## The main decision
 
-**Карточки не повторяют вёрстку штатной плитки — они собираются из её компонентов.**
+**The cards don't reimplement the stock tile's markup — they are assembled from its
+components.**
 
-`ha-tile-container` даёт подложку, ripple, распознавание жестов, индикатор долгого
-нажатия и кольцо фокуса. `ha-tile-icon` и `ha-tile-info` — иконку и тексты.
-`hui-card-features` — ряд features. Ничего из этого мы не рисуем сами.
+`ha-tile-container` gives the body, ripple, gesture recognition, the hold indicator and
+the focus ring. `ha-tile-icon` and `ha-tile-info` give the icon and the texts.
+`hui-card-features` gives the features row. None of that is drawn by us.
 
-Своего в карточке остаётся ровно две вещи, которых у плитки нет:
+Exactly two things of our own are left, neither of which the tile has:
 
-1. правая колонка с крупными значениями;
-2. отдельная цель тапа у каждой величины.
+1. the right-hand column of large values;
+2. a separate tap target per value.
 
-Всё остальное — подбор сущностей и порядок их показа. Ценность плагина в содержимом,
-а не в собственном визуальном языке.
+Everything else is the choice of entities and the order they are shown in. The value of
+the plugin is in the content, not in a visual language of its own.
 
-**Карточка — готовый макет под конкретный смысл, а не конструктор.** Конфиг отвечает
-только на вопрос «какая сущность в какую роль». Никакого автоопределения по устройству
-или зоне: сущности перечисляются явно.
+**A card is a ready-made layout for a specific meaning, not a builder.** The config only
+answers the question "which entity in which role". No detection by device or area:
+entities are listed explicitly.
 
-### Как мы получаем их компоненты
+### How we get hold of their components
 
-Ни `ha-tile-container`, ни `ha-tile-icon`, ни `ha-tile-info`, ни `hui-card-features`
-наружу не экспортируются. Но они регистрируются в общем реестре элементов страницы,
-когда HA подгружает бандл штатной плитки.
+Neither `ha-tile-container`, nor `ha-tile-icon`, nor `ha-tile-info`, nor
+`hui-card-features` is exported. But they do get registered in the page's shared element
+registry once HA loads the stock tile's bundle.
 
-Поэтому при подключении карточка просит HA создать обычный `tile` через
-`window.loadCardHelpers()` — исключительно ради побочного эффекта импорта — и ждёт
-регистрации, максимум 5 секунд. Пока не готово, рисуется плашка. Если не дождались,
-плашка остаётся: собирать урезанную копию вёрстки на такой случай мы не будем, это
-ровно та самая своя вёрстка, от которой мы уходим.
+So on connect a card asks HA to create an ordinary `tile` through
+`window.loadCardHelpers()` — purely for the side effect of the import — and waits for the
+registration, five seconds at most. Until it is ready, a banner is drawn. If the wait
+times out, the banner stays: we are not going to assemble a cut-down copy of the markup
+for that case, that is exactly the private markup we are moving away from.
 
-Редактор features лежит в отдельном бандле — редактора плитки. Он тянется так же, через
-`getConfigElement()` штатного tile.
+The features editor lives in a separate bundle, the tile editor's. It is pulled in the
+same way, through the stock tile's `getConfigElement()`.
 
-## Область
+## Scope
 
-Шестнадцать карточек. Четырнадцать — плитки: одна строка, роли, правая колонка значений.
-Кнопки скриптов — сетка: заголовок и решётка из готовых карточек HA.
+Sixteen cards. Fifteen are tiles: one line, roles, a right-hand column of values. Script
+buttons are a grid: a heading and a lattice of ready-made HA cards.
 
-Карточка термостатического клапана рассматривалась и исключена — не нужна.
+A thermostatic valve card was considered and dropped — not needed.
 
-Отложена подсветка HyperHDR.
+HyperHDR backlight is postponed.
 
-## Правая колонка
+## The right-hand column
 
-Единственное отступление от канона: главные значения выносятся вправо крупным шрифтом.
-Штатный tile прячет значение во вторичную строку, здесь смысл карточки читается с
-расстояния.
+The one departure from the canon: the main values are moved to the right in a large font.
+The stock tile hides the value in the secondary line; here the meaning of the card can be
+read from a distance.
 
-Значений может быть от одного до трёх, они разделяются косой чертой. Каждое следующее
-опускает шрифт на ступень: `--ha-font-size-xl` (20px), `--ha-font-size-l` (16px),
-`--ha-font-size-m` (14px). Четыре — ошибка конфига.
+There can be one to three values, separated by slashes. Each next one drops the font a
+step: `--ha-font-size-xl` (20px), `--ha-font-size-l` (16px), `--ha-font-size-m` (14px).
+Four is a config error.
 
-Плата за каждое следующее значение — имя карточки. Пара начинает съедать его примерно
-с 240px ширины, тройка помещается только на широкой сетке. Поэтому по умолчанию
-значение одно, а остальные включаются осознанно через `big_values`.
+The price of each next value is the card name. A pair starts eating into it at around
+240px of width; three only fit on a wide grid. So there is one value by default and the
+rest are switched on deliberately through `big_values`.
 
-Роль, ушедшая в правую колонку, из вторичной строки убирается — значение не должно
-показываться дважды.
+A role that moved into the right-hand column is removed from the secondary line — a value
+must not be shown twice.
 
-**У каждого значения есть иконка.** Само по себе «63%» не говорит ничего: это может быть
-влажность, заряд, место на диске или ресурс щётки. Единица измерения не спасает —
-проценты есть у всего. Иконка называет величину, не занимая места под слово, и остаётся
-приглушённой, чтобы число оставалось главным. Соответствие ролей иконкам — в
-`core/role-icons.ts`.
+**Every value has an icon.** On its own "63%" says nothing: it could be humidity,
+battery, disk space or brush life. The unit does not save it — everything is in per cent.
+An icon names the quantity without spending room on a word, and stays muted so the number
+remains the star. The role-to-icon mapping is in `core/role-icons.ts`.
 
-## Карточки
+## The cards
 
-### Климат комнаты
+### Room climate
 
 ```yaml
 type: custom:horos-climate-tile
-name: Спальня
+name: Bedroom
 temperature: sensor.sensor_temperature_humidity_bedroom_temperature
 humidity: sensor.sensor_temperature_humidity_bedroom_humidity
 illuminance: sensor.sensor_illuminance_bedroom_illuminance
-# pm25: sensor.device_air_filter_livingroom_pm25   — есть только в гостиной
-big_values: [temperature, humidity]   # необязательно, по умолчанию [temperature]
+# pm25: sensor.device_air_filter_livingroom_pm25   — only exists in the living room
+big_values: [temperature, humidity]   # optional, [temperature] by default
 ```
 
-Температура — крупным значением справа. Влажность, освещённость и PM2.5 идут во
-вторичную строку всегда в этом порядке. Незаполненные роли пропускаются. Обязательна
-только `temperature`, она же главная сущность карточки.
+Temperature is the large value on the right. Humidity, illuminance and PM2.5 go into the
+secondary line, always in that order. Roles that are not filled are skipped. Only
+`temperature` is mandatory, and it is also the card's main entity.
 
-### Розетка с потреблением
+### Plug with power metering
 
 ```yaml
 type: custom:horos-plug-tile
-name: Бойлер
+name: Boiler
 switch: switch.device_plug_boiler_kitchen
 power: sensor.device_plug_boiler_kitchen_power
 energy: sensor.device_plug_boiler_kitchen_energy
-toggle_button: false   # true разворачивается в features: [{type: toggle}]
-big_values: [power, energy]   # необязательно, по умолчанию [power]
+toggle_button: false   # true expands into features: [{type: toggle}]
+big_values: [power, energy]   # optional, [power] by default
 ```
 
-Мощность — крупным значением справа. Вторичная строка: состояние выключателя и
-накопленная энергия. Обязателен только `switch`, он же главная сущность.
+Power is the large value on the right. The secondary line holds the switch state and the
+accumulated energy. Only `switch` is mandatory, and it is also the main entity.
 
-### Растение
+### Plant
 
 ```yaml
 type: custom:horos-plant-tile
-name: Апельсин
+name: Orange tree
 moisture: sensor.soil_temperature_humidity_sensor_balcony_orange_soil_moisture
 temperature: sensor.soil_temperature_humidity_sensor_balcony_orange_temperature
 battery: sensor.soil_temperature_humidity_sensor_balcony_orange_battery
 dry_below: 30
 wet_above: 70
-big_values: [moisture, temperature]   # необязательно, по умолчанию [moisture]
+big_values: [moisture, temperature]   # optional, [moisture] by default
 ```
 
-Влажность почвы — крупным значением справа, и она же в полосе под строкой.
+Soil moisture is the large value on the right, and the same moisture fills the bar below
+the line.
 
-Пороги `dry_below` и `wet_above` задают только цвет: ниже нижнего сухо и цвет
-предупреждающий, между порогами норма и цвет успеха, выше верхнего залито и цвет
-информационный. Цвета из токенов темы. Значения по умолчанию — 30 и 70.
+The `dry_below` and `wet_above` thresholds set the colour only: below the lower one it is
+dry and the colour is the warning one, between them it is normal and the colour is the
+success one, above the upper one it is overwatered and the colour is the info one. The
+colours come from theme tokens. The defaults are 30 and 70.
 
-Обязательна только `moisture`, она же главная сущность.
+Only `moisture` is mandatory, and it is also the main entity.
 
-## Карточка-сетка
+## The grid card
 
-Кнопки устроены иначе, чем плитки: это заголовок и сетка. Ни того, ни другого мы не
-рисуем — заголовок это штатная карточка `heading`, ячейки штатные `button`. Наша работа
-тут целиком в составе сетки и в разумных значениях по умолчанию, чтобы вместо десятка
-блоков в конфиге был один список.
+Buttons are built differently from tiles: a heading and a grid. We draw neither — the
+heading is the stock `heading` card, the cells are stock `button` cards. Our work here is
+entirely in what goes into the grid and in sane defaults, so that a dozen blocks in the
+config become one list.
 
-### Кнопки скриптов
+### Script buttons
 
 ```yaml
 type: custom:horos-buttons-tile
@@ -150,18 +153,18 @@ buttons:
   - entity: script.ir_1_inc
     name: Bright
     icon: mdi:brightness-7
-  - script.ir_1_on_off        # короткая запись: имя и иконка подставятся сами
+  - script.ir_1_on_off        # short form: name and icon fill themselves in
 ```
 
-Каждая ячейка — штатная карточка `button`. Кнопка принимает всё нажимаемое: `script`,
-`scene`, `button`, `input_button`, `switch`.
+Every cell is a stock `button` card. A button takes anything pressable: `script`, `scene`,
+`button`, `input_button`, `switch`.
 
-Подпись по умолчанию берётся из имени сущности после двоеточия: у скриптов имена вида
-«IR — Bedroom: Night Mode», и общий префикс на кнопке лишний, он уже сказан
-заголовком. Иконка по умолчанию — иконка самой сущности, у скриптов это свиток, то
-есть для осмысленной сетки иконки стоит задать. Ради этого и есть развёрнутая запись.
+The default label comes from the part of the entity name after the colon: scripts carry
+names like "IR — Bedroom: Night Mode", and the shared prefix is redundant on the button,
+the heading already said it. The default icon is the entity's own, which for scripts is a
+scroll — so a meaningful grid needs icons set. That is what the long form is for.
 
-### Принтер
+### Printer
 
 ```yaml
 type: custom:horos-printer-tile
@@ -176,44 +179,45 @@ sensors:
 low_below: 15
 ```
 
-Обычная плитка: строка с именем и состоянием, под ней уровни чернил.
+An ordinary tile: a line with the name and state, ink levels below it.
 
-**Каждый цвет — своя строка с уровнем.** Под строкой плитки идут полосы: подпись,
-заливка цветом самих чернил, процент. Цвет здесь и есть название — голубая полоса это
-голубые чернила, поэтому подписи можно было бы и не читать.
+**Every colour gets its own level row.** Under the tile line come bars: a label, a fill in
+the colour of the ink itself, a per cent. The colour here _is_ the name — a cyan bar is
+cyan ink, so the labels could go unread.
 
-Крупным значением справа — **самые кончающиеся расходуемые чернила**: то, ради чего на
-принтер вообще смотрят, пора ли покупать. Состояние и прочие сенсоры уходят во вторую
-строку.
+The large value on the right is the **consumable ink closest to running out**: the thing a
+printer is looked at for at all, whether it is time to buy more. The state and the other
+sensors go to the second line.
 
-Единственное насыщенное пятно — сами чернила.
+The only saturated spot is the ink itself.
 
-**Пороги берутся у самого принтера, а не задаются нами.** IPP отдаёт вместе с уровнем
-и его смысл:
+**The thresholds come from the printer, they are not set by us.** IPP reports the meaning
+of a level along with the level:
 
-| маркер | `marker_type` | high | low | что значит уровень |
+| marker | `marker_type` | high | low | what the level means |
 |---|---|---|---|---|
-| чернила | `ink-cartridge` | 100 | 15 | сколько осталось, расходуется |
-| поглотитель отработки | `waste-ink` | 80 | 0 | сколько накопилось, наполняется |
+| ink | `ink-cartridge` | 100 | 15 | how much is left, is consumed |
+| waste ink absorber | `waste-ink` | 80 | 0 | how much has accumulated, fills up |
 
-Поэтому тревога у них противоположная: у чернил когда уровень **упал** ниже
-`marker_low_level`, у поглотителя когда **дорос** до `marker_high_level`. Считать «мало»
-одинаково нельзя — у поглотителя низкий уровень это хорошо. Ошибка была допущена именно
-так, с постоянным порогом 15%, и поймана вопросом владельца «а что такое MC».
+So their alarms are opposite: for ink when the level has **dropped** below
+`marker_low_level`, for the absorber when it has **grown** up to `marker_high_level`.
+Treating "low" the same way for both is wrong — for the absorber a low level is good news.
+The bug was made in exactly that way, with a fixed 15% threshold, and was caught by the
+owner asking "what is MC".
 
-Наполненность считается от вместимости маркера, а не от сотни: у поглотителя ёмкость 80,
-поэтому уровень 10 это 12.5% полосы.
+Fullness is counted against the marker's capacity, not against a hundred: the absorber's
+capacity is 80, so a level of 10 is 12.5% of the bar.
 
-`low_below` перебивает порог принтера, но только для расходуемых чернил.
+`low_below` overrides the printer's threshold, but only for consumable ink.
 
-Два цвета заданы не палитрой:
+Two colours are not taken from the palette:
 
-- **чёрные чернила** красятся цветом текста, а не чистым чёрным — иначе на тёмной теме
-  полоса сливается с фоном. Ведёт себя как чернила на бумаге;
-- **MC** это сервисный бак, а не чернила, и ему дан свой оттенок. С серым он был
-  неотличим от чёрного, который тоже выходит серым.
+- **black ink** is painted in the text colour rather than pure black — otherwise the bar
+  merges with the background on a dark theme. It behaves like ink on paper;
+- **MC** is the maintenance tank, not ink, and gets a shade of its own. In grey it was
+  indistinguishable from black, which also comes out grey.
 
-### Пылесос
+### Vacuum
 
 ```yaml
 type: custom:horos-vacuum-tile
@@ -221,46 +225,46 @@ vacuum: vacuum.xiaomi_sg_1065555985_c102gl
 battery: sensor.xiaomi_..._battery_level_p_3_1
 sensors: [sensor.xiaomi_..._cleaning_mode_p_4_4]
 consumables:
-  - { entity: sensor.xiaomi_..._brush_life_level_p_9_2, name: Осн. щётка }
-  - { entity: sensor.xiaomi_..._filter_life_level_p_11_1, name: Фильтр }
+  - { entity: sensor.xiaomi_..._brush_life_level_p_9_2, name: Main brush }
+  - { entity: sensor.xiaomi_..._filter_life_level_p_11_1, name: Filter }
 low_below: 20
 ```
 
-78 сущностей устройства сводятся к одной плитке. В строке — что он делает и сколько
-заряда, ниже — ресурс каждого расходника своей полосой.
+The device's 78 entities are reduced to one tile. On the line — what it is doing and how
+much charge is left; below — the life of each consumable as its own bar.
 
-Полосы красятся **по уровню**, а не цветом плитки: у стоящего на базе пылесоса цвет
-плитки неактивный, и все полосы выходили одинаково серыми. Вопрос у расходника тот же,
-что у батарейки, поэтому и ступени те же — 70 и 30 процентов.
+The bars are painted **by level**, not in the tile colour: a docked vacuum's tile colour
+is the inactive one, and every bar came out the same grey. A consumable asks the same
+question a battery does, so the steps are the same — 70 and 30 per cent.
 
-### Батарейки
+### Batteries
 
 ```yaml
 type: custom:horos-batteries-tile
-batteries: [sensor.…, …]   # хоть все 43
+batteries: [sensor.…, …]   # all 43 if you like
 low_below: 30
 ```
 
-Карточка сознательно показывает **не все батарейки, а только садящиеся**, от самой
-пустой. Список из сорока строк никто не читает, а вопрос у карточки ровно один: что
-пора менять. Когда менять нечего, она так и говорит — «все заряжены, 43 шт.».
+The card deliberately shows **not every battery but only the ones running down**,
+emptiest first. Nobody reads a list of forty rows, and the card asks exactly one question:
+what needs replacing. When nothing does, it says so — "all charged, 43 total".
 
-### Безопасность
+### Safety
 
 ```yaml
 type: custom:horos-safety-tile
 sensors: [binary_sensor.sensor_water_bathroom_water_leak]
 ```
 
-В норме молчит одной строкой. Тревога — это не только сработавший датчик:
-**недоступный датчик тоже тревога**, потому что он ничего не охраняет. Молчание
-сломанного датчика неотличимо от молчания исправного, если об этом не сказать. Такой
-датчик показывается отдельно, жёлтым, со своим значком.
+Normally it keeps quiet in a single line. An alarm is not only a sensor that fired: **an
+unavailable sensor is an alarm too**, because it guards nothing. A broken sensor's silence
+is indistinguishable from a healthy one's unless something says so. Such a sensor is shown
+separately, in yellow, with its own glyph.
 
-Это не умозрительный случай: газовый датчик на кухне был найден в состоянии
-`unavailable` при разборе устройств, и заметить это было неоткуда.
+This is not a hypothetical case: the kitchen gas sensor was found `unavailable` while
+going through the devices, and there was nowhere to notice it from.
 
-### Домашний сервер
+### Home server
 
 ```yaml
 type: custom:horos-server-tile
@@ -271,10 +275,10 @@ upload: sensor.transmission_upload_speed_2
 services: [sensor.pi_hole_ads_percentage_blocked]
 ```
 
-Три интеграции в одной плитке. Приём и отдача помечены стрелками: они часто равны нулю
-и без пометки неразличимы.
+Three integrations in one tile. Download and upload are marked with arrows: they are often
+both zero and blur together without a label.
 
-### Компьютер
+### Computer
 
 ```yaml
 type: custom:horos-computer-tile
@@ -283,8 +287,8 @@ status: binary_sensor.lnxlink_desktop_minisforum_lwt
 cpu: sensor.lnxlink_desktop_minisforum_cpu_usage
 memory: sensor.lnxlink_desktop_minisforum_memory_usage
 gpu: sensor.lnxlink_desktop_minisforum_gpu_amd_0
-temperatures: [ … все 11 датчиков … ]
-disks: [ … все разделы … ]
+temperatures: [ … all 11 sensors … ]
+disks: [ … all partitions … ]
 sensors: [sensor.lnxlink_desktop_minisforum_current_users]
 alerts:
   - binary_sensor.lnxlink_desktop_minisforum_required_restart
@@ -292,36 +296,36 @@ alerts:
 big_values: [temperature, cpu]
 ```
 
-100 сущностей устройства сводятся к одной плитке. Ценность не в том, чтобы показать
-одиннадцать датчиков температуры и три раздела диска, а в том, чтобы **свести их к
-одному числу**: насколько горячо и насколько забито.
+The device's 100 entities are reduced to one tile. The value is not in showing eleven
+temperature sensors and three disk partitions, but in **reducing them to one number
+each**: how hot and how full.
 
-`temperatures`, `disks` и `disks_free` — списки, из которых берётся крайний. Крайний датчик при этом
-становится обычной ролью, поэтому тап по значению открывает именно тот, который сейчас
-горячее всех. При первой же проверке карточка показала 92.5 °C и загрузку 99.3% —
-ровно то, что в списке из одиннадцати строк заметить невозможно.
+`temperatures`, `disks` and `disks_free` are lists the extreme one is taken from. That
+extreme sensor becomes an ordinary role, so a tap on the value opens exactly the one that
+is hottest right now. On the very first check the card showed 92.5 °C and 99.3% load —
+precisely what is impossible to notice in a list of eleven rows.
 
-`alerts` — бинарные сенсоры, о которых говорится **только когда они сработали**:
-требуется перезагрузка, есть обновления. В норме их не видно.
+`alerts` are binary sensors mentioned **only once they have fired**: a restart is
+required, updates are available. Normally they are invisible.
 
-**Занятое и свободное место — разные роли, а не одна.** `disks` это проценты занятого,
-`disks_free` — проценты свободного, как отдаёт приложение HA для macOS. У них
-противоположно всё: крайним берётся самый полный против самого пустого, и красятся они
-по-разному — занятое как нагрузка (много плохо), свободное как батарейка (мало плохо).
-Подставить одно в роль другого значит молча показать 32% там, где на самом деле 68%.
-Это тот же род ошибки, что был с поглотителем чернил, поэтому роль заведена отдельная.
+**Used and free space are different roles, not one.** `disks` is the per cent used,
+`disks_free` the per cent free, as the HA companion app for macOS reports it. Everything
+about them is opposite: the extreme is the fullest against the emptiest, and they are
+coloured differently — used like load (a lot is bad), free like a battery (little is bad).
+Feeding one into the other's role means silently showing 32% where it is really 68%. That
+is the same class of bug as the ink absorber, so a separate role was made.
 
-Благодаря этому карточка накрыла и Mac mini, у которого нет ни CPU, ни температур —
-только диск, приложение на переднем плане и тип связи.
+Thanks to that the card also covered the Mac mini, which has neither CPU nor temperatures
+— only disk, the foreground application and the connection type.
 
-Полосы загрузки красятся обратным цветом: у батарейки много это хорошо, у процессора и
-диска наоборот. Ступени 80 и 90 процентов.
+Load bars are painted with the inverted colour: on a battery a lot is good, on a processor
+and a disk it is the other way round. The steps are 80 and 90 per cent.
 
-### Воздух
+### Air
 
 ```yaml
 type: custom:horos-air-tile
-name: Очиститель гостиная
+name: Air purifier
 appliance: fan.device_air_filter_livingroom
 pm25: sensor.device_air_filter_livingroom_pm25
 sensors: [sensor.device_air_filter_livingroom_fan_speed]
@@ -329,374 +333,387 @@ alerts: [binary_sensor.device_air_filter_livingroom_replace_filter]
 big_values: [pm25]
 ```
 
-Очиститель, рекуператор, увлажнитель, осушитель. У всех разный домен, но вопрос один:
-работает ли и что с воздухом. Поэтому прибор задаётся одной ролью `appliance` любого
-домена — `fan`, `humidifier` или розетка, к которой прибор подключён.
+Purifier, recuperator, humidifier, dehumidifier. Different domains, one question: is it
+running and what is happening to the air. So the appliance is one `appliance` role of any
+domain — `fan`, `humidifier`, or the plug the appliance is connected to.
 
-**Отрицательный PM2.5 считается отсутствием данных, а не нулём.** Выключенный очиститель
-IKEA отдаёт −1: концентрация не бывает отрицательной, и выносить такую цифру заголовком
-карточки нельзя. Поймано на живой карточке — она честно показала «−1 µg/m³».
+**A negative PM2.5 counts as no data, not as zero.** A switched-off IKEA purifier reports
+−1: a concentration is never negative, and a figure like that must not be put in the
+card's headline. Caught on a live card — it honestly showed "−1 µg/m³".
 
-### Шторы
+### Covers
 
 ```yaml
 type: custom:horos-cover-tile
 cover: cover.device_curtain_robot_balcony
 illuminance: sensor.device_curtain_robot_balcony_illuminance
 battery: sensor.device_curtain_robot_balcony_battery
-controls: true   # по умолчанию
+controls: true   # the default
 big_values: [illuminance, battery]
 ```
 
-Открыть, закрыть и задать положение можно прямо с карточки. Управление — штатные
-features HA (`cover-position`, `cover-open-close`), своих кнопок не рисуем.
+Open, close and set a position straight from the card. The controls are stock HA features
+(`cover-position`, `cover-open-close`); we draw no buttons of our own.
 
-**Набор кнопок подбирается по `supported_features` самой шторы:** слайдер положения
-предлагается только той, что умеет его задавать. У балконной `supported_features: 15` —
-открыть, закрыть, остановить и задать положение, поэтому она получает и слайдер, и три
-кнопки.
+**The set of controls is picked from the cover's own `supported_features`:** the position
+slider is only offered to a cover that can set one. The balcony one has
+`supported_features: 15` — open, close, stop and set position — so it gets both the slider
+and the three buttons.
 
-Роль `position` осталась для штор, которые положение показывают, но задавать не умеют:
-им рисуется своя полоса. Там, где есть слайдер, полоса не рисуется — она показывала бы
-то же самое дважды.
+The `position` role is left for covers that report a position but cannot set one: they get
+a bar of their own. Where there is a slider, no bar is drawn — it would show the same
+thing twice.
 
-### Энергия
+### Energy
 
 ```yaml
 type: custom:horos-energy-tile
 total: sensor.all_standby_power
 consumers:
-  - { entity: sensor.device_plug_boiler_kitchen_power, name: Бойлер }
-  - { entity: sensor.device_plug_recuperator_bedroom_power, name: Рекуператор }
+  - { entity: sensor.device_plug_boiler_kitchen_power, name: Boiler }
+  - { entity: sensor.device_plug_recuperator_bedroom_power, name: Recuperator }
 limit: 6
 ```
 
-Кто в доме ест электричество, от самого прожорливого.
+Who in the house is eating electricity, hungriest first.
 
-**Уровень здесь означает не «сколько осталось», а долю от самого прожорливого.** Шкала
-общая и относительная: длина полосы отвечает на вопрос «кто больше», а не «сколько
-процентов». Это единственная карточка с такой семантикой полосы, поэтому она названа
-прямо.
+**The level here means not "how much is left" but a share of the hungriest one.** The
+scale is shared and relative: the bar length answers "who draws more", not "what per
+cent". This is the only card with those bar semantics, which is why it is spelled out.
 
-Нулевые потребители не показываются: строка с пустой полосой ничего не говорит, а место
-занимает. Потерявшие связь наоборот **пересчитываются вслух** — молчащий ваттметр легко
-принять за выключенный прибор. На живом доме это сразу и проявилось: «2 потребляют · 4
-без связи».
+Consumers drawing nothing are not shown: a row with an empty bar says nothing and takes
+room. The ones that lost connection are **counted out loud** instead — a silent power
+meter is easy to mistake for a switched-off appliance. On the live house that showed up
+immediately: "2 drawing power · 4 offline".
 
-Сумму по перечисленным потребителям карточка не считает. Она была бы меньше настоящего
-расхода дома — измеряются только те розетки, что перечислены, — и выдавала бы за общий
-итог неполную величину.
+The card does not sum the listed consumers. That sum would be smaller than the house's
+real draw — only the listed plugs are metered — and would pass an incomplete figure off as
+the total.
 
-### Присутствие
+### Presence
 
 ```yaml
 type: custom:horos-presence-tile
 areas:
-  - { entity: binary_sensor.magic_areas_..._livingroom_area_state, name: Гостиная }
-  - { entity: binary_sensor.magic_areas_..._bedroom_area_state, name: Спальня }
+  - { entity: binary_sensor.magic_areas_..._livingroom_area_state, name: Living room }
+  - { entity: binary_sensor.magic_areas_..._bedroom_area_state, name: Bedroom }
 ```
 
-Называет только занятые зоны — их обычно одна-две, а список всех восьми читать незачем.
-Крупным значением сколько их сейчас.
+It names only the occupied areas — usually one or two — instead of listing all eight. The
+large value is how many there are right now.
 
-Зоны без связи считаются отдельно: зона, о которой нечего сказать, и пустая зона —
-разные вещи.
+Areas that lost connection are counted separately: an area with nothing to say and an
+empty area are different things.
 
-### Что не отвечает
+### Not responding
 
 ```yaml
 type: custom:horos-offline-tile
 limit: 4
-ignore: [sensor.тот_что_молчит_законно]
+ignore: [sensor.the_one_that_is_silent_legitimately]
 ```
 
-**Единственная карточка, которая сама перебирает состояния**, а не берёт сущности из
-конфига. Перечислить руками девятьсот сущностей невозможно, а правило отбора здесь
-объективное — состояние `unavailable`, — так что угадывать нечего. Это осознанное
-исключение из правила «никакого автоопределения».
+**The one card that walks the states itself** instead of taking entities from the config.
+Listing nine hundred entities by hand is not possible, and the selection rule here is
+objective — state `unavailable` — so there is nothing to guess. It is a deliberate
+exception to the "no auto-detection" rule.
 
-**Считает вещами, а не сущностями.** У отвалившейся розетки молчит шесть сущностей, у
-Syncthing семнадцать: список из девяноста двух строк говорит меньше, чем список из
-сорока четырёх вещей. Сущности без устройства считаются каждая за себя — шаблоны,
-хелперы и ИК-лампы это отдельные вещи, а не части общего.
+**It counts things, not entities.** A dead plug has six silent entities, Syncthing
+seventeen: a list of ninety-two rows says less than a list of forty-four things. Entities
+without a device each count for themselves — templates, helpers and IR lamps are separate
+things, not parts of something bigger.
 
-Служебные домены (`update`, `select`, `text`, `button`, `number`, `event`, `notify`) и
-скрытые сущности не считаются: их недоступность ничего не значит для жильца. Порядок —
-по числу молчащих сущностей, при равенстве по алфавиту, чтобы список не прыгал от
-обновления к обновлению.
+Service domains (`update`, `select`, `text`, `button`, `number`, `event`, `notify`) and
+hidden entities are not counted: their unavailability means nothing to whoever lives here.
+The order is by the number of silent entities, ties broken alphabetically, so the list
+does not jump around between updates.
 
-Карточка появилась последней, а нужна была первой: газовый датчик молчал неизвестно
-сколько, четыре ваттметра нашлись случайно при разборе энергии, лампы и кондиционеры —
-при разборе устройств. На живом доме она сразу показала сорок четыре молчащих вещи.
+The card was written last and was needed first: the gas sensor had been silent for who
+knows how long, four power meters turned up by accident while going through energy, lamps
+and air conditioners while going through the devices. On the live house it immediately
+showed forty-four silent things.
 
-### Человек
+### Person
 
 ```yaml
 type: custom:horos-person-tile
-person: person.grigorii
-battery: sensor.phone_grigorii_battery_level
-location: sensor.phone_grigorii_geocoded_location
+person: person.alice
+battery: sensor.phone_alice_battery_level
+location: sensor.phone_alice_geocoded_location
 devices:
-  - { entity: sensor.google_pixel_watch_battery_level, name: Часы }
+  - { entity: sensor.google_pixel_watch_battery_level, name: Watch }
 ```
 
-Дома ли, где именно, сколько заряда. Портрет человека показывается по умолчанию — он
-говорит больше безликой иконки. Заряды остальных устройств — теми же строками уровней.
+Whether they are home, where exactly, how much charge. The person's portrait is shown by
+default — it says more than a faceless icon. The other devices' batteries use the same
+level rows.
 
-## Строки уровней
+## Level rows
 
-Приём, придуманный для чернил, оказался общим: несколько однородных уровней, которые
-надо увидеть вместе и понять, что скоро кончится. Он вынесен в `core/levels.ts` и
-используется четырьмя карточками — принтер, пылесос, человек, компьютер.
+The device invented for ink turned out to be a general one: several homogeneous levels
+that have to be seen together to tell what is about to run out. It lives in
+`core/levels.ts` and is used by four cards — printer, vacuum, person, computer.
 
-Каждая строка — подпись слева, полоса посередине, значение справа. Полоса устроена как
-штатная `hui-bar-gauge-card-feature`: сплошная заливка цветом содержимого и тот же цвет
-на 20% в остатке, только тоньше, чтобы несколько строк помещались.
+Every row is a label on the left, a bar in the middle, a value on the right. The bar is
+built like the stock `hui-bar-gauge-card-feature`: a solid fill in the colour of the
+contents and the same colour at 20% in the remainder, only thinner, so several rows fit.
 
-**Первая версия рисовала вертикальные колбы в один ряд** — это было ближе к настоящему
-баковому принтеру, у которого спереди прозрачные окошки. Но на высоте штатной линии
-features пять колб превращались в полоски, в которых ничего не разобрать, и из-за той
-же высоты мельчали пылесос и компьютер. Горизонтальная строка даёт то же самое —
-заливку до уровня цветом содержимого, — но с подписью и числом.
+**The first version drew vertical flasks in a row** — closer to a real tank printer with
+its transparent windows on the front. But at the height of a stock features line five
+flasks turned into slivers with nothing to make out, and that same height shrank the
+vacuum and the computer. A horizontal row gives the same thing — a fill up to the level in
+the colour of the contents — plus a label and a number.
 
-Ширина подписи задана долей, а не автоматическая: иначе имена разной длины растаскивают
-полосы, и ряд перестаёт читаться как одна шкала.
+The label width is a fraction rather than automatic: otherwise names of different lengths
+drag the bars around and the row stops reading as one scale.
 
-Строка кликабельна: тап открывает more-info своей сущности. При тревоге у подписи
-появляется значок, а значение уходит в цвет ошибки. Значок свой для каждого случая:
-кончающиеся чернила, переполненный поглотитель, перегруженный процессор.
+A row is clickable: a tap opens more-info for its entity. On alarm a glyph appears next to
+the label and the value goes to the error colour. The glyph differs per case: ink running
+out, an overflowing absorber, an overloaded processor.
 
-Роль, показанная строкой, во вторичную строку карточки не попадает — там она была бы
-безымянным процентом.
+A role shown as a row does not also go into the card's secondary line — there it would be
+a nameless per cent.
 
 ## Features
 
-Карточки-плитки принимают `features` и `features_position` (`bottom` или `inline`) и отдают их
-штатному `hui-card-features`. Внутри наших карточек работают все features самого HA —
-переключатели, слайдеры яркости, режимы климата, управление шторами.
+The tile cards accept `features` and `features_position` (`bottom` or `inline`) and hand
+them to the stock `hui-card-features`. Every HA feature works inside our cards — toggles,
+brightness sliders, climate modes, cover controls.
 
-Собственные элементы карточек выражены через тот же механизм, своей вёрстки для них
-нет:
+The cards' own elements are expressed through the same mechanism; there is no markup of
+our own for them:
 
-- шкала растения — `{type: "bar-gauge", min: 0, max: 100}`, цвет она берёт из
-  `--tile-color`, то есть из наших порогов сухости;
-- `toggle_button: true` у розетки — `{type: "toggle"}`.
+- the plant gauge is `{type: "bar-gauge", min: 0, max: 100}`, taking its colour from
+  `--tile-color`, that is, from our dryness thresholds;
+- `toggle_button: true` on a plug is `{type: "toggle"}`.
 
-Если пользователь задал `features` сам, его список полностью замещает наш.
+If the user sets `features` themselves, their list replaces ours entirely.
 
-## Внешний вид
+## Appearance
 
-Общие поля, имена как у штатной плитки: `icon`, `color` (имя палитры HA, `primary`,
-`state` или готовый CSS-цвет), `vertical`, `hide_state`, `show_entity_picture`.
+The shared fields, with the stock tile's names: `icon`, `color` (an HA palette name,
+`primary`, `state` or a ready CSS colour), `vertical`, `hide_state`,
+`show_entity_picture`.
 
-Адрес картинки сущности берётся так же, как в `_getImageUrl` плитки:
-`entity_picture_local`, иначе `entity_picture`, через `hass.hassUrl`. Камеры с их
-отдельным адресом по размеру не поддерживаются.
+The entity picture URL is taken the same way as in the tile's `_getImageUrl`:
+`entity_picture_local`, otherwise `entity_picture`, through `hass.hassUrl`. Cameras, with
+their separate size-aware URL, are not supported.
 
-## Взаимодействия
+## Interactions
 
-Полный набор штатной плитки, с теми же именами полей: `tap_action`, `hold_action`,
-`double_tap_action` и три их варианта для иконки.
+The stock tile's full set, with the same field names: `tap_action`, `hold_action`,
+`double_tap_action` and their three icon variants.
 
-Поддержаны `more-info`, `toggle`, `navigate`, `url`, `perform-action` (и старое имя
-`call-service`), `none`, `fire-dom-event`, плюс `confirmation` у любого из них.
-Семантика повторяет `handle-action.ts`, включая сервисы переключения по доменам:
-шторам `open_cover`/`close_cover`, замку `unlock`/`lock`, кнопке `press`.
+Supported are `more-info`, `toggle`, `navigate`, `url`, `perform-action` (and the old name
+`call-service`), `none`, `fire-dom-event`, plus `confirmation` on any of them. The
+semantics mirror `handle-action.ts`, including the per-domain toggle services: covers get
+`open_cover`/`close_cover`, a lock `unlock`/`lock`, a button `press`.
 
-Распознавание жестов, зажатие и вся обратная связь на нажатие — от
-`ha-tile-container`. Мы только сообщаем ему, вооружены ли жесты
-(`hasHold`, `hasDoubleClick`), и слушаем событие `action`.
+Gesture recognition, the hold and all press feedback come from `ha-tile-container`. We
+only tell it whether the gestures are armed (`hasHold`, `hasDoubleClick`) and listen for
+the `action` event.
 
-Действие иконки по умолчанию — копия `getEntityDefaultTileIconAction`: переключаемые
-домены плюс `button`, `input_button`, `scene` получают `toggle`, остальные `none`.
-Поэтому у розетки иконка переключает и имеет цветную подложку, а у климата и растения
-иконка неинтерактивна и подложки не имеет — ровно как у штатной плитки для сенсора.
-Тап по такой иконке проваливается на подложку карточки и открывает more-info.
+The default icon action is a copy of `getEntityDefaultTileIconAction`: toggleable domains
+plus `button`, `input_button`, `scene` get `toggle`, everything else `none`. So a plug's
+icon toggles and has a coloured backdrop, while a climate or plant icon is not interactive
+and has no backdrop — exactly like the stock tile for a sensor. A tap on such an icon
+falls through to the card body and opens more-info.
 
-### Попапы отдельных величин
+### Per-value popups
 
-Отступление от канона: тап по конкретной величине открывает more-info **её** сущности,
-а не главной. Тап по температуре — попап температуры, по влажности — попап влажности,
-по куску вторичной строки — попап того, что в этом куске. Остальная площадь карточки
-ведёт на главную сущность.
+A departure from the canon: a tap on a specific value opens more-info for **its** entity
+rather than for the main one. A tap on the temperature opens the temperature popup, on the
+humidity the humidity popup, on a piece of the secondary line whatever is in that piece.
+The rest of the card's area leads to the main entity.
 
-Содержимое плитки событий не принимает, поэтому цели тапа включают их обратно через
-`pointer-events: auto` и гасят всплытие.
+Tile content does not take events, so the tap targets switch them back on with
+`pointer-events: auto` and stop the bubbling.
 
-## Редакторы
+## Editors
 
-У каждой карточки свой GUI-редактор на `ha-form`. Роли — отдельные `ha-entity-picker`,
-отфильтрованные по смыслу: влажность предлагает только `device_class: humidity`,
-мощность — только `power`, выключатель — только домен `switch`.
+Every card has its own GUI editor built on `ha-form`. Roles are separate
+`ha-entity-picker`s filtered by meaning: humidity only offers `device_class: humidity`,
+power only `power`, a switch only the `switch` domain.
 
-Плюс два раскрывающихся раздела по схеме редактора штатной плитки:
+Plus two expandable sections following the stock tile editor's scheme:
 
-- **«Внешний вид»** — иконка и цвет в сетке рядом, переключатели картинки сущности и
-  скрытия строки, затем раскладка теми же картинками, что у HA. Иконке передаётся
-  `context.icon_entity`. Цвету нужен `include_state: true`, иначе значение `state`
-  считается недопустимым и поле подсвечивается ошибкой.
-- **«Взаимодействия»** — шесть действий через штатный селектор `ui_action`, с
-  разделителем и группой `optional_actions`.
+- **"Appearance"** — icon and colour side by side in a grid, the entity-picture and
+  hide-state toggles, then the layout with the same pictures HA uses. The icon is given
+  `context.icon_entity`. Colour needs `include_state: true`, otherwise the value `state`
+  counts as invalid and the field is highlighted as an error.
+- **"Interactions"** — six actions through the stock `ui_action` selector, with a divider
+  and an `optional_actions` group.
 
-Каждому действию передаётся `context: { entity_id, area_id }`. Без него редактор
-действий не знает, к чему относится действие, и не подставляет сущность в `more-info`,
-`toggle` и цель сервиса. У штатной плитки это всегда поле `entity`, у нас — роль:
-`switch`, `temperature`, `moisture`.
+Every action is given `context: { entity_id, area_id }`. Without it the action editor does
+not know what the action applies to and does not fill the entity into `more-info`,
+`toggle` and the service target. On the stock tile that is always the `entity` field; here
+it is a role: `switch`, `temperature`, `moisture`.
 
-Имя — штатный селектор `entity_name`, то есть с тем же переключателем
-«Composed / Custom». Список `features` — штатный `hui-card-features-editor`.
+The name uses the stock `entity_name` selector, so it has the same "Composed / Custom"
+switch. The `features` list is the stock `hui-card-features-editor`.
 
-В конфиге лежит булево `vertical`, а форма показывает `content_layout` картинками —
-редактор конвертирует одно в другое, как это делает штатный.
+The config holds a boolean `vertical` while the form shows `content_layout` as pictures —
+the editor converts one into the other, exactly as the stock one does.
 
-## Техническая часть
+## Technical part
 
-**Расположение.** Папка `cards/` в корне репозитория. Папка `frontend/` — клон
-исходников home-assistant/frontend, она остаётся нетронутой и служит справочником.
+**Location.** The `cards/` folder at the repository root. The `frontend/` folder is a
+clone of the home-assistant/frontend sources; it stays untouched and serves as a
+reference.
 
-**Стек.** TypeScript, Lit 3, сборка Vite в library mode. Lit включается в бандл.
-Один файл `ha-plugins-cards.js` на все три карточки — один ресурс в дашборде, одна
-запись в HACS. Карточки регистрируются в `window.customCards`, поэтому появляются в
-списке «Добавить карточку».
+**Stack.** TypeScript, Lit 3, a Vite build in library mode. Lit is bundled in. One
+`ha-plugins-cards.js` file for every card — one dashboard resource, one HACS entry. The
+cards register themselves in `window.customCards`, so they show up in the card picker.
 
-**Целевая версия HA** — 2026.9 и новее. Совместимость со старыми не поддерживаем.
+The build must run with `NODE_ENV=production`, which the npm script sets: the developer's
+shell exports `development`, and Lit then resolves to its dev build with warnings — the
+bundle silently grows by a third (173 KB against 136 KB).
 
-**Тесты.** Vitest на чистую логику: сборка вторичной строки, разрешение ролей, пороги
-влажности, цвета состояний, выбор и деление крупных значений, вооружение жестов,
-сервисы переключения, действие иконки по умолчанию, подписи и цвета картриджей,
-подписи кнопок, сохранение ручных настроек при правке списка в GUI. Внешний вид проверяется в реальном
-HA, юнит-тестами вёрстку не покрываем.
+**Target HA version** — 2026.9 and newer. Compatibility with older ones is not supported.
 
-Модули с чистой логикой намеренно не импортируют DOM: файлы с `@customElement`
-регистрируют элементы при загрузке и в node падают.
+**Tests.** Vitest over the pure logic: assembling the secondary line, resolving roles,
+moisture thresholds, state colours, picking and splitting the large values, arming
+gestures, toggle services, the default icon action, cartridge labels and colours, button
+labels, keeping manual settings when a list is edited in the GUI. Appearance is checked in
+a real HA; markup is not covered by unit tests beyond our own templates.
 
-## Как проверяем
+The pure-logic modules deliberately do not import the DOM: files with `@customElement`
+register elements on load and crash in node.
 
-**Разработка — Vite прямо с рабочей машины, без копирования файлов.** `npm run dev`
-поднимает сервер на `0.0.0.0:5188`, а в дашборд добавлен ресурс-модуль
-`http://192.168.100.201:5188/src/main.ts`. Правка файла, F5 в браузере, новая версия.
+## How it is verified
 
-Порт намеренно не 5173: он уже был занят другим проектом разработчика, и дашборд молча
-грузился с чужого сервера. Карточки подключаются по абсолютному адресу, так что такая
-подмена ничем себя не проявляет — стоит держать за плагином отдельный порт.
+**Development is Vite straight off the working machine, with no file copying.** `npm run
+dev` brings up a server on `0.0.0.0:5188`, and the dashboard has a module resource
+`http://192.168.100.201:5188/src/main.ts` added to it. Edit a file, F5 in the browser, new
+version.
 
-Два условия. Дашборд открывается по **http**, не по https — иначе браузер зарубит
-http-модуль как mixed content. И обновление только через F5: переопределить уже
-зарегистрированный custom element в живой странице нельзя, поэтому HMR выключен.
+The port is deliberately not 5173: that one was already taken by another project of the
+developer's, and the dashboard silently loaded from someone else's server. The cards are
+attached by absolute URL, so a substitution like that shows no sign of itself — a plugin
+is worth keeping on a port of its own.
 
-**Боевой режим — собранный бандл в `/config/www/`**, ресурс — `/local/ha-plugins-cards.js?v=<хеш>`.
-Версия в адресе обязательна, иначе HA отдаёт закешированный файл.
+Two conditions. The dashboard is opened over **http**, not https — otherwise the browser
+blocks the http module as mixed content. And reloading is F5 only: a custom element that
+is already registered cannot be redefined in a live page, which is why HMR is off.
 
-Конфиг HA у этой установки лежит не там, где ожидается: Home Assistant запущен
-rootless-podman'ом от пользователя, и `/config` контейнера — это
-`~/.local/state/podman/homeassistant/config` на хосте. Ни `docker ps` от root, ни поиск
-по файловой системе его не находят; путь берётся из `podman inspect` от того
-пользователя, чей это контейнер.
+**Production is the built bundle in `/config/www/`**, with the resource
+`/local/ha-plugins-cards.js?v=<hash>`. The version in the URL is mandatory, otherwise HA
+serves the cached file.
 
-Раскладка делается `script/publish.py`: сборка, копирование по SSH, обновление ресурса с
-новым хешем в адресе.
+The HA config of this installation is not where it is expected: Home Assistant runs under
+rootless podman as a user, and the container's `/config` is
+`~/.local/state/podman/homeassistant/config` on the host. Neither `docker ps` as root nor
+a filesystem search finds it; the path comes from `podman inspect` run as the user who
+owns the container.
 
-Проверено выключением dev-сервера: дашборд продолжает работать, все шестнадцать типов
-карточек на месте.
+Deployment is done by `script/publish.py`: build, copy over SSH, update the resource with
+a new hash in the URL.
 
-**Релиз — HACS custom repository.** Собранный `dist/ha-plugins-cards.js` лежит в
-репозитории и версионируется, `hacs.json` на месте: HACS ставит плагин прямо из
-репозитория.
+Verified by shutting the dev server down: the dashboard keeps working and all sixteen card
+types are in place.
 
-Это единственный доступный путь установки без участия владельца машины. SSH на хост HA
-закрыт (`Permission denied (publickey,password)`), а сервисов записи файлов в HA нет —
-только `file.read_file`. То есть положить бандл в `/config/www/` со стороны нельзя, а
-через HACS можно.
+**Release is a HACS custom repository.** The built `dist/ha-plugins-cards.js` is committed
+and versioned, `hacs.json` is in place: HACS installs the plugin straight from the
+repository.
 
-Бандл проверен отдельно от dev-версии: загружен в чистой странице, регистрирует все
-пятнадцать карточек и заполняет `window.customCards`, ошибок в консоли нет. 154 КБ,
-37.7 КБ в gzip.
+That is the only installation path available without the machine owner's involvement. SSH
+to the HA host was closed at first (`Permission denied (publickey,password)` — the key is
+bound to the host alias, not the IP), and HA has no file-writing services, only
+`file.read_file`. So the bundle cannot be put into `/config/www/` from outside, while HACS
+can.
 
-**Отдельный дашборд.** `/cards-lab/cards` («Cards Lab» в боковом меню), рабочий
-`/lovelace/home` не трогается. Секции: климат по шести комнатам, четыре розетки, два
-растения, карточка с неверным `entity_id` для проверки плашки, «Два крупных значения» и
-«Взаимодействия и features».
+The bundle was verified separately from the dev version: loaded in a clean page, it
+registers every card and fills `window.customCards`, with no console errors.
 
-Скрипт разворачивания идемпотентный по ресурсу и дашборду, но **конфиг дашборда он
-переписывает целиком**. Правки, сделанные в GUI, следующий запуск сотрёт. Это уже
-чуть не случилось: карточка человека была настроена через редактор — заряд телефона
-перенесён в список устройств, — и запуск скрипта вслепую вернул бы её к виду из кода.
+**A separate dashboard.** `/cards-lab/cards` ("Cards Lab" in the sidebar); the working
+`/lovelace/home` is left alone. Sections: climate for six rooms, four plugs, two plants, a
+card with a wrong `entity_id` to check the banner, "Two large values" and "Interactions
+and features".
 
-## Что проверено на живом HA
+The deployment script is idempotent over the resource and the dashboard, and it **merges**
+into the dashboard config rather than overwriting it. It used to overwrite: edits made in
+the GUI would be silently reverted to the version in code. That nearly happened once — the
+person card had been configured through the editor, with the phone battery moved into the
+device list, and running the script blind would have taken it back.
 
-Не тестами, а замерами и кликами в браузере:
+## What was verified against a live HA
 
-- карточки зарегистрированы в `window.customCards` и видны в списке добавления;
-- тап по температуре открывает попап температуры, по влажности — влажности, по куску
-  вторичной строки — его сущности; пустая площадь ведёт на главную сущность;
-- зажатие 500мс выполняет `hold_action` (уводит в историю), короткий тап туда не
-  уводит;
-- нажатие заливает карточку цветом состояния — снято крупным планом настоящим вводом
-  мыши: прижатая карточка янтарная, соседняя белая;
-- иконка сенсора и иконка розетки совпадают со штатной плиткой по классам и подложке:
-  у сенсора `container` без тона, у розетки `container background`, янтарный 0.2;
-- редактор снят рядом со штатным и сверен по полям;
-- недоступная главная сущность не ломает строку: числа нет, статус во вторичной строке;
-- карточка принтера и обе карточки кнопок сверены с эталонными скриншотами владельца:
-  состав, иконки, подписи и раскладка совпадают.
+Not by tests, but by measurements and clicks in the browser:
 
-## Разбор проблем, найденных при ревизии
+- the cards are registered in `window.customCards` and appear in the picker;
+- a tap on the temperature opens the temperature popup, on the humidity the humidity one,
+  on a piece of the secondary line its entity; empty area leads to the main entity;
+- a 500ms hold performs `hold_action` (taking you to history), a short tap does not;
+- pressing fills the card with the state colour — captured close up with real mouse input:
+  the pressed card is amber, the neighbouring one white;
+- the sensor icon and the plug icon match the stock tile in classes and backdrop: the
+  sensor has `container` with no tone, the plug `container background`, amber at 0.2;
+- the editor was captured next to the stock one and compared field by field;
+- an unavailable main entity does not break the line: no number, a status in the secondary
+  line;
+- the printer card and both button cards were compared against the owner's reference
+  screenshots: contents, icons, labels and layout match.
 
-Проверка карточек по коду и вживую дала восемь дефектов. Все закрыты.
+## The defects found during the review
 
-**Двойная загрузка бандла ломала регистрацию.** `customElements.define` на занятое имя
-бросает исключение, и модуль умирает целиком. Случилось бы буднично: dev-ресурс остался
-в дашборде, рядом появился установленный через HACS. Работала бы копия, загруженная
-первой, — то есть можно смотреть на старый код, думая, что обновился. Теперь вторая
-копия молча уступает и пишет об этом в консоль.
+Checking the cards in code and in the browser produced eight defects. All are closed.
 
-**Карточки не сообщали HA свой размер.** `getGridOptions` не был реализован, а
-`getCardSize` возвращал единицу у всех: принтер с пятью строками чернил заявлял высоту
-одной строки. Теперь `rows: "auto"` — так же размечают себя штатные карточки с плавающей
-высотой, — а `getCardSize` считает содержимое.
+**Loading the bundle twice broke registration.** `customElements.define` on a name already
+taken throws, and the whole module dies with it. It would have happened routinely: the dev
+resource stays in the dashboard and one installed through HACS shows up next to it.
+Whichever loaded first would win — so you could end up looking at old code thinking it
+updated. Now the second copy quietly yields and says so in the console.
 
-**Крупные значения нельзя было нажать с клавиатуры.** Мы специально сделали каждую
-величину отдельной целью — но это был `span` с обработчиком клика. Теперь кнопка, до
-которой доходят табом, с именем сущности в `title` и `aria-label`: «63%» само по себе не
-говорит, чьё оно, ни глазу при наведении, ни скринридеру.
+**The cards did not tell HA their size.** `getGridOptions` was not implemented and
+`getCardSize` returned one for all of them: a printer with five ink rows claimed the
+height of a single row. Now it is `rows: "auto"` — the way the stock cards with a floating
+height describe themselves — and `getCardSize` counts the content.
 
-**Язык был смешанным.** HA переводит состояния сам, а наши подписи были жёстко русскими:
-«Всё спокойно, 1 датч.» рядом с «Docked · Standard · Charging». Теперь строки идут через
-словарь и выбираются по языку HA, с формами множественного числа для обоих языков —
-«1 sensors» и «2 зона» одинаково режут глаз. Названия в списке добавления карточек
-остались английскими: список заполняется при загрузке бандла, когда языка ещё нет.
+**The large values could not be pressed from the keyboard.** We deliberately made every
+value a separate target — but it was a `span` with a click handler. Now it is a button
+reachable by tab, with the entity name in `title` and `aria-label`: "63%" on its own says
+nothing about whose it is, neither on hover nor to a screen reader.
 
-**Одна пропавшая сущность гасила всю карточку.** У батареек их 43: переименуй одну — и
-вместо карточки плашка, а 42 остальные не видны. Теперь пропавшая строка выбрасывается,
-а её число называется в конце вторичной строки. Гаснет карточка только когда нет главной
-сущности — это уже ошибка конфига, а не жизни.
+**The language was mixed.** HA translates states itself, while our labels were hard-coded
+Russian — a Russian "all clear, 1 sensor" next to "Docked · Standard · Charging". Now the
+strings go through a dictionary and are picked by HA's language, with plural forms for
+both languages — a form that does not match the count grates in either. The names in the
+card picker stay English: that list is filled while the bundle loads, before the language
+is known.
 
-**Скрипт разворачивания переписывал дашборд целиком.** Правки, сделанные в GUI, молча
-возвращались к виду из кода. Теперь он дописывает только недостающие карточки, а
-существующие не трогает. Тождество карточки — это её тип и первая сущность в ней: имя не
-годится, его правят в GUI, а сущность остаётся.
+**One missing entity blacked out the whole card.** Batteries have 43 of them: rename one
+and instead of a card you get a banner, with the other 42 invisible. Now a row that
+disappeared is dropped and its count is named at the end of the secondary line. A card
+only goes dark when the main entity is missing — that is a config error, not life.
 
-**Тесты не видели разметку.** Все проверки были на чистой логике, и каждую визуальную
-ошибку приходилось ловить скриншотами вручную. Добавлено окружение happy-dom и проверки
-разметки строк уровней — ширина заливки, зажим в границы, значок тревоги, всплытие тапа.
-Полноценные карточки так не собрать, они опираются на компоненты HA, но собственные
-шаблоны теперь под проверкой.
+**The deployment script overwrote the whole dashboard.** Edits made in the GUI were
+silently reverted to the version in code. Now it only appends the cards that are missing
+and leaves the existing ones alone. A card's identity is its type plus the first entity in
+it: the name will not do, it gets edited in the GUI, while the entity stays.
 
-**Тип `CartridgeConfig` разъехался со смыслом.** Восемь карточек описывали им элемент
-любого списка — расходники, датчики, зоны, потребители. Стал `EntityItem` в своём модуле.
+**The tests did not see the markup.** Every check was over pure logic, and each visual bug
+had to be caught by screenshots by hand. A happy-dom environment was added, along with
+checks of the level rows' markup — fill width, clamping to the bounds, the alarm glyph,
+tap bubbling. Full cards cannot be assembled that way, they lean on HA components, but our
+own templates are under test now.
 
-## Чего против штатной плитки нет
+**The `CartridgeConfig` type had drifted from its meaning.** Eight cards used it for an
+item of any list — consumables, sensors, areas, consumers. It became `EntityItem` in a
+module of its own.
 
-- `state_content` — выбор, что показывать про сущность. У нас содержимое задано
-  ролями, это поле в модель не ложится;
-- `time_format` — наши роли числовые;
-- действие `assist`. Диалог `ha-voice-command-dialog` наружу не экспортируется и на
-  свежей странице не зарегистрирован — проверено. Делать вид, что действие работает,
-  хуже, чем честно писать предупреждение в консоль.
+## What is missing compared to the stock tile
 
-## Открытый вопрос
+- the `assist` action. The `ha-voice-command-dialog` is not exported and is not registered
+  on a fresh page — verified. Pretending the action works is worse than honestly writing a
+  warning to the console.
 
-Корень репозитория не под git — репозиторием является только `frontend/`, и это клон
-upstream home-assistant/frontend, а не форк. Нужно решить, где живёт код плагина:
-`git init` в корне `ha-plugins/` или отдельный репозиторий. Требуется решение
-владельца.
+`state_content` and `time_format` were missing at first and are supported now: when either
+is set, the secondary line is rendered by the stock `state-display`, so attributes and
+last-changed behave exactly as they do on the stock tile.
+
+## Resolved questions
+
+The repository root was not under git at first — only `frontend/` was, and that is a clone
+of upstream home-assistant/frontend rather than a fork. The plugin now lives in its own
+repository, `grigorii-horos/ha-plugins`, published under MIT with the built bundle
+committed for HACS.

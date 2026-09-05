@@ -23,28 +23,28 @@ import { t } from "../core/i18n";
 
 export interface PersonTileConfig extends TileBaseConfig {
   type: string;
-  /** person или device_tracker — кто это и дома ли он. */
+  /** person or device_tracker — who this is and whether they are home. */
   person: string;
-  /** Заряд основного устройства, он идёт крупно. */
+  /** The main device's battery, shown large. */
   battery?: string;
-  /** Где именно: геокодированный адрес или зона. */
+  /** Where exactly: a geocoded address or a zone. */
   location?: string;
-  /** Заряд остальных устройств: часы, планшет, читалка. */
+  /** The battery of the other devices: watch, tablet, e-reader. */
   devices?: (EntityItem | string)[];
 }
 
 /**
- * Человек: дома ли, где именно и сколько заряда на его устройствах.
+ * A person: whether they are home, where exactly, and their devices' battery.
  *
- * Заряды устройств показаны колбами — тем же приёмом, что расходники и
- * чернила: несколько однородных уровней, которые надо увидеть вместе.
+ * Device batteries are drawn as bars — the same device as consumables and ink:
+ * several homogeneous levels that have to be seen together.
  */
 export class HorosPersonTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: PersonTileConfig;
 
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
     return Math.ceil((this._config?.devices?.length ?? 0) / 2);
   }
@@ -62,10 +62,10 @@ export class HorosPersonTile extends BaseTileCard {
 
   public setConfig(config: PersonTileConfig): void {
     if (!config.person) {
-      throw new Error("Нужно указать человека (person)");
+      throw new Error("A person is required (person)");
     }
-    // Портрет человека говорит больше безликой иконки, поэтому по умолчанию
-    // показываем его, если он есть.
+    // A person's portrait says more than a faceless icon, so we show it by
+    // default when there is one.
     this.base = { show_entity_picture: true, ...config };
     this._config = config;
   }

@@ -1,6 +1,6 @@
 /**
- * Точка входа плагина. Все карточки в одном бандле — один ресурс в дашборде,
- * одна запись в HACS.
+ * The plugin entry point. Every card in one bundle — one dashboard resource, one
+ * HACS entry.
  */
 import "./cards/climate-tile";
 import "./cards/plug-tile";

@@ -11,7 +11,7 @@ import { t } from "../core/i18n";
 export interface BatteriesTileConfig extends TileBaseConfig {
   type: string;
   batteries: (EntityItem | string)[];
-  /** Ниже этого заряда батарейка попадает в список. */
+  /** Below this charge a battery makes the list. */
   low_below?: number;
 }
 
@@ -24,11 +24,11 @@ interface BatteryEntry {
 }
 
 /**
- * Батарейки дома.
+ * The batteries in the house.
  *
- * Карточка сознательно показывает не все батарейки, а только садящиеся:
- * список из сорока строк никто не читает, а вопрос у неё ровно один — что
- * пора менять. Когда менять нечего, она так и говорит.
+ * The card deliberately shows not every battery but only the ones running down:
+ * nobody reads a list of forty rows, and the card asks exactly one question —
+ * what needs replacing. When nothing does, it says so.
  */
 export class HorosBatteriesTile extends BaseTileCard {
   @state() private _config?: BatteriesTileConfig;
@@ -46,7 +46,7 @@ export class HorosBatteriesTile extends BaseTileCard {
 
   public setConfig(config: BatteriesTileConfig): void {
     if (!config.batteries?.length) {
-      throw new Error("Нужно указать хотя бы одну батарейку (batteries)");
+      throw new Error("At least one battery is required (batteries)");
     }
     this.base = config;
     this._config = config;
@@ -102,9 +102,9 @@ export class HorosBatteriesTile extends BaseTileCard {
                 }),
               },
             ]),
-        // Пропавшую строку выбрасываем, но молчать о ней нельзя: карточка со
-        // списком не должна гаснуть целиком из-за одной переименованной
-        // сущности, и не должна делать вид, что её там и не было.
+        // A row that disappeared is dropped, but staying silent about it is not
+        // an option: a list card must not go dark over one renamed entity, and
+        // must not pretend the entity was never there.
         ...(missing.length
           ? [{ text: t(this.hass, "list.missing", { count: missing.length }) }]
           : []),

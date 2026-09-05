@@ -1,14 +1,15 @@
 import { defineConfig } from "vite";
 
-// Dev-режим: HA грузит http://<этот-хост>:5188/src/main.ts как module-ресурс
-// дашборда. Поэтому сервер слушает на всех интерфейсах и отдаёт CORS-заголовки.
-// HMR отключён намеренно: переопределить уже зарегистрированный custom element
-// в живой странице нельзя, обновление всё равно только через F5.
+// Dev mode: HA loads http://<this-host>:5188/src/main.ts as a module resource of
+// the dashboard. Hence the server listens on every interface and sends CORS headers.
+// HMR is off on purpose: a custom element that is already registered cannot be
+// redefined in a live page, so reloading is F5 either way.
 export default defineConfig({
   server: {
     host: true,
-    // Не 5173: этот порт часто занимают другие проекты, а карточки грузятся
-    // по абсолютному адресу — молчаливый увод на чужой сервер тут дорого стоит.
+    // Not 5173: that port is often taken by other projects, and the cards are
+    // loaded by absolute URL — being sent to someone else's server silently would
+    // cost a lot here.
     port: 5188,
     strictPort: true,
     cors: true,
@@ -16,12 +17,12 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
-    // Сборка идёт с NODE_ENV=production (см. npm-скрипт): в оболочке бывает
-    // задан development, и тогда Lit подтягивает свою dev-сборку с
-    // предупреждениями — бандл распухает на треть незаметно для глаза.
+    // The build runs with NODE_ENV=production (see the npm script): the shell may
+    // have development set, and Lit then ships its dev build with warnings —
+    // the bundle grows by a third without anything visibly changing.
 
-    // Собранный файл лежит в dist/ корня репозитория и версионируется: HACS
-    // ставит плагины прямо из репозитория и ищет файл именно там.
+    // The built file lives in dist/ at the repository root and is committed: HACS
+    // installs plugins straight from the repository and looks for the file there.
     outDir: "../dist",
     emptyOutDir: true,
     lib: {

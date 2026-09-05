@@ -1,18 +1,18 @@
 /**
- * Разбор списка кнопок. Отдельным модулем без DOM — как и остальная чистая
- * логика, чтобы её покрывали тесты.
+ * Parsing the list of buttons. A separate DOM-free module, like the rest of the
+ * pure logic, so that tests cover it.
  */
 
 export interface ButtonConfig {
-  /** Что нажимаем: script, scene, button, switch — что угодно нажимаемое. */
+  /** What we press: script, scene, button, switch — anything pressable. */
   entity: string;
   name?: string;
   icon?: string;
 }
 
 /**
- * Подпись кнопки по умолчанию. У скриптов имена вида «IR — Bedroom: Night
- * Mode»: общий префикс на кнопке не нужен, он уже сказан заголовком карточки.
+ * The default button label. Scripts carry names like "IR — Bedroom: Night Mode":
+ * the shared prefix is not needed on a button, the card heading already said it.
  */
 export function buttonLabel(
   friendlyName: string | undefined

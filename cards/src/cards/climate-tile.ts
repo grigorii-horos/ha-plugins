@@ -14,7 +14,7 @@ import { defaultIconAction } from "../core/actions";
 import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 
-/** Порядок ролей во вторичной строке зашит и не настраивается. */
+/** The order of roles in the secondary line is fixed and not configurable. */
 export const CLIMATE_ROLES = [
   "temperature",
   "humidity",
@@ -30,13 +30,13 @@ export interface ClimateTileConfig extends TileBaseConfig {
   humidity?: string;
   illuminance?: string;
   pm25?: string;
-  /** Что показать крупно справа. По умолчанию одна температура. */
+  /** What to show large on the right. One temperature by default. */
   big_values?: ClimateRole[];
 }
 
 /**
- * Климат комнаты. Крупно справа — температура, при желании ещё одно значение
- * через косую черту. Остальное во вторичной строке в порядке CLIMATE_ROLES.
+ * Room climate. Large on the right — the temperature, optionally one more value
+ * after a slash. The rest goes to the secondary line in CLIMATE_ROLES order.
  */
 export class HorosClimateTile extends BaseTileCard {
   @state() private _config?: ClimateTileConfig;
@@ -56,7 +56,7 @@ export class HorosClimateTile extends BaseTileCard {
 
   public setConfig(config: ClimateTileConfig): void {
     if (!config.temperature) {
-      throw new Error("Нужно указать сущность температуры (temperature)");
+      throw new Error("A temperature entity is required (temperature)");
     }
     this._bigKeys = resolveBigKeys(
       config.big_values,

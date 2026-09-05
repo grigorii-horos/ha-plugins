@@ -1,9 +1,9 @@
-# Клон исходников home-assistant/frontend: справочник, а не наш код.
+# A clone of the home-assistant/frontend sources: a reference, not our code.
 frontend/
 
-# Черновики визуального companion из сессий brainstorming.
+# Drafts of the visual companion from brainstorming sessions.
 .superpowers/
 
 node_modules/
 
-# dist/ не игнорируется намеренно: HACS ставит собранный файл из репозитория.
+# dist/ is deliberately not ignored: HACS installs the built file from the repo.

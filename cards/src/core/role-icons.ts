@@ -1,9 +1,9 @@
 /**
- * Иконки ролей для правой колонки.
+ * Role icons for the right-hand column.
  *
- * Само по себе «63%» не говорит ничего: это может быть влажность, заряд,
- * место на диске или ресурс щётки. Единица измерения не спасает — проценты
- * есть у всего. Иконка называет величину, не занимая места под слово.
+ * On its own "63%" says nothing: it could be humidity, battery, disk space or
+ * brush life. The unit does not save it — everything is in per cent. An icon
+ * names the quantity without spending room on a word.
  */
 export const ROLE_ICONS: Record<string, string> = {
   temperature: "mdi:thermometer",

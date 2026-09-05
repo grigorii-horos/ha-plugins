@@ -1,19 +1,19 @@
 /**
- * Доступ к внутренним компонентам HA-фронтенда.
+ * Access to the internal components of the HA frontend.
  *
- * Карточки не повторяют вёрстку штатной плитки, а собираются из её же
- * компонентов: `ha-tile-container` (подложка, ripple, жесты, индикатор
- * зажатия, фокус), `ha-tile-icon`, `ha-tile-info`, `hui-card-features`.
+ * The cards don't reimplement the stock tile's markup, they are assembled from
+ * its own components: `ha-tile-container` (the body, ripple, gestures, the hold
+ * indicator, focus), `ha-tile-icon`, `ha-tile-info`, `hui-card-features`.
  *
- * Наружу они не экспортируются, но регистрируются в общем реестре элементов
- * страницы, когда HA подгружает бандл штатной плитки. Поэтому мы просим HA
- * создать обычный tile — исключительно ради побочного эффекта импорта — и
- * дожидаемся регистрации.
+ * They are not exported, but they do get registered in the page's element
+ * registry once HA loads the stock tile's bundle. So we ask HA to create an
+ * ordinary tile — purely for the side effect of that import — and then wait for
+ * the registration.
  */
 
 const REGISTRATION_TIMEOUT = 5000;
 
-/** Всё, из чего собирается карточка. */
+/** Everything a card is assembled from. */
 const REQUIRED_ELEMENTS = [
   "ha-tile-container",
   "ha-tile-icon",
@@ -43,14 +43,14 @@ async function loadTileBundle(): Promise<void> {
   if (!loader) return;
   try {
     const helpers = await loader();
-    // Сам элемент не нужен, нужен побочный эффект импорта бандла плитки.
+    // The element itself is not needed, the side effect of the import is.
     helpers.createCardElement?.({ type: "tile", entity: "sun.sun" });
   } catch {
-    // Конфиг мог не подойти — на импорт это не влияет.
+    // The config may not have fit — that does not affect the import.
   }
 }
 
-/** true — компоненты плитки доступны и карточку можно собрать. */
+/** true — the tile components are available and a card can be assembled. */
 export function ensureTileInternals(): Promise<boolean> {
   if (pending) return pending;
 
@@ -67,8 +67,8 @@ export function ensureTileInternals(): Promise<boolean> {
 }
 
 /**
- * Редактор features живёт в бандле редактора плитки — отдельном от бандла
- * самой плитки. Просим HA собрать её редактор, чтобы получить его.
+ * The features editor lives in the tile editor's bundle, separate from the tile's
+ * own. We ask HA to build that editor to get hold of it.
  */
 export function ensureFeaturesEditor(): Promise<boolean> {
   if (pendingEditor) return pendingEditor;
@@ -83,7 +83,7 @@ export function ensureFeaturesEditor(): Promise<boolean> {
     try {
       await tileCard?.getConfigElement?.();
     } catch {
-      // Нам нужен только побочный эффект импорта.
+      // We only need the side effect of the import.
     }
 
     return whenDefined("hui-card-features-editor", REGISTRATION_TIMEOUT);

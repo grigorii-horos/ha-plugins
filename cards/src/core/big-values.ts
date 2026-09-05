@@ -1,10 +1,10 @@
 /**
- * Выбор ролей для правой колонки.
+ * Picking the roles for the right-hand column.
  *
- * Крупных значений может быть от одного до трёх. Каждое следующее опускает
- * шрифт на ступень: 20px, 16px, 14px. Три помещаются только на широкой сетке —
- * на узкой от имени карточки почти ничего не остаётся, — но это осознанный
- * выбор владельца дашборда, а не запрет.
+ * There can be one to three large values. Each next one drops the font a step:
+ * 20px, 16px, 14px. Three only fit on a wide grid — on a narrow one almost
+ * nothing is left of the card name — but that is the dashboard owner's
+ * deliberate choice, not something to forbid.
  */
 import type { ResolvedRole } from "./format";
 
@@ -16,8 +16,8 @@ export interface KeyedRole {
 }
 
 /**
- * Проверяет список ролей из конфига. Пустой или отсутствующий список означает
- * «как раньше»: одно значение, главная роль карточки.
+ * Validates the list of roles from the config. An empty or missing list means
+ * "as before": one value, the card's main role.
  */
 export function resolveBigKeys(
   configured: string[] | undefined,
@@ -28,15 +28,15 @@ export function resolveBigKeys(
 
   if (configured.length > MAX_BIG_VALUES) {
     throw new Error(
-      `Крупных значений может быть не больше ${MAX_BIG_VALUES}, указано ${configured.length}`
+      `At most ${MAX_BIG_VALUES} large values are allowed, got ${configured.length}`
     );
   }
 
   const unknown = configured.filter((key) => !allowed.includes(key));
   if (unknown.length) {
     throw new Error(
-      `Неизвестные роли в big_values: ${unknown.join(", ")}. ` +
-        `Допустимы: ${allowed.join(", ")}`
+      `Unknown roles in big_values: ${unknown.join(", ")}. ` +
+        `Allowed: ${allowed.join(", ")}`
     );
   }
 
@@ -44,15 +44,15 @@ export function resolveBigKeys(
     (key, index) => configured.indexOf(key) !== index
   );
   if (duplicates.length) {
-    throw new Error(`Роль указана дважды: ${duplicates.join(", ")}`);
+    throw new Error(`Role listed twice: ${duplicates.join(", ")}`);
   }
 
   return configured;
 }
 
 /**
- * Делит роли на правую колонку и вторичную строку. Роль, ушедшая в крупные,
- * во вторичной строке не повторяется — иначе значение дублируется.
+ * Splits roles between the right-hand column and the secondary line. A role that
+ * went large is not repeated in the secondary line — otherwise it shows twice.
  */
 export function splitRoles(
   roles: KeyedRole[],

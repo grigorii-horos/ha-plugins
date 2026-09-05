@@ -20,7 +20,7 @@ import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { t } from "../core/i18n";
 
-/** Порядок ролей во вторичной строке. */
+/** The order of roles in the secondary line. */
 export const COMPUTER_ROLES = [
   "temperature",
   "cpu",
@@ -33,47 +33,47 @@ export type ComputerRole = (typeof COMPUTER_ROLES)[number];
 
 export interface ComputerTileConfig extends TileBaseConfig {
   type: string;
-  /** Жив ли компьютер: lwt, device_tracker, что угодно с состоянием. */
+  /** Whether the computer is alive: lwt, device_tracker, anything with a state. */
   status?: string;
   cpu?: string;
   memory?: string;
   gpu?: string;
-  /** Все датчики температуры. Показывается самый горячий. */
+  /** Every temperature sensor. The hottest one is shown. */
   temperatures?: string[];
-  /** Разделы диска в процентах занятого. Показывается самый заполненный. */
+  /** Disk partitions as per cent used. The fullest one is shown. */
   disks?: string[];
   /**
-   * Разделы диска в процентах **свободного** — так отдаёт, например,
-   * приложение HA для macOS. Показывается тот, где свободного меньше всего.
-   * Отдельная роль, а не та же самая: перепутать «занято» и «свободно» — это
-   * молча показать 32% там, где на самом деле 68%.
+   * Disk partitions as per cent **free** — what the HA companion app for macOS
+   * reports, for one. The one with the least free space is shown. A separate role
+   * rather than the same one: confusing "used" with "free" means silently showing
+   * 32% where it is really 68%.
    */
   disks_free?: string[];
-  /** Что ещё сказать во второй строке: кто за компом, что играет. */
+  /** What else to say on the second line: who is at the computer, what is playing. */
   sensors?: (EntityItem | string)[];
-  /** Бинарные сенсоры, о которых стоит сказать, только когда они сработали. */
+  /** Binary sensors worth mentioning only once they have fired. */
   alerts?: (EntityItem | string)[];
-  /** Что показать крупно справа. По умолчанию температура. */
+  /** What to show large on the right. Temperature by default. */
   big_values?: ComputerRole[];
 }
 
 /**
- * Компьютер.
+ * A computer.
  *
- * Ценность не в том, чтобы показать двенадцать датчиков температуры и три
- * раздела диска, а в том, чтобы свести их к одному числу: насколько горячо и
- * насколько забито. Крайний датчик становится обычной ролью, поэтому тап по
- * значению открывает именно тот, который сейчас крайний.
+ * The value is not in showing twelve temperature sensors and three disk
+ * partitions, but in reducing them to one number each: how hot and how full. The
+ * extreme sensor becomes an ordinary role, so a tap on the value opens exactly
+ * the one that is extreme right now.
  *
- * Загрузка показана колбами — тем же приёмом, что чернила и расходники, но
- * цвет обратный: у нагрузки высокий уровень это плохо.
+ * Load is drawn as bars — the same device as ink and consumables, but with the
+ * colours inverted: for load a high level is the bad one.
  */
 export class HorosComputerTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
 
   @state() private _config?: ComputerTileConfig;
 
-  /** Строки уровней под плиткой: примерно две на одну строку сетки. */
+  /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
     return Math.ceil((4) / 2);
   }
@@ -100,7 +100,7 @@ export class HorosComputerTile extends BaseTileCard {
       !config.disks_free?.length
     ) {
       throw new Error(
-        "Нужна хотя бы одна сущность: cpu, memory, temperatures или disks"
+        "At least one entity is required: cpu, memory, temperatures or disks"
       );
     }
     this._bigKeys = resolveBigKeys(
@@ -112,7 +112,7 @@ export class HorosComputerTile extends BaseTileCard {
     this._config = config;
   }
 
-  /** Роли карточки: списки уже сведены к крайнему датчику. */
+  /** The card's roles: the lists are already reduced to their extreme sensor. */
   private _roles(): KeyedRole[] {
     const config = this._config!;
     return [
@@ -127,7 +127,7 @@ export class HorosComputerTile extends BaseTileCard {
     ];
   }
 
-  /** Раздел с наименьшим запасом свободного места. */
+  /** The partition with the least free space left. */
   private _freeDisk(): ResolvedRole | undefined {
     return pickExtreme(this.hass, this._config?.disks_free, "min");
   }
@@ -169,7 +169,7 @@ export class HorosComputerTile extends BaseTileCard {
     ]);
     if (warning) return this.renderWarning(warning);
 
-    // О перезагрузке и обновлениях говорим, только когда они действительно нужны.
+    // Reboots and updates are mentioned only when they actually matter.
     const alerts = (config.alerts ?? [])
       .map((raw) => normalizeItem(raw))
       .map((alert) => ({ alert, role: resolveRole(this.hass, alert.entity) }))
@@ -195,8 +195,8 @@ export class HorosComputerTile extends BaseTileCard {
       this._levelRow(t(this.hass, "level.memory"), roles[2].role),
       this._levelRow(t(this.hass, "level.gpu"), roles[3].role),
       this._levelRow(t(this.hass, "level.disk"), roles[4].role),
-      // Свободное место — ресурс, который кончается, поэтому и цвет, и тревога
-      // здесь как у батарейки, а не как у загрузки.
+      // Free space is a resource that runs out, so both the colour and the alarm
+      // here behave like a battery's, not like load's.
       freeDisk
         ? {
             entityId: freeDisk.entityId,
@@ -223,7 +223,7 @@ export class HorosComputerTile extends BaseTileCard {
         unavailableSegment(this.hass, status),
         ...alerts,
         ...extras.map((extra) => roleSegment(this.hass, extra)),
-        // Загрузка и диски уже показаны полосами со своими подписями.
+      // Load and disks are already shown as bars with their own labels.
         ...(this._bigKeys.includes("temperature")
           ? []
           : [roleSegment(this.hass, roles[0].role)]),

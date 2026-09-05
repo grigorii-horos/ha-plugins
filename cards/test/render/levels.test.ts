@@ -3,10 +3,10 @@ import { render } from "lit";
 import { renderLevels, type LevelRow } from "../../src/core/levels";
 
 /**
- * Разметка строк уровней. Все визуальные ошибки этой сессии ловились
- * скриншотами вручную — эти проверки закрывают хотя бы то, что мы рисуем сами.
+ * The markup of the level rows. Every visual bug this session was caught by
+ * screenshots taken by hand — these checks cover at least what we draw ourselves.
  */
-describe("строки уровней", () => {
+describe("level rows", () => {
   let host: HTMLDivElement;
   const rows: LevelRow[] = [
     { entityId: "sensor.cyan", name: "Cyan", text: "50 %", ink: "cyan", level: 50 },
@@ -34,23 +34,23 @@ describe("строки уровней", () => {
     return host;
   };
 
-  it("на каждую строку своя кнопка", () => {
+  it("every row gets its own button", () => {
     expect(draw().querySelectorAll("button.level")).toHaveLength(2);
   });
 
-  it("подпись и значение видны текстом, а не только в подсказке", () => {
+  it("the label and the value are visible as text, not only in the tooltip", () => {
     const first = draw().querySelector("button.level")!;
     expect(first.querySelector(".name")!.textContent).toContain("Cyan");
     expect(first.querySelector(".value")!.textContent).toContain("50 %");
   });
 
-  it("заливка ровно по уровню", () => {
+  it("the fill matches the level exactly", () => {
     const fills = draw().querySelectorAll<HTMLElement>(".bar .fill");
     expect(fills[0].style.width).toBe("50%");
     expect(fills[1].style.width).toBe("12.5%");
   });
 
-  it("уровень зажимается в границы полосы", () => {
+  it("the level is clamped to the bar bounds", () => {
     const wild = draw([
       { ...rows[0], level: -20 },
       { ...rows[1], level: 250 },
@@ -59,12 +59,12 @@ describe("строки уровней", () => {
     expect(wild[1].style.width).toBe("100%");
   });
 
-  it("цвет содержимого приходит в строку", () => {
+  it("the colour of the contents reaches the row", () => {
     expect(draw().querySelector<HTMLElement>("button.level")!.style
       .getPropertyValue("--ink")).toBe("cyan");
   });
 
-  it("тревога помечена своим значком, спокойная строка без него", () => {
+  it("an alarm is marked with its own glyph, a calm row has none", () => {
     const buttons = draw().querySelectorAll("button.level");
     expect(buttons[0].querySelector("ha-icon")).toBeNull();
     expect(buttons[1].querySelector("ha-icon")!.getAttribute("icon")).toBe(
@@ -73,13 +73,13 @@ describe("строки уровней", () => {
     expect(buttons[1].classList.contains("low")).toBe(true);
   });
 
-  it("подсказка называет и строку, и значение", () => {
+  it("the tooltip names both the row and the value", () => {
     expect(draw().querySelector("button.level")!.getAttribute("title")).toBe(
       "Cyan: 50 %"
     );
   });
 
-  it("тап отдаёт свою сущность и не всплывает до карточки", () => {
+  it("a tap reports its own entity and does not bubble to the card", () => {
     const tapped: string[] = [];
     let bubbled = 0;
     const el = draw(rows, (id) => tapped.push(id));
@@ -89,7 +89,7 @@ describe("строки уровней", () => {
     expect(bubbled).toBe(0);
   });
 
-  it("пустой список рисует пустой ряд, а не падает", () => {
+  it("an empty list draws an empty row instead of crashing", () => {
     expect(draw([]).querySelectorAll("button.level")).toHaveLength(0);
   });
 });

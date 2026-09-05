@@ -1,22 +1,22 @@
 /**
- * Разбор сущностей принтера. Отдельным модулем без DOM, чтобы логику можно
- * было проверять тестами, не поднимая браузерное окружение.
+ * Parsing printer entities. A separate DOM-free module so the logic can be
+ * tested without bringing up a browser environment.
  */
 
 import { stripDeviceName } from "./labels";
 import { normalizeItem, type EntityItem } from "./entity-item";
 
 /**
- * Цвет картриджа по имени сущности. У HA нет палитрового «magenta», ближайший
- * по смыслу — purple; так же он выглядит и в интерфейсе принтера.
+ * Cartridge colour from the entity name. HA has no palette "magenta"; the
+ * closest in meaning is purple, and that is how the printer's own UI shows it.
  */
 const CARTRIDGE_COLORS: [RegExp, string][] = [
   [/black|pgbk|_bk(_|$)/i, "black"],
   [/cyan/i, "cyan"],
   [/magenta/i, "purple"],
   [/yellow/i, "yellow"],
-  // MC — сервисный бак, а не чернила. Своим оттенком, иначе он
-  // неотличим от чёрного: тот красится цветом текста и тоже выходит серым.
+  // MC is the maintenance tank, not ink. It gets its own shade, otherwise it is
+  // indistinguishable from black: that one is painted in the text colour and
   [/_mc(_|$)|maintenance/i, "blue-grey"],
 ];
 
@@ -26,11 +26,11 @@ export function cartridgeColor(entityId: string): string | undefined {
 }
 
 /**
- * Готовый CSS-цвет капли.
+ * The ready CSS colour of the drop.
  *
- * Чёрные чернила нельзя красить в чистый чёрный: на тёмной теме капля сливается
- * с фоном карточки. Берём цвет текста — он чёрный на светлой теме и белый на
- * тёмной, то есть ведёт себя ровно как «цвет чернил на бумаге».
+ * Black ink must not be painted pure black: on a dark theme the drop merges with
+ * the card background. We take the text colour — black on a light theme, white
+ * on a dark one — which behaves exactly like "the colour of ink on paper".
  */
 export function cartridgeCssColor(color: string): string {
   if (color === "black") return "var(--primary-text-color)";
@@ -38,32 +38,32 @@ export function cartridgeCssColor(color: string): string {
   return `var(--${color}-color, var(--state-icon-color))`;
 }
 
-/** Имя картриджа без имени принтера — оно уже сказано заголовком карточки. */
+/** The cartridge name without the printer's — the card heading already said it. */
 export const cartridgeLabel = stripDeviceName;
 
-/** Прежние имена: картридж — частный случай элемента списка. */
+/** Former names: a cartridge is a special case of a list item. */
 export type CartridgeConfig = EntityItem;
 export const normalizeCartridge = normalizeItem;
 
 /**
- * Разбор маркера принтера.
+ * Parsing a printer marker.
  *
- * IPP отдаёт вместе с уровнем и его смысл. Чернильный картридж расходуется:
- * тревога, когда уровень падает ниже marker_low_level. Поглотитель отработки
- * (marker_type "waste-ink") наоборот наполняется: у него low_level нулевой, а
- * тревога — когда уровень дорос до marker_high_level.
+ * IPP reports the meaning of a level along with the level. An ink cartridge is
+ * consumed: alarm when the level drops below marker_low_level. The waste ink
+ * absorber (marker_type "waste-ink") fills up instead: its low_level is zero and
+ * the alarm is when the level has grown up to marker_high_level.
  *
- * Считать «мало» одинаково для обоих нельзя: у поглотителя низкий уровень —
- * это хорошо.
+ * Treating "low" the same way for both is wrong: for the absorber a low level
+ * is good news.
  */
 export type MarkerAttributes = Record<string, unknown>;
 
 export interface MarkerReading {
-  /** Наполненность ёмкости в процентах от её вместимости, 0..100. */
+  /** How full the container is, in per cent of its capacity, 0..100. */
   fill: number;
-  /** Требует внимания: чернила кончаются или поглотитель полон. */
+  /** Needs attention: ink is running out or the absorber is full. */
   alarm: boolean;
-  /** Наполняется (поглотитель) или расходуется (чернила). */
+  /** Fills up (absorber) or is consumed (ink). */
   fills: boolean;
 }
 
@@ -73,7 +73,7 @@ const numberOr = (value: unknown, fallback: number): number =>
 export function readMarker(
   state: string,
   attributes: MarkerAttributes,
-  /** Свой порог для расходуемых чернил, если задан в конфиге. */
+  /** A custom threshold for consumable ink, if the config sets one. */
   lowOverride?: number
 ): MarkerReading | undefined {
   const value = Number(state);

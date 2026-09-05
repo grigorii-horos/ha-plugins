@@ -1,11 +1,11 @@
 /**
- * Подписи, выведенные из имён сущностей. Без DOM — покрывается тестами.
+ * Labels derived from entity names. DOM-free — covered by tests.
  */
 
 /**
- * Убирает из имени сущности имя устройства: оно уже сказано заголовком
- * карточки. «Canon G3030 series Cyan» при принтере «Canon G3030 series»
- * становится «Cyan». Если после отрезания ничего не остаётся, имя не трогаем.
+ * Strips the device name out of an entity name: the card heading already said
+ * it. "Canon G3030 series Cyan" under a printer named "Canon G3030 series"
+ * becomes "Cyan". If nothing is left after the cut, the name is kept as is.
  */
 export function stripDeviceName(
   friendlyName: string | undefined,
@@ -20,22 +20,23 @@ export function stripDeviceName(
 }
 
 /**
- * Убирает хвост «Battery level» из имени сенсора заряда. Строка «Phone Olga
- * Battery level» в карточке, которая вся про заряд, повторяет очевидное —
- * достаточно «Phone Olga».
+ * Strips the "Battery level" tail off a battery sensor name. "Phone Olga
+ * Battery level" on a card that is entirely about battery repeats the obvious —
+ * "Phone Olga" is enough.
  */
 export function stripBatterySuffix(
   name: string | undefined
 ): string | undefined {
   if (!name) return undefined;
+  // The Russian word is there on purpose: entity names follow the HA UI language.
   const stripped = name.replace(/[\s—-]*(battery(\s+level)?|заряд)\s*$/i, "").trim();
   return stripped || name;
 }
 
 /**
- * Цвет уровня — по тем же ступеням, что HA красит батарейки: 70 и 30
- * процентов. Годится и для расходников: вопрос у них тот же, «скоро ли
- * кончится».
+ * Level colour — the same steps HA paints batteries with: 70 and 30 per cent.
+ * It suits consumables too: the question there is the same, "will it run out
+ * soon".
  */
 export function levelColor(level: number | undefined): string {
   if (level === undefined) return "var(--state-unavailable-color)";
@@ -44,12 +45,12 @@ export function levelColor(level: number | undefined): string {
   return "var(--state-sensor-battery-low-color, #db4437)";
 }
 
-/** Прежнее имя: у батареек тот же смысл. */
+/** The former name: batteries mean the same thing. */
 export const batteryColor = levelColor;
 
 /**
- * Цвет нагрузки — обратный цвету уровня. У батарейки много это хорошо, у
- * загрузки процессора и заполненности диска наоборот: чем выше, тем тревожнее.
+ * Load colour — the inverse of level colour. On a battery a lot is good; on CPU
+ * load and disk usage it is the other way round: the higher, the more alarming.
  */
 export function loadColor(level: number | undefined): string {
   if (level === undefined) return "var(--state-unavailable-color)";

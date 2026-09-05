@@ -14,27 +14,27 @@ import type { LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { t } from "../core/i18n";
 
-/** Порядок ролей во вторичной строке. */
+/** The order of roles in the secondary line. */
 export const SERVER_ROLES = ["disk", "download", "upload"] as const;
 
 export type ServerRole = (typeof SERVER_ROLES)[number];
 
 export interface ServerTileConfig extends TileBaseConfig {
   type: string;
-  /** Жив ли сервер: любая сущность, чьё состояние стоит видеть первым. */
+  /** Whether the server is alive: any entity whose state is worth seeing first. */
   status?: string;
   disk?: string;
   download?: string;
   upload?: string;
-  /** Что ещё сказать во второй строке: блокировки, торренты, синхронизация. */
+  /** What else to say on the second line: locks, torrents, synchronisation. */
   services?: (EntityItem | string)[];
-  /** Что показать крупно справа. По умолчанию свободное место. */
+  /** What to show large on the right. Free space by default. */
   big_values?: ServerRole[];
 }
 
 /**
- * Домашний сервер: место на диске, скорости и состояние сервисов в одной
- * плитке вместо трёх интеграций, разбросанных по дашборду.
+ * A home server: disk space, throughput and the state of services in a single
+ * tile instead of three integrations scattered across the dashboard.
  */
 export class HorosServerTile extends BaseTileCard {
   @state() private _config?: ServerTileConfig;
@@ -55,7 +55,7 @@ export class HorosServerTile extends BaseTileCard {
   public setConfig(config: ServerTileConfig): void {
     if (!config.disk && !config.download && !config.status) {
       throw new Error(
-        "Нужна хотя бы одна сущность: status, disk или download"
+        "At least one entity is required: status, disk or download"
       );
     }
     this._bigKeys = resolveBigKeys(config.big_values, "disk", SERVER_ROLES);
@@ -96,7 +96,7 @@ export class HorosServerTile extends BaseTileCard {
         ...rest.map((item) => {
           const segment = roleSegment(this.hass, item.role);
           if (!segment) return undefined;
-          // Приём и отдача часто равны нулю и без пометки неразличимы.
+          // Download and upload are often both zero and unlabelled they blur together.
           const mark =
             item.key === "download" ? "↓ " : item.key === "upload" ? "↑ " : "";
           return { ...segment, text: mark + segment.text };

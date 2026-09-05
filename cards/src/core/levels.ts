@@ -1,33 +1,32 @@
 import { css, html, nothing, type TemplateResult } from "lit";
 
 /**
- * Строки уровней — линия features, где каждый уровень показан горизонтальной
- * полосой с подписью слева и значением справа.
+ * Level rows — a features line where every level is a horizontal bar with a
+ * label on the left and a value on the right.
  *
- * Приём взят у бакового принтера: спереди у него прозрачные ёмкости, и уровень
- * в них видно глазом. Первая версия рисовала их вертикальными колбами в один
- * ряд, но на высоте штатной линии features пять колб превращались в полоски,
- * в которых ничего не разобрать. Горизонтальная строка даёт то же самое —
- * заливку до уровня цветом содержимого, — но с подписью и числом.
+ * The idea comes from a tank printer: it has transparent tanks on the front and
+ * you read the level by eye. The first version drew them as vertical flasks in a
+ * row, but at the height of a stock features line five flasks turned into
+ * slivers with nothing to make out. A horizontal row gives the same thing — a
+ * fill up to the level in the colour of the contents — plus a label and a number.
  *
- * Работает везде, где несколько однородных уровней надо увидеть вместе:
- * чернила принтера, расходники пылесоса, батарейки устройств, загрузка
- * компьютера.
+ * It works anywhere several homogeneous levels have to be seen together:
+ * printer ink, vacuum consumables, device batteries, computer load.
  */
 
 export interface LevelRow {
   entityId: string;
-  /** Подпись слева. */
+  /** The label on the left. */
   name: string;
-  /** Что написано справа: «50 %», «нет данных». */
+  /** What is written on the right: "50 %", "no data". */
   text: string;
-  /** CSS-цвет заливки. */
+  /** CSS fill colour. */
   ink: string;
-  /** Заполненность полосы 0..100. */
+  /** Bar fill, 0..100. */
   level: number;
-  /** Требует внимания. */
+  /** Needs attention. */
   alarm?: boolean;
-  /** Значок тревоги: у кончающегося и у переполненного он разный. */
+  /** The alarm glyph: running out and overflowing get different ones. */
   alarmIcon?: string;
 }
 
@@ -57,8 +56,8 @@ export const levelStyles = css`
   }
 
   /*
-   * Доля, а не автоширина: иначе имена разной длины растаскивают полосы, и
-   * ряд перестаёт читаться как одна шкала.
+   * A fraction, not auto width: otherwise names of different lengths drag the
+   * bars around and the row stops reading as one scale.
    */
   .level .name {
     flex: 0 0 34%;
@@ -79,7 +78,7 @@ export const levelStyles = css`
     --mdc-icon-size: 14px;
   }
 
-  /* Полоса как у штатной hui-bar-gauge-card-feature, только тоньше. */
+  /* The bar as in the stock hui-bar-gauge-card-feature, only thinner. */
   .level .bar {
     flex: 1 1 auto;
     display: flex;

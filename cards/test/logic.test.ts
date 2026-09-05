@@ -60,14 +60,14 @@ const fakeHass = (entities: HassEntity[]): HomeAssistant => ({
   callService: async () => undefined,
 });
 
-describe("сборка вторичной строки", () => {
-  it("сохраняет порядок заполненных кусков", () => {
+describe("assembling the secondary line", () => {
+  it("keeps the order of the filled pieces", () => {
     expect(
       composeSegments([{ text: "47 %" }, { text: "115 lx" }]).map((s) => s.text)
     ).toEqual(["47 %", "115 lx"]);
   });
 
-  it("выбрасывает незаполненные роли, не оставляя дырок", () => {
+  it("drops the roles that are not filled, leaving no holes", () => {
     expect(
       composeSegments([undefined, { text: "115 lx" }, undefined]).map(
         (s) => s.text
@@ -75,13 +75,13 @@ describe("сборка вторичной строки", () => {
     ).toEqual(["115 lx"]);
   });
 
-  it("пустая строка — не кусок", () => {
+  it("an empty string is not a piece", () => {
     expect(composeSegments([undefined, { text: "" }, { text: "  " }])).toEqual(
       []
     );
   });
 
-  it("кусок помнит свою сущность, чтобы открыть её more-info", () => {
+  it("a piece remembers its entity so more-info can open it", () => {
     const segments = composeSegments([
       { text: "47 %", entityId: "sensor.hum" },
     ]);
@@ -89,54 +89,54 @@ describe("сборка вторичной строки", () => {
   });
 });
 
-describe("разрешение ролей", () => {
+describe("role resolution", () => {
   const hass = fakeHass([
     entity("sensor.temp", "27.4", { unit_of_measurement: "°C" }),
     entity("sensor.broken", "unavailable"),
   ]);
 
-  it("пустая роль не разрешается вовсе", () => {
+  it("an empty role does not resolve at all", () => {
     expect(resolveRole(hass, undefined)).toBeUndefined();
   });
 
-  it("отсутствующая сущность помечается как missing", () => {
+  it("a missing entity is marked as missing", () => {
     const role = resolveRole(hass, "sensor.nope");
     expect(role?.missing).toBe(true);
     expect(role?.unavailable).toBe(false);
   });
 
-  it("недоступная сущность помечается как unavailable", () => {
+  it("an unavailable entity is marked as unavailable", () => {
     const role = resolveRole(hass, "sensor.broken");
     expect(role?.missing).toBe(false);
     expect(role?.unavailable).toBe(true);
   });
 
-  it("недоступная роль не даёт текста — она просто исчезнет из строки", () => {
+  it("an unavailable role gives no text — it just leaves the line", () => {
     expect(formatRole(hass, resolveRole(hass, "sensor.broken"))).toBeUndefined();
   });
 
-  it("нормальная роль форматируется силами HA", () => {
+  it("a normal role is formatted by HA itself", () => {
     expect(formatRole(hass, resolveRole(hass, "sensor.temp"))).toBe("27.4 °C");
   });
 
-  it("недоступная роль отдаёт статус для вторичной строки", () => {
+  it("an unavailable role returns a status for the secondary line", () => {
     expect(formatUnavailable(hass, resolveRole(hass, "sensor.broken"))).toBe(
       "unavailable"
     );
   });
 
-  it("доступная роль статуса недоступности не отдаёт", () => {
+  it("an available role returns no unavailability status", () => {
     expect(
       formatUnavailable(hass, resolveRole(hass, "sensor.temp"))
     ).toBeUndefined();
   });
 
-  it("кусок строки несёт сущность роли", () => {
+  it("a line piece carries the role's entity", () => {
     const segment = roleSegment(hass, resolveRole(hass, "sensor.temp"));
     expect(segment).toEqual({ text: "27.4 °C", entityId: "sensor.temp" });
   });
 
-  it("у недоступной роли обычного куска нет, есть кусок со статусом", () => {
+  it("an unavailable role has no ordinary piece, only a status one", () => {
     const role = resolveRole(hass, "sensor.broken");
     expect(roleSegment(hass, role)).toBeUndefined();
     expect(unavailableSegment(hass, role)).toEqual({
@@ -145,122 +145,122 @@ describe("разрешение ролей", () => {
     });
   });
 
-  it("нечисловое состояние не превращается в число", () => {
+  it("a non-numeric state does not turn into a number", () => {
     expect(numericState(resolveRole(hass, "sensor.broken"))).toBeUndefined();
     expect(numericState(resolveRole(hass, "sensor.temp"))).toBe(27.4);
   });
 });
 
-describe("имя карточки", () => {
+describe("the card name", () => {
   const hass = fakeHass([
-    entity("sensor.temp", "27.4", { friendly_name: "Спальня температура" }),
+    entity("sensor.temp", "27.4", { friendly_name: "Bedroom temperature" }),
   ]);
 
-  it("берётся из конфига когда задано", () => {
-    expect(cardName("Спальня", resolveRole(hass, "sensor.temp"))).toBe("Спальня");
+  it("comes from the config when it is set", () => {
+    expect(cardName("Bedroom", resolveRole(hass, "sensor.temp"))).toBe("Bedroom");
   });
 
-  it("иначе падает на имя сущности", () => {
+  it("otherwise falls back to the entity name", () => {
     expect(cardName(undefined, resolveRole(hass, "sensor.temp"))).toBe(
-      "Спальня температура"
+      "Bedroom temperature"
     );
   });
 });
 
-describe("отделение единицы измерения", () => {
-  it("отрезает единицу с конца", () => {
+describe("splitting off the unit", () => {
+  it("cuts the unit off the end", () => {
     expect(splitValueUnit("27.4 °C", "°C")).toEqual({
       value: "27.4",
       unit: "°C",
     });
   });
 
-  it("оставляет строку целой когда единицы нет", () => {
-    expect(splitValueUnit("Включён", undefined)).toEqual({ value: "Включён" });
+  it("leaves the string whole when there is no unit", () => {
+    expect(splitValueUnit("Switched on", undefined)).toEqual({ value: "Switched on" });
   });
 
-  it("не режет когда значение состоит из одной единицы", () => {
+  it("does not cut when the value is nothing but the unit", () => {
     expect(splitValueUnit("°C", "°C")).toEqual({ value: "°C" });
   });
 });
 
-describe("пороги влажности почвы", () => {
-  it("ниже нижнего порога — сухо", () => {
+describe("soil moisture thresholds", () => {
+  it("below the lower threshold — dry", () => {
     expect(moistureStatus(27, 30, 70)).toBe("dry");
   });
 
-  it("между порогами — норма", () => {
+  it("between the thresholds — normal", () => {
     expect(moistureStatus(61, 30, 70)).toBe("ok");
   });
 
-  it("выше верхнего порога — залито", () => {
+  it("above the upper threshold — overwatered", () => {
     expect(moistureStatus(85, 30, 70)).toBe("wet");
   });
 
-  it("границы включаются в норму", () => {
+  it("the bounds count as normal", () => {
     expect(moistureStatus(30, 30, 70)).toBe("ok");
     expect(moistureStatus(70, 30, 70)).toBe("ok");
   });
 
-  it("без числа статус неизвестен", () => {
+  it("without a number the status is unknown", () => {
     expect(moistureStatus(undefined, 30, 70)).toBe("unknown");
   });
 });
 
-describe("цвет плитки по состоянию", () => {
-  it("включённый выключатель красится цепочкой цветов состояния", () => {
+describe("tile colour by state", () => {
+  it("a switch that is on takes the state colour chain", () => {
     const color = tileColor(entity("switch.plug", "on"));
     expect(color).toContain("--state-switch-on-color");
     expect(color).toContain("--state-active-color");
   });
 
-  it("выключенный выключатель уходит в неактивный цвет", () => {
+  it("a switch that is off falls back to the inactive colour", () => {
     const color = tileColor(entity("switch.plug", "off"));
     expect(color).toContain("--state-switch-off-color");
   });
 
-  it("числовой сенсор HA не окрашивает — он просто активен", () => {
+  it("HA does not colour a numeric sensor — it is simply active", () => {
     expect(tileColor(entity("sensor.temp", "27.4"))).toBe(
       "var(--state-icon-color)"
     );
   });
 
-  it("недоступная сущность красится в цвет недоступности", () => {
+  it("an unavailable entity takes the unavailable colour", () => {
     expect(tileColor(entity("sensor.temp", "unavailable"))).toBe(
       "var(--state-unavailable-color)"
     );
   });
 
-  it("заряд батареи имеет собственное правило", () => {
+  it("battery charge has a rule of its own", () => {
     expect(
       tileColor(entity("sensor.bat", "32", { device_class: "battery" }))
     ).toBe("var(--state-sensor-battery-medium-color)");
   });
 
-  it("stateActive повторяет правила доменов HA", () => {
+  it("stateActive mirrors HA's domain rules", () => {
     expect(stateActive(entity("cover.c", "closed"))).toBe(false);
     expect(stateActive(entity("cover.c", "open"))).toBe(true);
     expect(stateActive(entity("sensor.s", "unknown"))).toBe(false);
   });
 });
 
-describe("выбор крупных значений", () => {
+describe("picking the large values", () => {
   const allowed = ["temperature", "humidity", "illuminance", "pm25"];
 
-  it("без настройки показывается одна главная роль", () => {
+  it("with nothing set one main role is shown", () => {
     expect(resolveBigKeys(undefined, "temperature", allowed)).toEqual([
       "temperature",
     ]);
     expect(resolveBigKeys([], "temperature", allowed)).toEqual(["temperature"]);
   });
 
-  it("две роли разрешены", () => {
+  it("two roles are allowed", () => {
     expect(
       resolveBigKeys(["temperature", "humidity"], "temperature", allowed)
     ).toEqual(["temperature", "humidity"]);
   });
 
-  it("три роли разрешены", () => {
+  it("three roles are allowed", () => {
     expect(
       resolveBigKeys(
         ["temperature", "humidity", "illuminance"],
@@ -270,7 +270,7 @@ describe("выбор крупных значений", () => {
     ).toEqual(["temperature", "humidity", "illuminance"]);
   });
 
-  it("четыре роли — ошибка конфига", () => {
+  it("four roles — a config error", () => {
     expect(() =>
       resolveBigKeys(
         ["temperature", "humidity", "illuminance", "pm25"],
@@ -280,38 +280,38 @@ describe("выбор крупных значений", () => {
     ).toThrow(new RegExp(String(MAX_BIG_VALUES)));
   });
 
-  it("неизвестная роль — ошибка с подсказкой", () => {
+  it("an unknown role — an error with a hint", () => {
     expect(() =>
       resolveBigKeys(["temperature", "co2"], "temperature", allowed)
     ).toThrow(/co2/);
   });
 
-  it("одна роль дважды — ошибка", () => {
+  it("one role twice — an error", () => {
     expect(() =>
       resolveBigKeys(["humidity", "humidity"], "temperature", allowed)
-    ).toThrow(/дважды/);
+    ).toThrow(/twice/);
   });
 });
 
-describe("деление ролей на колонку и строку", () => {
+describe("splitting roles between the column and the line", () => {
   const roles: KeyedRole[] = [
     { key: "temperature" },
     { key: "humidity" },
     { key: "illuminance" },
   ];
 
-  it("крупные роли не повторяются во вторичной строке", () => {
+  it("large roles are not repeated in the secondary line", () => {
     const { big, rest } = splitRoles(roles, ["temperature", "humidity"]);
     expect(big.map((item) => item.key)).toEqual(["temperature", "humidity"]);
     expect(rest.map((item) => item.key)).toEqual(["illuminance"]);
   });
 
-  it("порядок крупных берётся из конфига, а не из порядка ролей", () => {
+  it("the order of the large ones comes from the config, not from the roles", () => {
     const { big } = splitRoles(roles, ["humidity", "temperature"]);
     expect(big.map((item) => item.key)).toEqual(["humidity", "temperature"]);
   });
 
-  it("остаток сохраняет канонический порядок карточки", () => {
+  it("the remainder keeps the card's canonical order", () => {
     const { rest } = splitRoles(roles, ["humidity"]);
     expect(rest.map((item) => item.key)).toEqual([
       "temperature",
@@ -320,83 +320,83 @@ describe("деление ролей на колонку и строку", () => 
   });
 });
 
-describe("вооружение жестов", () => {
-  it("незаданное действие жест не вооружает — как в HA", () => {
+describe("arming the gestures", () => {
+  it("an action that is not set arms no gesture — as in HA", () => {
     expect(hasAction(undefined)).toBe(false);
   });
 
-  it('явное "none" тоже не вооружает', () => {
+  it('an explicit "none" does not arm one either', () => {
     expect(hasAction({ action: "none" })).toBe(false);
   });
 
-  it("заданное действие вооружает", () => {
+  it("an action that is set arms it", () => {
     expect(hasAction({ action: "toggle" })).toBe(true);
   });
 });
 
-describe("сервис переключения по доменам", () => {
-  it("обычный домен переключается turn_on/turn_off", () => {
+describe("the toggle service per domain", () => {
+  it("an ordinary domain toggles with turn_on/turn_off", () => {
     expect(toggleAction("switch", true)).toBe("turn_on");
     expect(toggleAction("switch", false)).toBe("turn_off");
   });
 
-  it("шторы открываются и закрываются своими сервисами", () => {
+  it("covers open and close with their own services", () => {
     expect(toggleAction("cover", true)).toBe("open_cover");
     expect(toggleAction("cover", false)).toBe("close_cover");
   });
 
-  it("замок инвертирован: включить значит открыть", () => {
+  it("a lock is inverted: turning it on means unlocking", () => {
     expect(toggleAction("lock", true)).toBe("unlock");
     expect(toggleAction("lock", false)).toBe("lock");
   });
 
-  it("у кнопки выключения нет, обе стороны нажимают", () => {
+  it("a button has no off, both sides press", () => {
     expect(toggleAction("button", true)).toBe("press");
     expect(toggleAction("button", false)).toBe("press");
   });
 });
 
-describe("действие иконки по умолчанию", () => {
-  it("переключаемый домен переключается", () => {
+describe("the default icon action", () => {
+  it("a toggleable domain toggles", () => {
     expect(defaultIconAction("switch.plug")).toEqual({ action: "toggle" });
     expect(defaultIconAction("light.lamp")).toEqual({ action: "toggle" });
     expect(defaultIconAction("fan.recuperator")).toEqual({ action: "toggle" });
   });
 
-  it("кнопки и сцены тоже считаются действием", () => {
+  it("buttons and scenes count as an action too", () => {
     expect(defaultIconAction("button.restart")).toEqual({ action: "toggle" });
     expect(defaultIconAction("scene.evening")).toEqual({ action: "toggle" });
   });
 
-  it("у сенсора иконка сама по себе ничего не делает — как в HA", () => {
+  it("on a sensor the icon does nothing by itself — as in HA", () => {
     expect(defaultIconAction("sensor.temp")).toEqual({ action: "none" });
   });
 
-  it("без сущности действия нет", () => {
+  it("without an entity there is no action", () => {
     expect(defaultIconAction(undefined)).toEqual({ action: "none" });
   });
 });
 
-describe("подписи и цвета картриджей", () => {
-  it("имя принтера отрезается от имени картриджа", () => {
+describe("cartridge labels and colours", () => {
+  it("the printer name is cut off the cartridge name", () => {
     expect(
       cartridgeLabel("Canon G3030 series Cyan", "Canon G3030 series")
     ).toBe("Cyan");
   });
 
-  it("без имени принтера остаётся как есть", () => {
+  it("without the printer name it stays as it is", () => {
     expect(cartridgeLabel("Canon G3030 series Cyan", undefined)).toBe(
       "Canon G3030 series Cyan"
     );
   });
 
-  it("не отрезает всё под ноль", () => {
+  it("does not cut everything down to nothing", () => {
     expect(cartridgeLabel("Canon G3030 series", "Canon G3030 series")).toBe(
       "Canon G3030 series"
     );
   });
 
-  it("цвет угадывается по имени сущности", () => {
+  it("the colour is guessed from the entity name", () => {
     expect(cartridgeColor("sensor.canon_g3030_series_black_pgbk")).toBe("black");
     expect(cartridgeColor("sensor.canon_g3030_series_cyan")).toBe("cyan");
     expect(cartridgeColor("sensor.canon_g3030_series_magenta")).toBe("purple");
@@ -404,158 +404,158 @@ describe("подписи и цвета картриджей", () => {
     expect(cartridgeColor("sensor.canon_g3030_series_mc")).toBe("blue-grey");
   });
 
-  it("непонятная сущность цвета не получает", () => {
+  it("an unrecognised entity gets no colour", () => {
     expect(cartridgeColor("sensor.canon_g3030_series_uptime")).toBeUndefined();
   });
 
-  it("чёрные чернила красятся цветом текста, а не чистым чёрным", () => {
-    // иначе на тёмной теме капля сливается с фоном карточки
+  it("black ink takes the text colour, not pure black", () => {
+    // otherwise the drop merges with the card background on a dark theme
     expect(cartridgeCssColor("black")).toBe("var(--primary-text-color)");
   });
 
-  it("остальные цвета берутся из палитры темы", () => {
+  it("the other colours come from the theme palette", () => {
     expect(cartridgeCssColor("cyan")).toBe(
       "var(--cyan-color, var(--state-icon-color))"
     );
   });
 
-  it("готовый CSS-цвет пропускается как есть", () => {
+  it("a ready CSS colour passes through as is", () => {
     expect(cartridgeCssColor("#ff0066")).toBe("#ff0066");
   });
 });
 
-describe("подписи кнопок", () => {
-  it("общий префикс скрипта отбрасывается", () => {
+describe("button labels", () => {
+  it("the shared script prefix is dropped", () => {
     expect(buttonLabel("IR — Bedroom: Night Mode")).toBe("Night Mode");
   });
 
-  it("имя без двоеточия остаётся целым", () => {
-    expect(buttonLabel("Вертикальная лампа")).toBe("Вертикальная лампа");
+  it("a name without a colon stays whole", () => {
+    expect(buttonLabel("Vertical lamp")).toBe("Vertical lamp");
   });
 
-  it("без имени подписи нет", () => {
+  it("without a name there is no label", () => {
     expect(buttonLabel(undefined)).toBeUndefined();
   });
 });
 
-describe("правка списка сущностей в GUI", () => {
-  it("настройки, дописанные в YAML, переживают правку списка", () => {
+describe("editing an entity list in the GUI", () => {
+  it("settings written in YAML survive an edit of the list", () => {
     const previous = [
-      { entity: "script.a", name: "Ярко", icon: "mdi:brightness-7" },
+      { entity: "script.a", name: "Bright", icon: "mdi:brightness-7" },
       "script.b",
     ];
     expect(mergeEntityList(previous, ["script.b", "script.a"])).toEqual([
       "script.b",
-      { entity: "script.a", name: "Ярко", icon: "mdi:brightness-7" },
+      { entity: "script.a", name: "Bright", icon: "mdi:brightness-7" },
     ]);
   });
 
-  it("новая сущность добавляется просто строкой", () => {
+  it("a new entity is added as a plain string", () => {
     expect(mergeEntityList([{ entity: "script.a" }], ["script.a", "script.c"]))
       .toEqual([{ entity: "script.a" }, "script.c"]);
   });
 
-  it("убранная сущность исчезает вместе со своими настройками", () => {
+  it("a removed entity disappears together with its settings", () => {
     expect(
-      mergeEntityList([{ entity: "script.a", name: "Ярко" }], ["script.c"])
+      mergeEntityList([{ entity: "script.a", name: "Bright" }], ["script.c"])
     ).toEqual(["script.c"]);
   });
 });
 
-describe("маркеры принтера", () => {
-  // значения сняты с живого Canon G3030 через IPP
+describe("printer markers", () => {
+  // the values are taken off a live Canon G3030 over IPP
   const ink = { marker_type: "ink-cartridge", marker_high_level: 100, marker_low_level: 15 };
   const waste = { marker_type: "waste-ink", marker_high_level: 80, marker_low_level: 0 };
 
-  it("чернила расходуются: полный бак тревоги не даёт", () => {
+  it("ink is consumed: a full tank raises no alarm", () => {
     const marker = readMarker("50", ink);
     expect(marker).toEqual({ fill: 50, alarm: false, fills: false });
   });
 
-  it("чернила ниже порога принтера — тревога", () => {
+  it("ink below the printer's threshold — alarm", () => {
     expect(readMarker("15", ink)?.alarm).toBe(true);
     expect(readMarker("16", ink)?.alarm).toBe(false);
   });
 
-  it("поглотитель наполняется: низкий уровень это хорошо", () => {
+  it("the absorber fills up: a low level is good news", () => {
     const marker = readMarker("10", waste);
     expect(marker?.alarm).toBe(false);
     expect(marker?.fills).toBe(true);
   });
 
-  it("поглотитель полон — тревога", () => {
+  it("the absorber is full — alarm", () => {
     expect(readMarker("80", waste)?.alarm).toBe(true);
   });
 
-  it("наполненность считается от вместимости, а не от сотни", () => {
-    // у поглотителя вместимость 80, поэтому 10 это 12.5% ёмкости
+  it("fullness is counted against capacity, not against a hundred", () => {
+    // the absorber's capacity is 80, so 10 is 12.5% of it
     expect(readMarker("10", waste)?.fill).toBe(12.5);
   });
 
-  it("свой порог перебивает порог принтера только у расходуемых", () => {
+  it("a custom threshold overrides the printer's only for consumables", () => {
     expect(readMarker("20", ink, 25)?.alarm).toBe(true);
     expect(readMarker("20", waste, 25)?.alarm).toBe(false);
   });
 
-  it("без атрибутов маркера шкала считается сотенной", () => {
+  it("without marker attributes the scale is assumed to be a hundred", () => {
     expect(readMarker("40", {})).toEqual({ fill: 40, alarm: false, fills: false });
   });
 
-  it("нечисловое состояние маркером не считается", () => {
+  it("a non-numeric state does not count as a marker", () => {
     expect(readMarker("unavailable", ink)).toBeUndefined();
   });
 });
 
-describe("цвет уровня", () => {
-  it("полный — спокойный", () => {
+describe("level colour", () => {
+  it("full — calm", () => {
     expect(levelColor(70)).toContain("battery-high");
     expect(levelColor(100)).toContain("battery-high");
   });
 
-  it("средний — предупреждающий", () => {
+  it("middling — warning", () => {
     expect(levelColor(30)).toContain("battery-medium");
     expect(levelColor(69)).toContain("battery-medium");
   });
 
-  it("низкий — тревожный", () => {
+  it("low — alarming", () => {
     expect(levelColor(29)).toContain("battery-low");
     expect(levelColor(0)).toContain("battery-low");
   });
 
-  it("без данных — цвет недоступности", () => {
+  it("no data — the unavailable colour", () => {
     expect(levelColor(undefined)).toContain("unavailable");
   });
 });
 
-describe("отрезание имени устройства", () => {
-  it("общий префикс уходит", () => {
+describe("cutting off the device name", () => {
+  it("a shared prefix goes", () => {
     expect(stripDeviceName("Xiaomi X20+ Filter life", "Xiaomi X20+")).toBe(
       "Filter life"
     );
   });
 
-  it("чужой префикс не трогается", () => {
+  it("someone else's prefix is left alone", () => {
     expect(stripDeviceName("Filter life", "Xiaomi X20+")).toBe("Filter life");
   });
 
-  it("имя не срезается под ноль", () => {
+  it("the name is not cut down to nothing", () => {
     expect(stripDeviceName("Xiaomi X20+", "Xiaomi X20+")).toBe("Xiaomi X20+");
   });
 });
 
-describe("цвет нагрузки", () => {
-  it("обратен цвету уровня: много — плохо", () => {
+describe("load colour", () => {
+  it("the inverse of level colour: a lot is bad", () => {
     expect(loadColor(10)).toContain("state-icon-color");
     expect(loadColor(85)).toContain("warning");
     expect(loadColor(95)).toContain("error");
   });
 
-  it("без данных — цвет недоступности", () => {
+  it("no data — the unavailable colour", () => {
     expect(loadColor(undefined)).toContain("unavailable");
   });
 });
 
-describe("сведение списка датчиков к одному", () => {
+describe("reducing a list of sensors to one", () => {
   const hass = fakeHass([
     entity("sensor.cpu", "84.4", { unit_of_measurement: "°C" }),
     entity("sensor.gpu", "60", { unit_of_measurement: "°C" }),
@@ -563,118 +563,118 @@ describe("сведение списка датчиков к одному", () =>
     entity("sensor.broken", "unavailable"),
   ]);
 
-  it("выбирает самый горячий", () => {
+  it("picks the hottest", () => {
     expect(
       pickExtreme(hass, ["sensor.gpu", "sensor.cpu", "sensor.nvme"], "max")
         ?.entityId
     ).toBe("sensor.cpu");
   });
 
-  it("выбирает самый холодный", () => {
+  it("picks the coldest", () => {
     expect(
       pickExtreme(hass, ["sensor.gpu", "sensor.cpu", "sensor.nvme"], "min")
         ?.entityId
     ).toBe("sensor.nvme");
   });
 
-  it("нечисловые пропускаются", () => {
+  it("non-numeric ones are skipped", () => {
     expect(
       pickExtreme(hass, ["sensor.broken", "sensor.gpu"], "max")?.entityId
     ).toBe("sensor.gpu");
   });
 
-  it("если чисел нет вовсе — отдаёт первую роль, чтобы карточка сказала о проблеме", () => {
+  it("with no numbers at all — the first role, so the card reports the problem", () => {
     expect(pickExtreme(hass, ["sensor.broken"], "max")?.entityId).toBe(
       "sensor.broken"
     );
   });
 
-  it("пустой список — ничего", () => {
+  it("an empty list — nothing", () => {
     expect(pickExtreme(hass, [], "max")).toBeUndefined();
     expect(pickExtreme(hass, undefined, "max")).toBeUndefined();
   });
 });
 
-describe("свободное место и занятое — разные роли", () => {
-  // ловушка того же рода, что «мало чернил» у поглотителя: у Mac сенсор диска
-  // отдаёт процент СВОБОДНОГО, и подставлять его в роль «занято» нельзя
+describe("free space and used space are different roles", () => {
+  // the same class of trap as "ink low" on the absorber: on a Mac the disk sensor
+  // reports the per cent FREE, and feeding that into the "used" role is wrong
   const hass = fakeHass([
     entity("sensor.mac_storage", "32.29", { unit_of_measurement: "%" }),
     entity("sensor.linux_disk_root", "72.5", { unit_of_measurement: "%" }),
     entity("sensor.linux_disk_boot", "28.8", { unit_of_measurement: "%" }),
   ]);
 
-  it("из занятого берётся самый полный", () => {
+  it("out of the used ones the fullest is taken", () => {
     expect(
       pickExtreme(hass, ["sensor.linux_disk_boot", "sensor.linux_disk_root"], "max")
         ?.entityId
     ).toBe("sensor.linux_disk_root");
   });
 
-  it("из свободного берётся самый пустой", () => {
+  it("out of the free ones the emptiest is taken", () => {
     expect(
       pickExtreme(hass, ["sensor.mac_storage", "sensor.linux_disk_root"], "min")
         ?.entityId
     ).toBe("sensor.mac_storage");
   });
 
-  it("свободное красится как батарейка: мало — тревожно", () => {
+  it("free space is coloured like a battery: little is alarming", () => {
     expect(levelColor(32)).toContain("battery-medium");
     expect(levelColor(5)).toContain("battery-low");
   });
 
-  it("занятое красится обратно: много — тревожно", () => {
+  it("used space is coloured the other way round: a lot is alarming", () => {
     expect(loadColor(32)).toContain("state-icon-color");
     expect(loadColor(95)).toContain("error");
   });
 });
 
-describe("хвост «Battery level» в имени", () => {
-  it("убирается: карточка и так вся про заряд", () => {
+describe('the "Battery level" tail in a name', () => {
+  it("is removed: the card is all about charge anyway", () => {
     expect(stripBatterySuffix("Phone Olga Battery level")).toBe("Phone Olga");
     expect(stripBatterySuffix("Sensor Motion Detector Kitchen Battery")).toBe(
       "Sensor Motion Detector Kitchen"
     );
   });
 
-  it("русский вариант тоже", () => {
+  it("the Russian variant too", () => {
     expect(stripBatterySuffix("Датчик кухня заряд")).toBe("Датчик кухня");
   });
 
-  it("имя не срезается под ноль", () => {
+  it("the name is not cut down to nothing", () => {
     expect(stripBatterySuffix("Battery")).toBe("Battery");
   });
 
-  it("посторонние имена не трогает", () => {
-    expect(stripBatterySuffix("Часы")).toBe("Часы");
+  it("unrelated names are left alone", () => {
+    expect(stripBatterySuffix("Watch")).toBe("Watch");
     expect(stripBatterySuffix(undefined)).toBeUndefined();
   });
 });
 
-describe("язык карточек", () => {
+describe("the cards' language", () => {
   const ru = fakeHass([]);
   const en = { ...fakeHass([]), language: "en" };
 
-  it("берётся из hass", () => {
+  it("comes from hass", () => {
     expect(languageOf(ru)).toBe("ru");
     expect(languageOf(en)).toBe("en");
   });
 
-  it("región отбрасывается: en-GB это en", () => {
+  it("the region is dropped: en-GB is en", () => {
     expect(languageOf({ ...ru, language: "en-GB" })).toBe("en");
   });
 
-  it("незнакомый язык — английский, а не пустая строка", () => {
+  it("an unknown language — English, not an empty string", () => {
     expect(languageOf({ ...ru, language: "uk" })).toBe("en");
     expect(languageOf(undefined)).toBe("en");
   });
 
-  it("подставляет числа в строку", () => {
+  it("substitutes numbers into a string", () => {
     expect(t(ru, "batteries.allFull", { count: 43 })).toBe("Все заряжены, 43 шт.");
     expect(t(en, "batteries.allFull", { count: 43 })).toBe("All charged, 43 total");
   });
 
-  it("русские формы множественного числа", () => {
+  it("Russian plural forms", () => {
     expect(t(ru, "presence.empty", { count: 1 })).toBe("Пусто, 1 зона");
     expect(t(ru, "presence.empty", { count: 3 })).toBe("Пусто, 3 зоны");
     expect(t(ru, "presence.empty", { count: 8 })).toBe("Пусто, 8 зон");
@@ -682,18 +682,18 @@ describe("язык карточек", () => {
     expect(t(ru, "presence.empty", { count: 22 })).toBe("Пусто, 22 зоны");
   });
 
-  it("английские формы", () => {
+  it("English forms", () => {
     expect(t(en, "safety.calm", { count: 1 })).toBe("All clear, 1 sensor");
     expect(t(en, "safety.calm", { count: 4 })).toBe("All clear, 4 sensors");
   });
 
-  it("неизвестный ключ не роняет карточку", () => {
-    expect(t(ru, "нет.такого")).toBe("нет.такого");
+  it("an unknown key does not break the card", () => {
+    expect(t(ru, "no.such.key")).toBe("no.such.key");
   });
 });
 
-describe("поиск того, что не отвечает", () => {
-  // счёт по устройствам: у одной отвалившейся розетки шесть молчащих сущностей
+describe("finding what is not responding", () => {
+  // counted by device: one dead plug has six silent entities
   const hass = {
     ...fakeHass([
       entity("switch.plug", "unavailable"),
@@ -704,7 +704,7 @@ describe("поиск того, что не отвечает", () => {
       entity("update.firmware", "unavailable"),
       entity("sensor.hidden_one", "unavailable"),
       entity("sensor.no_device", "unavailable", {
-        friendly_name: "Сенсор без устройства",
+        friendly_name: "Sensor without a device",
       }),
     ]),
     entities: {
@@ -716,54 +716,54 @@ describe("поиск того, что не отвечает", () => {
       "sensor.hidden_one": { device_id: "plug", hidden: true },
     },
     devices: {
-      plug: { name: "Plug", name_by_user: "Розетка бойлера" },
-      lamp: { name: "Лампа" },
+      plug: { name: "Plug", name_by_user: "Boiler plug" },
+      lamp: { name: "Lamp" },
     },
   };
 
-  it("считает устройствами, а не сущностями", () => {
+  it("counts devices, not entities", () => {
     const groups = findOffline(hass);
     expect(groups.map((g) => [g.name, g.count])).toEqual([
-      ["Розетка бойлера", 3],
-      ["Лампа", 1],
-      ["Сенсор без устройства", 1],
+      ["Boiler plug", 3],
+      ["Lamp", 1],
+      ["Sensor without a device", 1],
     ]);
   });
 
-  it("имя, данное пользователем, важнее заводского", () => {
-    expect(findOffline(hass)[0].name).toBe("Розетка бойлера");
+  it("a name given by the user beats the factory one", () => {
+    expect(findOffline(hass)[0].name).toBe("Boiler plug");
   });
 
-  it("служебные домены не считаются", () => {
-    // update.firmware принадлежит той же розетке, но в счёт не идёт
+  it("service domains are not counted", () => {
+    // update.firmware belongs to the same plug but does not count
     expect(findOffline(hass)[0].count).toBe(3);
     expect(findOffline(hass, { ignoreDomains: [] })[0].count).toBe(4);
   });
 
-  it("скрытые сущности не считаются", () => {
+  it("hidden entities are not counted", () => {
     expect(
-      findOffline(hass).some((g) => g.name === "Скрытая")
+      findOffline(hass).some((g) => g.name === "Hidden")
     ).toBe(false);
   });
 
-  it("названные в ignore молчат законно", () => {
+  it("the ones named in ignore are silent legitimately", () => {
     const groups = findOffline(hass, { ignore: ["light.lamp"] });
-    expect(groups.map((g) => g.name)).not.toContain("Лампа");
+    expect(groups.map((g) => g.name)).not.toContain("Lamp");
   });
 
-  it("живые сущности не попадают", () => {
+  it("live entities do not get in", () => {
     expect(findOffline(hass).some((g) => g.entityId === "sensor.alive")).toBe(
       false
     );
   });
 
-  it("порядок устойчив: по числу, затем по алфавиту", () => {
+  it("the order is stable: by count, then alphabetically", () => {
     const names = findOffline(hass).map((g) => g.name);
     expect(names).toEqual([...names]);
     expect(names[1] < names[2]).toBe(true);
   });
 
-  it("без hass — пустой список, а не падение", () => {
+  it("without hass — an empty list, not a crash", () => {
     expect(findOffline(undefined)).toEqual([]);
   });
 });

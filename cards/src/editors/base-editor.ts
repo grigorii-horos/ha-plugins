@@ -8,26 +8,26 @@ export interface SchemaItem {
   name: string;
   required?: boolean;
   selector?: Record<string, unknown>;
-  /** Раскрывающаяся группа или сетка — так же, как в редакторе штатной плитки. */
+  /** An expandable group or a grid — the same as in the stock tile's editor. */
   type?: string;
   flatten?: boolean;
   icon?: string;
   schema?: SchemaItem[];
   /**
-   * Связывает поле формы с сущностью карточки. Без этого редактор действий не
-   * знает, к чему относится действие, и не подставляет сущность в more-info,
-   * toggle и цель сервиса.
+   * Ties a form field to the card's entity. Without it the action editor does not
+   * know what the action applies to and does not fill the entity into more-info,
+   * toggle and service targets.
    */
   context?: Record<string, string>;
 }
 
 /**
- * Общая база GUI-редакторов: форма собирается из схемы, а не пишется руками.
- * Каждая роль карточки — свой ha-entity-picker, отфильтрованный по смыслу.
+ * The shared base of the GUI editors: the form is built from a schema instead of
+ * being written by hand. Every card role gets its own filtered ha-entity-picker.
  */
 /**
- * Минимальная форма: схема, подписи, ha-form. Ей пользуются карточки-сетки,
- * у которых нет ни ролей плитки, ни features.
+ * The minimal form: schema, labels, ha-form. Used by the grid cards, which have
+ * neither tile roles nor features.
  */
 export abstract class FormCardEditor
   extends LitElement
@@ -45,20 +45,20 @@ export abstract class FormCardEditor
     this._config = config;
   }
 
-  /** Что показать форме. По умолчанию — сам конфиг. */
+  /** What to show the form. The config itself by default. */
   protected get formData(): Record<string, unknown> {
     return this._config ?? {};
   }
 
-  /** Что положить в конфиг из формы. */
+  /** What to put into the config from the form. */
   protected fromForm(data: Record<string, unknown>): Record<string, unknown> {
     return data;
   }
 
   /**
-   * Подписи на языке пользователя. Держим их парой прямо у карточки, а не в
-   * общем словаре: одно и то же поле в разных карточках называется по-разному —
-   * «Заряд», «Заряд датчика», «Заряд основного устройства».
+   * Labels in the user's language. They are kept as a pair right next to the card
+   * rather than in a shared dictionary: the same field is called differently on
+   * different cards — "Battery", "Sensor battery", "Main device battery".
    */
   protected pick(dicts: {
     ru: Record<string, string>;
@@ -67,7 +67,7 @@ export abstract class FormCardEditor
     return languageOf(this.hass) === "ru" ? dicts.ru : dicts.en;
   }
 
-  /** Подсказки под полями. У штатной плитки такая есть под цветом. */
+  /** Helper text under fields. The stock tile has one under colour. */
   protected _computeHelper = (item: SchemaItem): string | undefined =>
     item.name === "color"
       ? this.pick({
@@ -127,9 +127,9 @@ export abstract class BaseCardEditor extends FormCardEditor {
   @state() private _featuresEditorReady = false;
 
   /**
-   * Имя поля конфига с главной сущностью. У карточек, собранных из списка
-   * равноправных сущностей, её нет — тогда features не предлагаются: их
-   * нечему адресовать.
+   * The name of the config field holding the main entity. Cards assembled from a
+   * list of equal entities have none — then features are not offered: there is
+   * nothing to address them to.
    */
   protected abstract get entityField(): string | undefined;
 
@@ -141,8 +141,8 @@ export abstract class BaseCardEditor extends FormCardEditor {
   }
 
   /**
-   * Форма показывает раскладку картинками (content_layout), а в конфиге лежит
-   * булево vertical — ровно как в редакторе штатной плитки.
+   * The form shows the layout as pictures (content_layout) while the config holds
+   * a boolean vertical — exactly as in the stock tile's editor.
    */
   protected override get formData(): Record<string, unknown> {
     const { vertical, ...rest } = this._config ?? {};
@@ -174,7 +174,7 @@ export abstract class BaseCardEditor extends FormCardEditor {
     return config;
   }
 
-  /** Раздел features повторяет разметку редактора штатной плитки. */
+  /** The features section repeats the markup of the stock tile's editor. */
   private _renderFeatures() {
     const entityId = this.entityField
       ? (this._config?.[this.entityField] as string | undefined)
@@ -239,21 +239,21 @@ export abstract class BaseCardEditor extends FormCardEditor {
 }
 
 /**
- * Разделы «Внешний вид» и «Взаимодействия» — общие для всех карточек, с теми
- * же именами полей, селекторами и контекстами, что в редакторе штатного tile.
+ * The "Appearance" and "Interactions" sections are shared by every card, with the
+ * same field names, selectors and contexts as in the stock tile's editor.
  *
- * `entityField` — имя поля конфига с главной сущностью карточки. У штатной
- * плитки это всегда `entity`, у нас — роль: `switch`, `temperature`, `moisture`.
+ * `entityField` is the name of the config field holding the card's main entity.
+ * On the stock tile that is `entity`; here it is a role: `switch`, `moisture`.
  */
 export const contentSection = (
   /**
-   * Поле с главной сущностью. У части карточек её нет вовсе — батарейки,
-   * присутствие, безопасность собраны из списка равноправных сущностей, —
-   * и тогда имя вводится обычным текстом, а иконке нечего подсказывать.
+   * The field with the main entity. Some cards have none at all — batteries,
+   * presence and safety are assembled from a list of equal entities — and then
+   * the name is typed as plain text and there is nothing to suggest to the icon.
    */
   entityField: string | undefined,
   language: string,
-  /** Наше расширение раздела: что вынести крупно вправо. */
+  /** Our own extension of the section: what to pull out large on the right. */
   extra: SchemaItem[] = []
 ): SchemaItem => ({
   name: "content",
@@ -279,8 +279,8 @@ export const contentSection = (
         },
         {
           name: "color",
-          // include_state обязателен: без него значение "state" считается
-          // недопустимым и поле подсвечивается как ошибочное.
+          // include_state is mandatory: without it the value "state" counts as
+          // invalid and the field is highlighted as an error.
           selector: { ui_color: { default_color: "state", include_state: true } },
         },
         { name: "show_entity_picture", selector: { boolean: {} } },
@@ -413,10 +413,10 @@ export const COMMON_LABELS_EN: Record<string, string> = {
   icon_double_tap_action: "Double tap on icon",
 };
 
-/** Прежнее имя: подписи по умолчанию для тех, кто ещё не переведён. */
+/** The former name: default labels for whatever is not translated yet. */
 export const COMMON_LABELS = COMMON_LABELS_RU;
 
-/** Селектор сущности, суженный до домена и класса устройства. */
+/** An entity selector narrowed down to a domain and a device class. */
 export const entitySelector = (
   domain: string,
   deviceClass?: string
@@ -437,8 +437,8 @@ export const numberSelector = (
 export const textSelector: Record<string, unknown> = { text: {} };
 
 /**
- * Выбор ролей для правой колонки. Варианты приходят парой языков: подписи
- * внутри селектора HA не переводит, это наши строки.
+ * Picking the roles for the right-hand column. The options come as a pair of
+ * languages: HA does not translate labels inside a selector, these are our own.
  */
 export const bigValuesSelector = (
   options: { value: string; label: string }[]

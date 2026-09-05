@@ -1,14 +1,14 @@
 /**
- * Списки сущностей в GUI-редакторе.
+ * Entity lists in the GUI editor.
  *
- * В форме список — это просто entity_id, а в конфиге могут лежать объекты со
- * своим именем и иконкой. Модуль без DOM: логику покрывают тесты.
+ * In the form a list is just entity_ids, while the config may hold objects with
+ * their own name and icon. DOM-free module: the logic is covered by tests.
  */
 
 /**
- * Пересобирает список после правки в GUI, сохраняя настройки, дописанные
- * руками в YAML. Иначе выбор одной сущности стирал бы имена и иконки всех
- * остальных.
+ * Rebuilds the list after a GUI edit, keeping the settings written by hand in
+ * YAML. Otherwise picking one entity would wipe the names and icons of all the
+ * others.
  */
 export function mergeEntityList<T extends { entity: string }>(
   previous: (T | string)[] | undefined,
@@ -21,7 +21,7 @@ export function mergeEntityList<T extends { entity: string }>(
   return entityIds.map((entityId) => byEntity.get(entityId) ?? entityId);
 }
 
-/** Достаёт entity_id из списка, который может быть смесью строк и объектов. */
+/** Pulls entity_ids out of a list that may mix strings and objects. */
 export function entityIdsOf(
   items: ({ entity: string } | string)[] | undefined
 ): string[] {

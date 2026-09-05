@@ -1,18 +1,18 @@
 /**
- * Поиск того, что перестало отвечать.
+ * Finding what stopped responding.
  *
- * Единственная карточка, которая сама перебирает состояния, а не берёт
- * сущности из конфига. Так и задумано: перечислить руками девятьсот сущностей
- * невозможно, а правило отбора здесь объективное — состояние `unavailable`, —
- * так что угадывать нечего.
+ * The one card that walks the states itself instead of taking entities from the
+ * config. That is deliberate: listing nine hundred entities by hand is not
+ * possible, and the selection rule here is objective — state `unavailable` — so
+ * there is nothing to guess.
  *
- * Считается по устройствам, а не по сущностям: у одной отвалившейся розетки их
- * шесть, у Syncthing семнадцать, и список из девяноста двух строк говорит
- * меньше, чем список из семнадцати устройств.
+ * It counts by device, not by entity: a single dead plug has six of them,
+ * Syncthing seventeen, and a list of ninety-two lines says less than a list of
+ * seventeen devices.
  */
 import type { HomeAssistant } from "./types";
 
-/** Служебные домены: их недоступность ничего не значит для жильца. */
+/** Service domains: their unavailability means nothing to whoever lives here. */
 export const DEFAULT_IGNORED_DOMAINS = [
   "update",
   "select",
@@ -24,11 +24,11 @@ export const DEFAULT_IGNORED_DOMAINS = [
 ];
 
 export interface OfflineGroup {
-  /** Имя устройства, либо самой сущности, если устройства нет. */
+  /** The device name, or the entity's own if it has no device. */
   name: string;
-  /** Сколько сущностей молчит. */
+  /** How many entities are silent. */
   count: number;
-  /** За какую сущность зацепиться при тапе. */
+  /** Which entity to hook the tap onto. */
   entityId: string;
 }
 
@@ -76,8 +76,8 @@ export function findOffline(
     }
   }
 
-  // Сначала те, у кого молчит больше всего, при равенстве — по алфавиту,
-  // чтобы список не прыгал от обновления к обновлению.
+  // Whoever is most silent first, ties broken alphabetically, so the list does
+  // not jump around between updates.
   return [...groups.values()].sort(
     (a, b) => b.count - a.count || a.name.localeCompare(b.name)
   );

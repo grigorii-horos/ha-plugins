@@ -1,10 +1,10 @@
 /**
- * Цвет иконки по состоянию — тот же алгоритм, что в
+ * Icon colour by state — the same algorithm as in
  * home-assistant/frontend: src/common/entity/state_color.ts.
  *
- * Переиспользовать их модуль нельзя, он не публикуется наружу, поэтому
- * повторяем логику. Смысл в том, чтобы карточка окрашивалась ровно так же,
- * как штатная плитка, и подхватывала пользовательские темы.
+ * Their module cannot be reused, it is not published, so the logic is mirrored.
+ * The point is for a card to be coloured exactly like the stock tile and to pick
+ * up user themes.
  */
 import type { HassEntity } from "./types";
 
@@ -51,7 +51,7 @@ const STATE_COLORED_DOMAIN = new Set([
 export const computeDomain = (entityId: string): string =>
   entityId.substring(0, entityId.indexOf("."));
 
-/** Тот же slugify, которым HA собирает имена CSS-переменных состояния. */
+/** The same slugify HA builds state CSS variable names with. */
 const slugify = (value: string): string =>
   value
     .toLowerCase()
@@ -104,14 +104,14 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   }
 }
 
-/** Собирает цепочку var(--a, var(--b, ...)) — как computeCssVariable в HA. */
+/** Builds the var(--a, var(--b, ...)) chain — like computeCssVariable in HA. */
 export const cssVariableChain = (props: string[]): string | undefined =>
   props.reduceRight<string | undefined>(
     (fallback, variable) => `var(${variable}${fallback ? `, ${fallback}` : ""})`,
     undefined
   );
 
-/** Цвет заряда батареи — у HA для него отдельное правило. */
+/** Battery charge colour — HA has a separate rule for it. */
 const batteryStateColorProperty = (state: string): string | undefined => {
   const value = Number(state);
   if (isNaN(value)) return undefined;
@@ -138,7 +138,7 @@ export function stateColorCss(
   }
 
   if (!STATE_COLORED_DOMAIN.has(domain)) {
-    // Числовые сенсоры HA не окрашивает — плитка остаётся нейтральной.
+    // HA does not colour numeric sensors — the tile stays neutral.
     return fallback;
   }
 
@@ -160,9 +160,9 @@ export function stateColorCss(
 }
 
 /**
- * Цвет плитки ровно по логике hui-tile-card: если у состояния есть свой цвет —
- * берём его, иначе активная сущность красится в --state-icon-color, а
- * неактивная остаётся нейтральной.
+ * Tile colour exactly by hui-tile-card's logic: if the state has a colour of its
+ * own we take it, otherwise an active entity is painted --state-icon-color and
+ * an inactive one stays neutral.
  */
 export function tileColor(stateObj: HassEntity | undefined): string {
   if (!stateObj) return "var(--state-inactive-color)";

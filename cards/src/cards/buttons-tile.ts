@@ -19,11 +19,11 @@ export interface ButtonsTileConfig {
 }
 
 /**
- * Сетка кнопок, вызывающих скрипты.
+ * A grid of buttons that run scripts.
  *
- * Каждая ячейка — штатная карточка `button` HA, заголовок — штатная `heading`.
- * Своей вёрстки нет: карточка нужна затем, чтобы вместо десятка блоков в
- * конфиге был один список.
+ * Every cell is a stock HA `button` card, the heading a stock `heading`. There is
+ * no markup of our own: the card exists so that a dozen blocks in the config
+ * become one list.
  */
 export class HorosButtonsTile extends BaseGridCard {
   @state() private _config?: ButtonsTileConfig;
@@ -41,7 +41,7 @@ export class HorosButtonsTile extends BaseGridCard {
 
   public setConfig(config: ButtonsTileConfig): void {
     if (!config.buttons?.length) {
-      throw new Error("Нужно указать хотя бы одну кнопку (buttons)");
+      throw new Error("At least one button is required (buttons)");
     }
     this._config = config;
     this.rebuild();
