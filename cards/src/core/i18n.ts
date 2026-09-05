@@ -38,6 +38,11 @@ const RU: Dict = {
   "energy.idle": "Никто не потребляет",
 
   "offline.count": "{count} без связи",
+  "offline.title": "Не отвечает",
+  "offline.allAnswer": "Все на связи",
+  "offline.more.one": "и ещё {count}",
+  "offline.more.few": "и ещё {count}",
+  "offline.more.many": "и ещё {count}",
   "list.missing.one": "{count} не найдена",
   "list.missing.few": "{count} не найдены",
   "list.missing.many": "{count} не найдено",
@@ -81,6 +86,10 @@ const EN: Dict = {
   "energy.idle": "Nothing drawing power",
 
   "offline.count": "{count} offline",
+  "offline.title": "Not responding",
+  "offline.allAnswer": "Everything is answering",
+  "offline.more.one": "and {count} more",
+  "offline.more.many": "and {count} more",
   "list.missing.one": "{count} not found",
   "list.missing.many": "{count} not found",
 

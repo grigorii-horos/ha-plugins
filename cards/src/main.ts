@@ -15,6 +15,7 @@ import "./cards/person-tile";
 import "./cards/computer-tile";
 import "./cards/air-tile";
 import "./cards/cover-tile";
+import "./cards/offline-tile";
 import "./cards/energy-tile";
 import "./cards/presence-tile";
 

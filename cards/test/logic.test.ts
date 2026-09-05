@@ -20,6 +20,7 @@ import {
 import { buttonLabel } from "../src/core/buttons";
 import { mergeEntityList } from "../src/core/entity-lists";
 import { languageOf, t } from "../src/core/i18n";
+import { findOffline } from "../src/core/offline";
 import {
   levelColor,
   loadColor,
@@ -688,5 +689,81 @@ describe("язык карточек", () => {
 
   it("неизвестный ключ не роняет карточку", () => {
     expect(t(ru, "нет.такого")).toBe("нет.такого");
+  });
+});
+
+describe("поиск того, что не отвечает", () => {
+  // счёт по устройствам: у одной отвалившейся розетки шесть молчащих сущностей
+  const hass = {
+    ...fakeHass([
+      entity("switch.plug", "unavailable"),
+      entity("sensor.plug_power", "unavailable"),
+      entity("sensor.plug_energy", "unavailable"),
+      entity("light.lamp", "unavailable"),
+      entity("sensor.alive", "21.5"),
+      entity("update.firmware", "unavailable"),
+      entity("sensor.hidden_one", "unavailable"),
+      entity("sensor.no_device", "unavailable", {
+        friendly_name: "Сенсор без устройства",
+      }),
+    ]),
+    entities: {
+      "switch.plug": { device_id: "plug" },
+      "sensor.plug_power": { device_id: "plug" },
+      "sensor.plug_energy": { device_id: "plug" },
+      "light.lamp": { device_id: "lamp" },
+      "update.firmware": { device_id: "plug" },
+      "sensor.hidden_one": { device_id: "plug", hidden: true },
+    },
+    devices: {
+      plug: { name: "Plug", name_by_user: "Розетка бойлера" },
+      lamp: { name: "Лампа" },
+    },
+  };
+
+  it("считает устройствами, а не сущностями", () => {
+    const groups = findOffline(hass);
+    expect(groups.map((g) => [g.name, g.count])).toEqual([
+      ["Розетка бойлера", 3],
+      ["Лампа", 1],
+      ["Сенсор без устройства", 1],
+    ]);
+  });
+
+  it("имя, данное пользователем, важнее заводского", () => {
+    expect(findOffline(hass)[0].name).toBe("Розетка бойлера");
+  });
+
+  it("служебные домены не считаются", () => {
+    // update.firmware принадлежит той же розетке, но в счёт не идёт
+    expect(findOffline(hass)[0].count).toBe(3);
+    expect(findOffline(hass, { ignoreDomains: [] })[0].count).toBe(4);
+  });
+
+  it("скрытые сущности не считаются", () => {
+    expect(
+      findOffline(hass).some((g) => g.name === "Скрытая")
+    ).toBe(false);
+  });
+
+  it("названные в ignore молчат законно", () => {
+    const groups = findOffline(hass, { ignore: ["light.lamp"] });
+    expect(groups.map((g) => g.name)).not.toContain("Лампа");
+  });
+
+  it("живые сущности не попадают", () => {
+    expect(findOffline(hass).some((g) => g.entityId === "sensor.alive")).toBe(
+      false
+    );
+  });
+
+  it("порядок устойчив: по числу, затем по алфавиту", () => {
+    const names = findOffline(hass).map((g) => g.name);
+    expect(names).toEqual([...names]);
+    expect(names[1] < names[2]).toBe(true);
+  });
+
+  it("без hass — пустой список, а не падение", () => {
+    expect(findOffline(undefined)).toEqual([]);
   });
 });

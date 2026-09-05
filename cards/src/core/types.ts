@@ -22,6 +22,10 @@ export interface HomeAssistant {
   formatEntityState: (stateObj: HassEntity, state?: string) => string;
   /** Абсолютный адрес по относительному пути HA — нужен для картинок сущностей. */
   hassUrl: (path?: string) => string;
+  /** Реестр сущностей: нужен, чтобы понять, какому устройству принадлежит сущность. */
+  entities?: Record<string, { device_id?: string; hidden?: boolean }>;
+  /** Реестр устройств: имена для группировки. */
+  devices?: Record<string, { name?: string; name_by_user?: string }>;
   /** Язык интерфейса пользователя. */
   language?: string;
   locale?: { language?: string };
