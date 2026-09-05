@@ -7,7 +7,6 @@ import {
   composeSegments,
   numericState,
   resolveRole,
-  roleSegment,
   unavailableSegment,
   type Segment,
 } from "../core/format";
@@ -135,7 +134,7 @@ export class HorosEnergyTile extends BaseTileCard {
       color: "var(--amber-color, #ffc107)",
       primary: config.name ?? t(this.hass, "energy.title"),
       mainEntityId: total?.entityId ?? shown[0]?.row.entityId,
-      secondary: composeSegments([roleSegment(this.hass, total), ...notes]),
+      secondary: composeSegments([this.mainStateSegment(total), ...notes]),
       values: total ? this.bigValues([{ key: "total", role: total }]) : [],
       customFeatures: levels.length
         ? renderLevels(levels, (entityId) => this.fireMoreInfo(entityId))
@@ -146,8 +145,11 @@ export class HorosEnergyTile extends BaseTileCard {
 
 registerCard("horos-energy-tile", HorosEnergyTile, {
   type: "horos-energy-tile",
-  name: "Energy",
-  description: "Who in the house draws power, hungriest first",
+  name: { ru: "Энергия", en: "Energy" },
+  description: {
+    ru: "Кто в доме ест электричество, от самого прожорливого",
+    en: "Who in the house draws power, hungriest first",
+  },
   preview: true,
 });
 

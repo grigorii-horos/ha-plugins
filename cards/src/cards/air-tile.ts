@@ -124,7 +124,7 @@ export class HorosAirTile extends BaseTileCard {
       secondary: composeSegments([
         unavailableSegment(this.hass, appliance),
         ...alerts,
-        roleSegment(this.hass, appliance),
+        this.mainStateSegment(appliance),
         ...extras.map((extra) => roleSegment(this.hass, extra)),
         ...rest.map((item) => roleSegment(this.hass, item.role)),
       ]),
@@ -135,8 +135,11 @@ export class HorosAirTile extends BaseTileCard {
 
 registerCard("horos-air-tile", HorosAirTile, {
   type: "horos-air-tile",
-  name: "Air",
-  description: "Purifier, recuperator, humidifier — the appliance and the air",
+  name: { ru: "Воздух", en: "Air" },
+  description: {
+    ru: "Очиститель, рекуператор, увлажнитель — прибор и что с воздухом",
+    en: "Purifier, recuperator, humidifier — the appliance and the air",
+  },
   preview: true,
 });
 

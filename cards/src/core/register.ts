@@ -1,4 +1,5 @@
-import type { CustomCardEntry } from "./types";
+import type { CustomCardEntry, HomeAssistant } from "./types";
+import { languageOf } from "./i18n";
 
 /**
  * Регистрация карточек и редакторов, переживающая вторую загрузку бандла.
@@ -24,10 +25,35 @@ function alreadyLoaded(tag: string): void {
   );
 }
 
+/**
+ * Язык пользователя в момент, когда список карточек читают.
+ *
+ * Список заполняется при загрузке бандла, когда `hass` ещё нет ни у одной
+ * карточки. Поэтому название и описание — не строки, а геттеры: HA спрашивает
+ * их, когда открывает окно добавления, и к этому моменту приложение уже на
+ * странице.
+ */
+function currentLanguage(): string {
+  const app = document.querySelector("home-assistant") as
+    | { hass?: HomeAssistant }
+    | null;
+  return languageOf(app?.hass);
+}
+
+export interface CardTexts {
+  ru: string;
+  en: string;
+}
+
 export function registerCard(
   tag: string,
   ctor: CustomElementConstructor,
-  entry: CustomCardEntry
+  entry: {
+    type: string;
+    name: CardTexts;
+    description: CardTexts;
+    preview?: boolean;
+  }
 ): void {
   if (customElements.get(tag)) {
     alreadyLoaded(tag);
@@ -35,7 +61,16 @@ export function registerCard(
   }
   customElements.define(tag, ctor);
   window.customCards = window.customCards ?? [];
-  window.customCards.push(entry);
+  window.customCards.push({
+    type: entry.type,
+    preview: entry.preview,
+    get name() {
+      return entry.name[currentLanguage() === "ru" ? "ru" : "en"];
+    },
+    get description() {
+      return entry.description[currentLanguage() === "ru" ? "ru" : "en"];
+    },
+  } as CustomCardEntry);
 }
 
 export function registerEditor(

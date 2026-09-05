@@ -115,7 +115,7 @@ export class HorosPersonTile extends BaseTileCard {
       imageUrl: this.entityImage(person?.stateObj),
       secondary: composeSegments([
         unavailableSegment(this.hass, person),
-        roleSegment(this.hass, person),
+        this.mainStateSegment(person),
         roleSegment(this.hass, location),
       ]),
       values: battery ? this.bigValues([{ key: "battery", role: battery }]) : [],
@@ -128,8 +128,11 @@ export class HorosPersonTile extends BaseTileCard {
 
 registerCard("horos-person-tile", HorosPersonTile, {
   type: "horos-person-tile",
-  name: "Person",
-  description: "Whether they are home, where exactly, and their devices' battery",
+  name: { ru: "Человек", en: "Person" },
+  description: {
+    ru: "Дома ли он, где именно и заряд его устройств",
+    en: "Whether they are home, where exactly, and their devices' battery",
+  },
   preview: true,
 });
 

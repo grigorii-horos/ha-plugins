@@ -287,6 +287,16 @@ export const contentSection = (
         { name: "hide_state", selector: { boolean: {} } },
       ],
     },
+    ...(entityField
+      ? [
+          {
+            name: "state_content",
+            selector: { ui_state_content: { allow_context: true } },
+            context: { filter_entity: entityField },
+          },
+          { name: "time_format", selector: { ui_time_format: {} } },
+        ]
+      : []),
     {
       name: "content_layout",
       required: true,
@@ -365,6 +375,8 @@ export const interactionsSection = (
 
 export const COMMON_LABELS_RU: Record<string, string> = {
   content: "Содержимое",
+  state_content: "Что показывать про сущность",
+  time_format: "Формат времени",
   interactions: "Взаимодействия",
   icon: "Иконка",
   color: "Цвет",
@@ -383,6 +395,8 @@ export const COMMON_LABELS_RU: Record<string, string> = {
 
 export const COMMON_LABELS_EN: Record<string, string> = {
   content: "Content",
+  state_content: "State content",
+  time_format: "Time format",
   interactions: "Interactions",
   icon: "Icon",
   color: "Colour",

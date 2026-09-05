@@ -238,8 +238,11 @@ export class HorosComputerTile extends BaseTileCard {
 
 registerCard("horos-computer-tile", HorosComputerTile, {
   type: "horos-computer-tile",
-  name: "Computer",
-  description: "Hottest spot, load and disks in a single tile",
+  name: { ru: "Компьютер", en: "Computer" },
+  description: {
+    ru: "Самая горячая точка, загрузка и диски в одной плитке",
+    en: "Hottest spot, load and disks in a single tile",
+  },
   preview: true,
 });
 

@@ -80,7 +80,13 @@ export class HorosPlugTile extends BaseTileCard {
         // Одна из двух вернёт кусок: доступный выключатель даёт своё
         // состояние, недоступный — статус недоступности.
         unavailableSegment(this.hass, sw),
-        ...rest.map((item) => roleSegment(this.hass, item.role)),
+        // Выключатель — главная сущность карточки, поэтому его состояние
+        // может показываться через state_content, как у штатной плитки.
+        ...rest.map((item) =>
+          item.key === "switch"
+            ? this.mainStateSegment(item.role)
+            : roleSegment(this.hass, item.role)
+        ),
       ]),
       mainEntityId: entityId,
       imageUrl: this.entityImage(sw.stateObj),
@@ -94,8 +100,11 @@ export class HorosPlugTile extends BaseTileCard {
 
 registerCard("horos-plug-tile", HorosPlugTile, {
   type: "horos-plug-tile",
-  name: "Smart plug",
-  description: "Switch, current power draw and accumulated energy in a single tile",
+  name: { ru: "Розетка", en: "Smart plug" },
+  description: {
+    ru: "Выключатель, текущая мощность и накопленная энергия в одной плитке",
+    en: "Switch, current power draw and accumulated energy in a single tile",
+  },
   preview: true,
 });
 

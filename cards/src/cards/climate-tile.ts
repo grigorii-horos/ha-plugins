@@ -100,9 +100,11 @@ export class HorosClimateTile extends BaseTileCard {
 
 registerCard("horos-climate-tile", HorosClimateTile, {
   type: "horos-climate-tile",
-  name: "Room climate",
-  description:
-    "Temperature, humidity, illuminance and PM2.5 of one room in a single tile",
+  name: { ru: "Климат комнаты", en: "Room climate" },
+  description: {
+    ru: "Температура, влажность, освещённость и PM2.5 одной комнаты в одной плитке",
+    en: "Temperature, humidity, illuminance and PM2.5 of one room in a single tile",
+  },
   preview: true,
 });
 

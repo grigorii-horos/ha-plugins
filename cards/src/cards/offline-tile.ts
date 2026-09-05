@@ -95,8 +95,11 @@ export class HorosOfflineTile extends BaseTileCard {
 
 registerCard("horos-offline-tile", HorosOfflineTile, {
   type: "horos-offline-tile",
-  name: "Not responding",
-  description: "Devices that went silent, grouped by device",
+  name: { ru: "Не отвечает", en: "Not responding" },
+  description: {
+    ru: "Что перестало отвечать, посчитанное по устройствам",
+    en: "Devices that went silent, grouped by device",
+  },
   preview: true,
 });
 

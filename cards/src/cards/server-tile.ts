@@ -92,7 +92,7 @@ export class HorosServerTile extends BaseTileCard {
       mainEntityId: status?.entityId ?? roles[0].role?.entityId,
       secondary: composeSegments([
         unavailableSegment(this.hass, status),
-        roleSegment(this.hass, status),
+        this.mainStateSegment(status),
         ...rest.map((item) => {
           const segment = roleSegment(this.hass, item.role);
           if (!segment) return undefined;
@@ -110,8 +110,11 @@ export class HorosServerTile extends BaseTileCard {
 
 registerCard("horos-server-tile", HorosServerTile, {
   type: "horos-server-tile",
-  name: "Home server",
-  description: "Disk, speeds and service status in a single tile",
+  name: { ru: "Домашний сервер", en: "Home server" },
+  description: {
+    ru: "Диск, скорости и состояние сервисов в одной плитке",
+    en: "Disk, speeds and service status in a single tile",
+  },
   preview: true,
 });
 

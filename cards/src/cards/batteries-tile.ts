@@ -125,8 +125,11 @@ export class HorosBatteriesTile extends BaseTileCard {
 
 registerCard("horos-batteries-tile", HorosBatteriesTile, {
   type: "horos-batteries-tile",
-  name: "Batteries",
-  description: "Only the batteries that are running down, emptiest first",
+  name: { ru: "Батарейки", en: "Batteries" },
+  description: {
+    ru: "Только садящиеся батарейки, от самой пустой",
+    en: "Only the batteries that are running down, emptiest first",
+  },
   preview: true,
 });
 

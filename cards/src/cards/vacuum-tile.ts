@@ -111,7 +111,7 @@ export class HorosVacuumTile extends BaseTileCard {
       mainEntityId: vacuum?.entityId,
       secondary: composeSegments([
         unavailableSegment(this.hass, vacuum),
-        roleSegment(this.hass, vacuum),
+        this.mainStateSegment(vacuum),
         ...extras.map((extra) => roleSegment(this.hass, extra)),
       ]),
       values: battery ? this.bigValues([{ key: "battery", role: battery }]) : [],
@@ -124,8 +124,11 @@ export class HorosVacuumTile extends BaseTileCard {
 
 registerCard("horos-vacuum-tile", HorosVacuumTile, {
   type: "horos-vacuum-tile",
-  name: "Vacuum",
-  description: "Robot status, battery and consumable life in a single tile",
+  name: { ru: "Пылесос", en: "Vacuum" },
+  description: {
+    ru: "Состояние робота, заряд и ресурс расходников в одной плитке",
+    en: "Robot status, battery and consumable life in a single tile",
+  },
   preview: true,
 });
 

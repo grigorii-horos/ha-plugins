@@ -116,9 +116,11 @@ export class HorosPlantTile extends BaseTileCard {
 
 registerCard("horos-plant-tile", HorosPlantTile, {
   type: "horos-plant-tile",
-  name: "Plant",
-  description:
-    "Soil moisture with dryness thresholds, soil temperature and sensor battery",
+  name: { ru: "Растение", en: "Plant" },
+  description: {
+    ru: "Влажность почвы с порогами сухости, температура почвы и заряд датчика",
+    en: "Soil moisture with dryness thresholds, soil temperature and sensor battery",
+  },
   preview: true,
 });
 

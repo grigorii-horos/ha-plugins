@@ -81,8 +81,11 @@ export class HorosButtonsTile extends BaseGridCard {
 
 registerCard("horos-buttons-tile", HorosButtonsTile, {
   type: "horos-buttons-tile",
-  name: "Script buttons",
-  description: "A grid of buttons running scripts, under one heading",
+  name: { ru: "Кнопки скриптов", en: "Script buttons" },
+  description: {
+    ru: "Сетка кнопок, вызывающих скрипты, под общим заголовком",
+    en: "A grid of buttons running scripts, under one heading",
+  },
   preview: true,
 });
 

@@ -183,8 +183,11 @@ export class HorosPrinterTile extends BaseTileCard {
 
 registerCard("horos-printer-tile", HorosPrinterTile, {
   type: "horos-printer-tile",
-  name: "Printer",
-  description: "Ink levels and printer status in a single tile",
+  name: { ru: "Принтер", en: "Printer" },
+  description: {
+    ru: "Уровни чернил и состояние принтера в одной плитке",
+    en: "Ink levels and printer status in a single tile",
+  },
   preview: true,
 });
 

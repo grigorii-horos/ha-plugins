@@ -15,6 +15,7 @@ import type {
 import {
   SECONDARY_SEPARATOR,
   UNAVAILABLE_STATES,
+  roleSegment,
   splitValueUnit,
   type ResolvedRole,
   type Segment,
@@ -52,6 +53,14 @@ export interface TileBaseConfig {
   vertical?: boolean;
   hide_state?: boolean;
   show_entity_picture?: boolean;
+  /**
+   * Что показывать про главную сущность: состояние, атрибут, время изменения.
+   * Ровно то же поле, что у штатной плитки, и отрисовывает его тот же
+   * компонент HA — `state-display`.
+   */
+  state_content?: string | string[];
+  /** Как показывать время у временных значений. */
+  time_format?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -195,6 +204,29 @@ export abstract class BaseTileCard extends LitElement {
     return html`<ha-card><div class="warning">${message}</div></ha-card>`;
   }
 
+  /**
+   * Состояние главной сущности для вторичной строки.
+   *
+   * Когда задан `state_content` или `time_format`, отрисовкой занимается
+   * штатный `state-display`: он умеет и атрибуты, и время изменения, и формат
+   * времени — повторять это своими руками незачем.
+   */
+  protected mainStateSegment(role: ResolvedRole | undefined): Segment | undefined {
+    if (!role?.stateObj || role.unavailable) return undefined;
+    if (!this.base.state_content && !this.base.time_format) {
+      return roleSegment(this.hass, role);
+    }
+    return {
+      entityId: role.entityId,
+      content: html`<state-display
+        .hass=${this.hass}
+        .stateObj=${role.stateObj}
+        .content=${this.base.state_content}
+        .timeFormat=${this.base.time_format}
+      ></state-display>`,
+    };
+  }
+
   /** Сообщение о ненайденных сущностях, либо undefined если всё на месте. */
   protected missingRolesWarning(
     roles: (ResolvedRole | undefined)[]
@@ -310,7 +342,7 @@ export abstract class BaseTileCard extends LitElement {
                         ${index
                           ? html`<span>${SECONDARY_SEPARATOR}</span>`
                           : nothing}${this.renderClickable(
-                          segment.text,
+                          segment.content ?? segment.text,
                           segment.entityId
                         )}
                       `

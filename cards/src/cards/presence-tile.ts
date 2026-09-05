@@ -103,8 +103,11 @@ export class HorosPresenceTile extends BaseTileCard {
 
 registerCard("horos-presence-tile", HorosPresenceTile, {
   type: "horos-presence-tile",
-  name: "Presence",
-  description: "Which areas have someone in them right now",
+  name: { ru: "Присутствие", en: "Presence" },
+  description: {
+    ru: "В каких зонах сейчас есть кто-то",
+    en: "Which areas have someone in them right now",
+  },
   preview: true,
 });
 

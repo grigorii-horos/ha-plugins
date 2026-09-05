@@ -144,7 +144,7 @@ export class HorosCoverTile extends BaseTileCard {
       mainEntityId: cover?.entityId,
       secondary: composeSegments([
         unavailableSegment(this.hass, cover),
-        roleSegment(this.hass, cover),
+        this.mainStateSegment(cover),
         ...rest.map((item) => roleSegment(this.hass, item.role)),
       ]),
       values: this.bigValues(big),
@@ -158,8 +158,11 @@ export class HorosCoverTile extends BaseTileCard {
 
 registerCard("horos-cover-tile", HorosCoverTile, {
   type: "horos-cover-tile",
-  name: "Curtains",
-  description: "How far open, how bright outside, and battery",
+  name: { ru: "Шторы", en: "Curtains" },
+  description: {
+    ru: "Насколько открыты, светло ли снаружи и сколько заряда",
+    en: "How far open, how bright outside, and battery",
+  },
   preview: true,
 });
 

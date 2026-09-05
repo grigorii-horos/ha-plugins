@@ -102,8 +102,11 @@ export class HorosSafetyTile extends BaseTileCard {
 
 registerCard("horos-safety-tile", HorosSafetyTile, {
   type: "horos-safety-tile",
-  name: "Safety",
-  description: "Leak, smoke, gas — and sensors that lost connection",
+  name: { ru: "Безопасность", en: "Safety" },
+  description: {
+    ru: "Протечка, дым, газ — и датчики, потерявшие связь",
+    en: "Leak, smoke, gas — and sensors that lost connection",
+  },
   preview: true,
 });
 

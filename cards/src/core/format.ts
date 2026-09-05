@@ -54,14 +54,17 @@ export function formatRole(
  * more-info именно про неё, а не про главную сущность карточки.
  */
 export interface Segment {
-  text: string;
+  text?: string;
+  /** Готовая разметка вместо текста: например, штатный state-display. */
+  content?: unknown;
   entityId?: string;
 }
 
 /** Собирает вторичную строку, выбрасывая незаполненные роли. */
 export function composeSegments(parts: (Segment | undefined)[]): Segment[] {
   return parts.filter(
-    (part): part is Segment => !!part && part.text.trim() !== ""
+    (part): part is Segment =>
+      !!part && (part.content !== undefined || (part.text ?? "").trim() !== "")
   );
 }
 
