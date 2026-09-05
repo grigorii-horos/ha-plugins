@@ -1,0 +1,36 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: cards/package-lock.json
+      - run: npm ci
+        working-directory: cards
+      - run: npm test
+        working-directory: cards
+      - run: npm run build
+        working-directory: cards
+      # Собранный бандл лежит в репозитории: HACS ставит плагин прямо из него,
+      # поэтому расхождение с исходниками — сломанная установка у пользователя.
+      - name: dist соответствует исходникам
+        run: git diff --exit-code -- dist
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hacs/action@main
+        with:
+          category: plugin
