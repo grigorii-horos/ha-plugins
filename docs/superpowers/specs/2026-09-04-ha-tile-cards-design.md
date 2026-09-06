@@ -848,6 +848,18 @@ switch. The `features` list is the stock `hui-card-features-editor`.
 The config holds a boolean `vertical` while the form shows `content_layout` as pictures —
 the editor converts one into the other, exactly as the stock one does.
 
+**The editor's own geometry is HA's too.** The sections have no styles of their own here:
+`config-elements-style` and the two rules the stock tile editor adds are ported into the
+base editor. Without them the panels do not line up — an `ha-form` leaves no room under
+itself, so a panel appended after it sits tight against the last section while the
+sections inside it are 24px apart; an `h3` header keeps its browser margin and weight; and
+the leading icon stays at full contrast where HA's is secondary text colour. The check is
+the same as for the cards: our editor next to `hui-tile-card-editor`, side by side.
+
+A feature with settings of its own — a gauge's bounds, a list of modes — is edited in a
+sub-view of the card dialog, which opens on `edit-sub-element`. Without forwarding it the
+pencil on a feature row does nothing.
+
 ## Technical part
 
 **Location.** The `cards/` folder at the repository root. The `frontend/` folder is a

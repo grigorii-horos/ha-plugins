@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import type { HomeAssistant, LovelaceCardEditor } from "../core/types";
 import { ensureFeaturesEditor } from "../core/ha-internals";
@@ -33,6 +33,49 @@ export abstract class FormCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
+  /*
+   * The editor's own geometry, ported from HA's `config-elements-style` and the
+   * stock tile editor. Without it the sections do not line up: an ha-form leaves
+   * no room under itself, so a panel appended after it sits tight against the
+   * last section while the sections inside are 24px apart; an h3 header keeps
+   * its browser margins and weight; and the leading icon stays at full contrast
+   * where HA's is secondary text colour.
+   */
+  static styles = css`
+    ha-form {
+      display: block;
+      margin-bottom: var(--ha-space-6, 24px);
+    }
+
+    ha-expansion-panel {
+      display: block;
+      --expansion-panel-content-padding: 0;
+      border-radius: var(--ha-border-radius-md, 12px);
+      --ha-card-border-radius: var(--ha-border-radius-md, 12px);
+    }
+
+    ha-expansion-panel .content {
+      padding: var(--ha-space-3, 12px);
+    }
+
+    ha-expansion-panel > *[slot="header"] {
+      margin: 0;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+
+    ha-expansion-panel ha-icon,
+    ha-expansion-panel ha-svg-icon {
+      color: var(--secondary-text-color);
+    }
+
+    /* The features position selector sits inside the panel, not after it. */
+    .features-form {
+      margin-top: var(--ha-space-6, 24px);
+      margin-bottom: 0;
+    }
+  `;
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() protected _config?: Record<string, unknown>;
@@ -164,10 +207,48 @@ export abstract class BaseCardEditor extends FormCardEditor {
 
   private _featuresChanged(ev: CustomEvent): void {
     ev.stopPropagation();
+    // Unlike the stock tile, an emptied list is kept rather than deleted: here
+    // the absence of the key means "the card's own features", so deleting it
+    // would bring back exactly what the user just removed.
     this.dispatchEvent(
       new CustomEvent("config-changed", {
         detail: {
           config: { ...this._config, features: ev.detail.features },
+        },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  /**
+   * A feature with settings of its own — a gauge's bounds, the list of modes —
+   * is edited in a sub-view of the card dialog. The dialog opens it in response
+   * to `edit-sub-element`; without this the pencil on a feature does nothing.
+   */
+  private _editFeature(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const index = ev.detail.subElementConfig?.index as number | undefined;
+    if (index === undefined) return;
+    const features = (this._config?.features ??
+      this.defaultFeatures()) as Record<string, unknown>[];
+    this.dispatchEvent(
+      new CustomEvent("edit-sub-element", {
+        detail: {
+          type: "feature",
+          config: features[index],
+          context: { entity_id: this.featuresEntity },
+          saveConfig: (updated: Record<string, unknown>) => {
+            const next = [...features];
+            next[index] = updated;
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: { config: { ...this._config, features: next } },
+                bubbles: true,
+                composed: true,
+              })
+            );
+          },
         },
         bubbles: true,
         composed: true,
@@ -220,10 +301,12 @@ export abstract class BaseCardEditor extends FormCardEditor {
             .context=${{ entity_id: entityId }}
             .features=${features}
             @features-changed=${this._featuresChanged}
+            @edit-detail-element=${this._editFeature}
           ></hui-card-features-editor>
           ${features.length
             ? html`
                 <ha-form
+                  class="features-form"
                   .hass=${this.hass}
                   .data=${this._config}
                   .schema=${[
