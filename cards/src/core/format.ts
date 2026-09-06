@@ -93,6 +93,23 @@ export function formatRole(
 }
 
 /**
+ * An attribute the way Home Assistant itself renders it: with its unit and in
+ * the user's locale. Undefined when the entity has no such attribute — an
+ * optional role then simply leaves the line, as everywhere else here.
+ */
+export function formatAttribute(
+  hass: HomeAssistant | undefined,
+  stateObj: HassEntity | undefined,
+  attribute: string
+): string | undefined {
+  const value = stateObj?.attributes[attribute];
+  if (value === undefined || value === null || value === "") return undefined;
+  return (
+    hass?.formatEntityAttributeValue?.(stateObj!, attribute) ?? String(value)
+  );
+}
+
+/**
  * A piece of the secondary line. It knows its own entity, so a tap on it opens
  * more-info for that entity rather than for the card's main one.
  */

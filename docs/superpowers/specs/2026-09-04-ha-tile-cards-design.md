@@ -50,13 +50,16 @@ same way, through the stock tile's `getConfigElement()`.
 
 ## Scope
 
-Twenty-three cards. Twenty-two are tiles: one line, roles, a right-hand column of
+Twenty-four cards. Twenty-three are tiles: one line, roles, a right-hand column of
 values. Script buttons are a grid: a heading and a lattice of ready-made HA cards.
 
 Seven of them came later, once the first sixteen had been living on a real dashboard:
 lights, media, a climate unit, updates, to-do lists, alerts and a script-driven lamp.
+Heating came last, when the rooms had been filled in and it turned out to be the only
+system left with nothing to call its own.
 
-A thermostatic valve card was considered and dropped — not needed.
+A thermostatic valve card was considered and dropped — the air conditioner card covers
+one valve; what was missing was the system above them.
 
 HyperHDR backlight is postponed.
 
@@ -629,6 +632,45 @@ probe has to be attached to the document.
 is on. Point the card at an `input_boolean` somebody flips alongside the script and the
 line, the colour and the icon start telling the truth; leave it out and the card says
 nothing about the state rather than guessing.
+
+### Heating
+
+```yaml
+type: custom:horos-heating-tile
+mode: sensor.boiler_mode
+burner: binary_sensor.boiler_burner_active
+pump: binary_sensor.boiler_pump_active
+switch: switch.boiler_plug
+power: sensor.boiler_plug_power
+energy: sensor.boiler_plug_energy
+zones:
+  - entity: climate.radiator_bedroom
+    name: Bedroom
+  - entity: climate.radiator_living_room
+    name: Living room
+```
+
+**Heating is the one system with no entity of its own.** The boiler is in the kitchen,
+the demand is in the bedroom, the bill is on a socket — three places on a dashboard, and
+nowhere to ask "why is it burning right now". Here the boiler is the line and the rooms
+are the rows, which makes the answer one glance: the burner is on because these two rooms
+are cold.
+
+**Demand comes from `hvac_action` and nowhere else.** It is tempting to derive it —
+current below target, so the room must be calling — and it would be wrong: a valve can be
+shut by a schedule, by an open window, by a boiler that is off. A thermostat that does not
+report `hvac_action` is therefore left out of the count entirely rather than counted as
+quiet, which is why `countDemand` has a denominator of its own instead of using the number
+of rooms.
+
+**The bar is the demand, not the temperature.** A room either has the boiler working for
+it or it does not; there is no honest 0..100 scale between "at 20°" and "asked for 21°".
+The row's text carries the two numbers instead, the current one stripped of its unit so
+that the pair does not crowd the bar out of the row.
+
+**No suggestion rule.** Which of two `heat` binary sensors is the burner and which is the
+pump cannot be told from the registry, and a card must not guess a role from a name. This
+one is assembled by hand.
 
 ## Level rows
 

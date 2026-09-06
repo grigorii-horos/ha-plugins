@@ -1,6 +1,6 @@
 # Horos cards for Home Assistant
 
-Twenty-three Lovelace cards that pack several entities into a single tile — grouped by
+Twenty-four Lovelace cards that pack several entities into a single tile — grouped by
 device or by meaning.
 
 ![Cards](docs/images/hero.png)
@@ -209,6 +209,30 @@ temperature: sensor.living_room_temperature
 humidity: sensor.living_room_humidity
 power: sensor.ac_plug_power
 controls: true
+```
+
+### Heating — `horos-heating-tile`
+
+![Heating](docs/images/heating.png)
+
+The boiler and the rooms it heats in one tile: what the boiler is doing, what it draws
+and has spent, and a row per room with where it is, where it was sent, and a bar that
+fills while the room is asking for heat. Demand is read from `hvac_action` only — a
+thermostat that does not report it is left out of the count rather than assumed quiet.
+
+```yaml
+type: custom:horos-heating-tile
+mode: sensor.boiler_mode
+burner: binary_sensor.boiler_burner_active
+pump: binary_sensor.boiler_pump_active
+switch: switch.boiler_plug
+power: sensor.boiler_plug_power
+energy: sensor.boiler_plug_energy
+zones:
+  - entity: climate.radiator_bedroom
+    name: Bedroom
+  - entity: climate.radiator_living_room
+    name: Living room
 ```
 
 ### Printer — `horos-printer-tile`

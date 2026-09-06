@@ -23,6 +23,7 @@ import { languageOf, t } from "../src/core/i18n";
 import { findOffline } from "../src/core/offline";
 import { findUpdates } from "../src/core/updates";
 import { firingStates, isFiring } from "../src/core/alerts";
+import { countDemand, zoneState } from "../src/core/heating";
 import {
   levelColor,
   loadColor,
@@ -894,5 +895,38 @@ describe("when an alert counts as fired", () => {
     expect(isFiring(item, "unknown")).toBe(false);
     expect(isFiring(item, undefined)).toBe(false);
     expect(isFiring(item, "on")).toBe(true);
+  });
+});
+
+describe("what a heating zone reports", () => {
+  const zone = (state: string, action?: string) =>
+    entity("climate.room", state, action ? { hvac_action: action } : {});
+
+  it("a room asking for heat", () => {
+    expect(zoneState(zone("heat", "heating"))).toBe("heating");
+  });
+
+  it("a room that has what it wanted", () => {
+    expect(zoneState(zone("heat", "idle"))).toBe("idle");
+  });
+
+  it("a radiator turned off", () => {
+    expect(zoneState(zone("off", "off"))).toBe("off");
+  });
+
+  it("a radiator that stopped answering", () => {
+    expect(zoneState(zone("unavailable"))).toBe("offline");
+    expect(zoneState(undefined)).toBe("offline");
+  });
+
+  it("a thermostat that does not report demand says so", () => {
+    // Not "idle": below its target it may well be calling, and we cannot tell.
+    expect(zoneState(zone("heat"))).toBe("unknown");
+  });
+
+  it("the count only speaks for the rooms that answered", () => {
+    expect(
+      countDemand(["heating", "idle", "unknown", "offline", "off"])
+    ).toEqual({ calling: 1, reporting: 3, offline: 1 });
   });
 });

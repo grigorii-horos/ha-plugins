@@ -20,6 +20,15 @@ export interface HomeAssistant {
   states: Record<string, HassEntity | undefined>;
   localize: (key: string, ...args: unknown[]) => string;
   formatEntityState: (stateObj: HassEntity, state?: string) => string;
+  /**
+   * An attribute rendered with its own unit and the user's locale — a climate
+   * target temperature, say. Optional: it appeared later than the rest.
+   */
+  formatEntityAttributeValue?: (
+    stateObj: HassEntity,
+    attribute: string,
+    value?: unknown
+  ) => string;
   /** An absolute URL from an HA relative path — needed for entity pictures. */
   hassUrl: (path?: string) => string;
   /** The entity registry: needed to tell which device an entity belongs to. */
