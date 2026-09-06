@@ -90,5 +90,13 @@ Rakes already stepped on:
 - The build must run with `NODE_ENV=production` (the npm script sets it): the user's shell
   exports `development`, and Lit then ships its dev build — the bundle silently grows by a
   third.
+- README screenshots are shot from the `cards-lab` dashboard, which is in English: labels
+  come from its config, not from overrides in the shooting script. Overrides that lived
+  only inside a script drifted from what was committed once already — `light.png` stayed
+  Russian for a whole release.
 - README screenshots must not contain addresses, faces or names of real people — the
-  person card is anonymised before the shot (`show_entity_picture: false`, no `location`).
+  person card is anonymised before the shot (`show_entity_picture: false`, no `location`),
+  the media title is replaced, and the computer card drops `current_users`. Those four are
+  the only runtime overrides left.
+- The picture at the top of the README comes from the lab's own `Hero` section: nine
+  cards, half a section wide each, in a known order, so the shot can be repeated.
