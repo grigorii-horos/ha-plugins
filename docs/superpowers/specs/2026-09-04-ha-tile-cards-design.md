@@ -723,6 +723,24 @@ so that an existing config keeps working, and are gone from the editors. A card 
 a list of equal entities has no main entity to address features to; the media card names
 its first player for that, and the ones with nothing of their own simply have no panel.
 
+**And they are rendered the way the stock tile renders them,** which took four things that
+had been missing. The list is not one block: with `features_position: inline` the first
+feature moves up into the tile's own row and the rest pair into two columns below, so the
+block below is given `columns` — that is `computeCardFeatureLayout`, ported into
+`core/features.ts` and used for both the markup and the row count. Each block is told its
+own `position`. The config `color` is handed to `hui-card-features`: a feature like the
+cover slider paints itself from that property and otherwise falls back to its entity's
+state colour, so without it a card's colour never reached its controls. And a card in a
+grid with a height of its own passes `fixedInfoHeight`, which is what keeps an inline
+feature at full height and pins the info block on vertical tiles.
+
+**The tile colour follows the same rule too:** a colour from the config counts only while
+the entity is active, exactly as on the stock tile, and a lit lamp with an `rgb_color`
+paints the tile with its own colour — pale colours pushed towards white, washed-out ones
+saturated. The one branch deliberately left out is the stock exception for `person` and
+`device_tracker`, where the colour lives on a badge we do not draw: here it is the only
+thing that says whether someone is home.
+
 ## Level rows
 
 The device invented for ink turned out to be a general one: several homogeneous levels

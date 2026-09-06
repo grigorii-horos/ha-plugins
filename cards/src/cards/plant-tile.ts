@@ -67,7 +67,7 @@ export class HorosPlantTile extends BaseTileCard {
   private _bigKeys: string[] = ["moisture"];
 
   protected override fixedRows(): number {
-    return this.featureRows(plantFeatures(this.hass, this._config).length);
+    return this.featureRows(plantFeatures(this.hass, this._config));
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

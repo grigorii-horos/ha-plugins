@@ -159,13 +159,63 @@ export function stateColorCss(
   return cssVariableChain(properties);
 }
 
+const hex = (value: number) =>
+  Math.round(value).toString(16).padStart(2, "0");
+
+/** RGB → HSV → RGB, ported from HA's convert-color: the tile needs both ways. */
+const rgb2hsv = ([r, g, b]: number[]): [number, number, number] => {
+  const v = Math.max(r, g, b);
+  const c = v - Math.min(r, g, b);
+  const h =
+    c && (v === r ? (g - b) / c : v === g ? 2 + (b - r) / c : 4 + (r - g) / c);
+  return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+};
+
+const hsv2rgb = ([h, s, v]: [number, number, number]): number[] => {
+  const f = (n: number) => {
+    const k = (n + h / 60) % 6;
+    return v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+  };
+  return [f(5), f(3), f(1)];
+};
+
 /**
- * Tile colour exactly by hui-tile-card's logic: if the state has a colour of its
- * own we take it, otherwise an active entity is painted --state-icon-color and
- * an inactive one stays neutral.
+ * The colour a lit lamp paints its tile with — the stock tile's rule, tweaks
+ * and all: a very pale colour is pushed towards white and a merely washed-out
+ * one is saturated, because the real rgb of a warm white bulb is invisible on
+ * a card.
+ */
+function lightColor(stateObj: HassEntity): string | undefined {
+  const rgb = stateObj.attributes.rgb_color as number[] | undefined;
+  if (!Array.isArray(rgb) || rgb.length < 3) return undefined;
+  const hsv = rgb2hsv(rgb);
+  if (hsv[1] < 0.4) {
+    if (hsv[1] < 0.1) {
+      hsv[2] = 225;
+    } else {
+      hsv[1] = 0.4;
+    }
+  }
+  const [r, g, b] = hsv2rgb(hsv);
+  return `#${hex(r)}${hex(g)}${hex(b)}`;
+}
+
+/**
+ * Tile colour exactly by hui-tile-card's logic: a lit lamp gives its own
+ * colour, otherwise a state with a colour of its own gives that, otherwise an
+ * active entity is painted --state-icon-color and an inactive one stays
+ * neutral.
+ *
+ * The one branch left out is the stock tile's exception for person and
+ * device_tracker, where the colour sits on a badge instead. We draw no badge,
+ * so the colour is the only thing that says whether someone is home.
  */
 export function tileColor(stateObj: HassEntity | undefined): string {
   if (!stateObj) return "var(--state-inactive-color)";
+  if (computeDomain(stateObj.entity_id) === "light" && stateActive(stateObj)) {
+    const color = lightColor(stateObj);
+    if (color) return color;
+  }
   const stateColor = stateColorCss(stateObj);
   if (stateColor) return stateColor;
   return stateActive(stateObj)

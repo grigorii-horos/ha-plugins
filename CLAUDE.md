@@ -71,6 +71,9 @@ npm run build   # tsc --noEmit && vite build → ../dist/ha-plugins-cards.js
   own: the card exports a `<name>Features(hass, config)` function, uses it for
   `ownFeatures` and for `fixedRows()`, and the editor returns it from `defaultFeatures()`
   so the Features panel shows it and can remove it. `features: []` means none.
+- Features are handed to `hui-card-features` the way the stock tile hands them over —
+  split inline/below by `core/features.ts`, with `columns`, `position` and the config
+  `color` — and the check is a screenshot next to a stock `tile` with the same config.
 - The shared config fields (`name`, `icon`, `state_content`, `levels`, `features`, the six
   actions) live in `TileBaseConfig`; a subclass's `setConfig` must put them into
   `this.base`.

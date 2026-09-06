@@ -28,8 +28,10 @@ import {
   type ActionConfig,
   type ActionType,
 } from "./actions";
+import { featureLayout, featureRowCount, type Feature } from "./features";
 import { ensureTileInternals } from "./ha-internals";
 import { ROLE_ICONS } from "./role-icons";
+import { stateActive } from "./state-color";
 import { t } from "./i18n";
 
 export interface FormattedValue {
@@ -126,6 +128,13 @@ export abstract class BaseTileCard extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  /**
+   * Where the dashboard put the card. Home Assistant sets it; the tile uses it
+   * for one thing — a card in a grid with a height of its own reserves a fixed
+   * height for the info block so neighbouring tiles line up.
+   */
+  @property({ attribute: false }) public layout?: string;
+
   /** HA components load asynchronously, hence the re-render. */
   @state() private _ready = false;
 
@@ -162,21 +171,20 @@ export abstract class BaseTileCard extends LitElement {
    * reports, and it is why the two numbers are counted separately.
    */
   protected fixedRows(): number {
-    return this.featureRows(0);
+    return this.featureRows([]);
   }
 
   /**
    * Rows taken by the features line, counted the way the stock tile counts
-   * them: one row each, except that an `inline` first feature shares the main
-   * row and the rest pair up into two columns. The user's list wins over the
-   * card's own, exactly as it does in render.
+   * them. The user's list wins over the card's own, exactly as it does in
+   * render, and the layout arithmetic is HA's own.
    */
-  protected featureRows(own: number): number {
-    const count = this.base.features?.length ?? own;
-    if (!count) return 0;
-    if ((this.base.features_position ?? "bottom") !== "inline") return count;
-    const below = count - 1;
-    return below <= 0 ? 0 : Math.ceil(below / Math.min(below, 2));
+  protected featureRows(own: Feature[]): number {
+    const features = this.base.features ?? own;
+    if (!features.length) return 0;
+    return featureRowCount(
+      featureLayout(features, this.base.features_position ?? "bottom")
+    );
   }
 
   public getCardSize(): number {
@@ -341,9 +349,7 @@ export abstract class BaseTileCard extends LitElement {
       return this.renderWarning(t(this.hass, "internals.failed"));
     }
 
-    const tileColor = this.base.color
-      ? cssColor(this.base.color)
-      : (color ?? "var(--state-inactive-color)");
+    const tileColor = this._tileColor(color);
 
     const iconAction = this.base.icon_tap_action ?? defaultIconAction;
     const hasIconAction =
@@ -358,12 +364,16 @@ export abstract class BaseTileCard extends LitElement {
     const position: FeaturesPosition = this.base.features_position ?? "bottom";
     // The card's own line under the tile, unless the config turned it off.
     const own = this.base.levels === false ? undefined : customFeatures;
+    // The features are split the way the stock tile splits them: with `inline`
+    // the first one moves up into the tile's row and the rest pair up below.
+    const layout = featureLayout(features, position);
+
     // A card fills its slot only when the height was fixed by hand and there is
     // something under the line to fill it with; see the note by :host([filled]).
     const fixedHeight = typeof this.base.grid_options?.rows === "number";
     this.toggleAttribute(
       "filled",
-      fixedHeight && Boolean(own || features?.length)
+      fixedHeight && Boolean(own || layout.below.length)
     );
 
     return html`
@@ -371,6 +381,7 @@ export abstract class BaseTileCard extends LitElement {
         <ha-tile-container
           .featurePosition=${position}
           .vertical=${Boolean(this.base.vertical)}
+          .fixedInfoHeight=${this.layout === "grid" && fixedHeight}
           .interactive=${true}
           .actionHandlerOptions=${{
             hasHold: hasAction(this.base.hold_action),
@@ -433,23 +444,51 @@ export abstract class BaseTileCard extends LitElement {
               : nothing}
           </div>
 
+          ${layout.inline.length
+            ? html`<hui-card-features
+                slot="features-inline"
+                .hass=${this.hass}
+                .context=${{ entity_id: mainEntityId }}
+                .color=${this.base.color}
+                .features=${layout.inline}
+                .position=${position}
+              ></hui-card-features>`
+            : nothing}
           ${own
             ? html`<div slot="features" class="custom-features">
                 ${own}
               </div>`
             : nothing}
-          ${features?.length
+          ${layout.below.length
             ? html`<hui-card-features
-                slot=${position === "inline" ? "features-inline" : "features"}
+                slot="features"
+                .columns=${layout.columns}
                 .hass=${this.hass}
                 .context=${{ entity_id: mainEntityId }}
-                .features=${features}
-                .position=${position}
+                .color=${this.base.color}
+                .features=${layout.below}
+                .position=${"bottom"}
               ></hui-card-features>`
             : nothing}
         </ha-tile-container>
       </ha-card>
     `;
+  }
+
+  /**
+   * The tile colour, by the stock tile's rule: a colour from the config counts
+   * only while the entity is active — an inactive one is grey on the stock tile
+   * and has to be grey here. A card assembled from a list of equal entities has
+   * nothing to be active, so there its colour is taken at face value.
+   */
+  private _tileColor(fallback?: string): string {
+    const stateObj = this._entityId
+      ? this.hass?.states[this._entityId]
+      : undefined;
+    if (this.base.color && (!stateObj || stateActive(stateObj))) {
+      return cssColor(this.base.color);
+    }
+    return fallback ?? "var(--state-inactive-color)";
   }
 
   /**

@@ -97,7 +97,7 @@ export class HorosCoverTile extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    return this.featureRows(coverFeatures(this.hass, this._config).length);
+    return this.featureRows(coverFeatures(this.hass, this._config));
   }
 
   private _bigKeys: string[] = ["illuminance"];

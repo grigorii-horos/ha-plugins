@@ -13,7 +13,7 @@ class TestCard extends BaseTileCard {
   public rows = 0;
   public controls = 0;
   /** What the card would put under the line if the config said nothing. */
-  public own = 0;
+  public own: Record<string, unknown>[] = [];
 
   public setConfig(config: TileBaseConfig): void {
     this.base = config;
@@ -39,7 +39,7 @@ const card = (
   config: TileBaseConfig = {},
   rows = 0,
   controls = 0,
-  own = 0
+  own: Record<string, unknown>[] = []
 ): TestCard => {
   const element = document.createElement("test-tile-card") as TestCard;
   element.setConfig(config);
@@ -99,7 +99,7 @@ describe("how many rows a card asks for", () => {
   });
 
   it("the card's own features count when the config says nothing", () => {
-    const tile = card({}, 0, 0, 2);
+    const tile = card({}, 0, 0, [{ type: "toggle" }, { type: "a" }]);
     expect(tile.getCardSize()).toBe(3);
     expect(tile.getGridOptions().min_rows).toBe(3);
   });
@@ -107,7 +107,10 @@ describe("how many rows a card asks for", () => {
   it("an emptied list means none of them, not back to the defaults", () => {
     // This is what removing the last feature in the editor writes, and it has
     // to mean what it says.
-    const tile = card({ features: [] }, 0, 0, 2);
+    const tile = card({ features: [] }, 0, 0, [
+      { type: "toggle" },
+      { type: "a" },
+    ]);
     expect(tile.getCardSize()).toBe(1);
     expect(tile.getGridOptions().min_rows).toBe(1);
   });

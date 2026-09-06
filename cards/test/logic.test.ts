@@ -24,6 +24,7 @@ import { findOffline } from "../src/core/offline";
 import { findUpdates } from "../src/core/updates";
 import { firingStates, isFiring } from "../src/core/alerts";
 import { countDemand, zoneState } from "../src/core/heating";
+import { featureLayout, featureRowCount } from "../src/core/features";
 import {
   levelColor,
   loadColor,
@@ -928,5 +929,39 @@ describe("what a heating zone reports", () => {
     expect(
       countDemand(["heating", "idle", "unknown", "offline", "off"])
     ).toEqual({ calling: 1, reporting: 3, offline: 1 });
+  });
+});
+
+describe("how a features list is laid out", () => {
+  const three = [{ type: "a" }, { type: "b" }, { type: "c" }];
+
+  it("at the bottom they are one column, one row each", () => {
+    const layout = featureLayout(three, "bottom");
+    expect(layout.inline).toEqual([]);
+    expect(layout.below).toEqual(three);
+    expect(featureRowCount(layout)).toBe(3);
+  });
+
+  it("inline the first one goes up and the rest pair off", () => {
+    const layout = featureLayout(three, "inline");
+    expect(layout.inline).toEqual([{ type: "a" }]);
+    expect(layout.below).toEqual([{ type: "b" }, { type: "c" }]);
+    expect(layout.columns).toBe(2);
+    expect(featureRowCount(layout)).toBe(1);
+  });
+
+  it("a single feature inline leaves nothing below", () => {
+    const layout = featureLayout([{ type: "a" }], "inline");
+    expect(layout.below).toEqual([]);
+    expect(featureRowCount(layout)).toBe(0);
+  });
+
+  it("five inline are one up top and two rows of two", () => {
+    const five = [...three, { type: "d" }, { type: "e" }];
+    expect(featureRowCount(featureLayout(five, "inline"))).toBe(2);
+  });
+
+  it("no features at all is no rows", () => {
+    expect(featureRowCount(featureLayout(undefined, "bottom"))).toBe(0);
   });
 });

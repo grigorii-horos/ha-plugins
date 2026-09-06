@@ -98,7 +98,7 @@ export class HorosAcTile extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    return this.featureRows(acFeatures(this._config).length);
+    return this.featureRows(acFeatures(this._config));
   }
 
   protected render() {

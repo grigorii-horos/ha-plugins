@@ -173,7 +173,7 @@ export class HorosLampTile extends BaseTileCard {
     const controls =
       (STEPS.some(({ key }) => config[key]) ? 1 : 0) +
       (config.presets?.length ? 1 : 0);
-    return controls + this.featureRows(lampFeatures(config).length);
+    return controls + this.featureRows(lampFeatures(config));
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

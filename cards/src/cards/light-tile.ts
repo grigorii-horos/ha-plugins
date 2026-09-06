@@ -74,7 +74,7 @@ export class HorosLightTile extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    return this.featureRows(lightFeatures(this._config).length);
+    return this.featureRows(lightFeatures(this._config));
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
