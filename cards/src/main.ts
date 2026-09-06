@@ -28,7 +28,7 @@ import "./cards/lamp-tile";
 
 // eslint-disable-next-line no-console
 console.info(
-  "%c HOROS-CARDS %c 0.3.2 ",
+  "%c HOROS-CARDS %c 0.3.3 ",
   "background:#03a9f4;color:#fff;border-radius:3px 0 0 3px;padding:2px 4px",
   "background:#555;color:#fff;border-radius:0 3px 3px 0;padding:2px 4px"
 );

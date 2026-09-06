@@ -6,6 +6,7 @@ import { renderLevels, levelStyles, type LevelRow } from "../core/levels";
 import { tileColor } from "../core/state-color";
 import {
   composeSegments,
+  formatUnavailable,
   resolveRole,
   unavailableSegment,
   type ResolvedRole,
@@ -43,6 +44,10 @@ export interface LightTileConfig extends TileBaseConfig {
  *
  * A light that is off keeps its row with an empty bar rather than disappearing:
  * the question here is "what is on", and an answer needs the ones that are not.
+ *
+ * A light that lost connection is neither on nor off, and saying "all off" about
+ * a room whose lamps stopped answering is the card telling a comfortable lie.
+ * Those are counted separately and named on the line.
  */
 export class HorosLightTile extends BaseTileCard {
   static styles = [tileStyles, levelStyles];
@@ -97,12 +102,16 @@ export class HorosLightTile extends BaseTileCard {
     if (warning) return this.renderWarning(warning);
 
     const on = lights.filter((light) => light.role?.stateObj?.state === "on");
+    const offline = lights.filter((light) => light.role?.unavailable);
+    const answering = lights.length - offline.length;
     const main = group ?? on[0]?.role ?? lights[0].role;
     const groupName = group?.stateObj?.attributes.friendly_name;
 
     const rows: LevelRow[] = lights.map(({ item, role }) => {
       const level = this._brightness(role);
       const lit = role?.stateObj?.state === "on";
+      // What HA itself calls that state: "Unavailable", "Unknown", translated.
+      const offlineText = formatUnavailable(this.hass, role);
       return {
         entityId: item.entity,
         name:
@@ -110,11 +119,13 @@ export class HorosLightTile extends BaseTileCard {
           stripDeviceName(role?.stateObj?.attributes.friendly_name, groupName) ??
           item.entity,
         // A dimmable light says how bright, a plain one only that it is on.
-        text: lit
-          ? level === undefined
-            ? t(this.hass, "light.on")
-            : `${level}%`
-          : t(this.hass, "light.off"),
+        text:
+          offlineText ??
+          (lit
+            ? level === undefined
+              ? t(this.hass, "light.on")
+              : `${level}%`
+            : t(this.hass, "light.off")),
         ink: item.color ?? tileColor(role?.stateObj),
         level: lit ? (level ?? 100) : 0,
       };
@@ -130,14 +141,24 @@ export class HorosLightTile extends BaseTileCard {
       defaultIconAction: defaultIconAction(main?.entityId),
       secondary: composeSegments([
         unavailableSegment(this.hass, group),
-        {
-          text: on.length
-            ? t(this.hass, "light.count", {
-                count: on.length,
-                total: lights.length,
-              })
-            : t(this.hass, "light.allOff"),
-        },
+        // With nothing answering there is no "on out of" to state: the count
+        // would be about lights nobody can see.
+        answering === 0
+          ? undefined
+          : {
+              text: on.length
+                ? t(this.hass, "light.count", {
+                    count: on.length,
+                    total: answering,
+                  })
+                : t(this.hass, "light.allOff"),
+            },
+        offline.length
+          ? {
+              text: t(this.hass, "offline.count", { count: offline.length }),
+              entityId: offline[0].item.entity,
+            }
+          : undefined,
       ]),
       values:
         brightness === undefined

@@ -15,6 +15,7 @@ import type {
 import {
   SECONDARY_SEPARATOR,
   UNAVAILABLE_STATES,
+  impossibleValue,
   roleSegment,
   splitValueUnit,
   type ResolvedRole,
@@ -435,6 +436,9 @@ export abstract class BaseTileCard extends LitElement {
   ): FormattedValue | undefined {
     if (!this.hass || !stateObj) return undefined;
     if (UNAVAILABLE_STATES.has(stateObj.state)) return undefined;
+    // A number the quantity cannot take is a sensor saying it has no reading;
+    // large and in bold is the last place that belongs.
+    if (impossibleValue(stateObj)) return undefined;
     return splitValueUnit(
       this.hass.formatEntityState(stateObj),
       stateObj.attributes.unit_of_measurement

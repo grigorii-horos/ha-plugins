@@ -9,6 +9,41 @@ import type { HassEntity, HomeAssistant } from "./types";
 
 export const UNAVAILABLE_STATES = new Set(["unavailable", "unknown"]);
 
+/**
+ * Quantities that have no negative half: a concentration, a share of something
+ * present, a light level. A device that reports a minus there is not measuring
+ * a low value, it is saying it has nothing to report — which is exactly what an
+ * air purifier's PM2.5 does while the fan is off, `-1`. Drawing that as
+ * "-1 μg/m³" is worse than drawing nothing.
+ */
+const NEVER_NEGATIVE = new Set([
+  "aqi",
+  "battery",
+  "carbon_dioxide",
+  "carbon_monoxide",
+  "humidity",
+  "illuminance",
+  "moisture",
+  "nitrogen_dioxide",
+  "nitrogen_monoxide",
+  "nitrous_oxide",
+  "ozone",
+  "pm1",
+  "pm10",
+  "pm25",
+  "sulphur_dioxide",
+  "volatile_organic_compounds",
+  "volatile_organic_compounds_parts",
+]);
+
+/** Whether the state is a number this quantity cannot take. */
+export function impossibleValue(stateObj: HassEntity | undefined): boolean {
+  const deviceClass = stateObj?.attributes.device_class as string | undefined;
+  if (!deviceClass || !NEVER_NEGATIVE.has(deviceClass)) return false;
+  const value = Number(stateObj!.state);
+  return Number.isFinite(value) && value < 0;
+}
+
 export const SECONDARY_SEPARATOR = " · ";
 
 export interface ResolvedRole {
@@ -18,6 +53,12 @@ export interface ResolvedRole {
   missing: boolean;
   /** The entity exists but has no data: unavailable or unknown. */
   unavailable: boolean;
+  /**
+   * The entity answers, but with a number its quantity cannot take. Kept apart
+   * from `unavailable`: there is nothing to show, yet nothing to report either —
+   * the sensor is fine, it just has no reading right now.
+   */
+  impossible: boolean;
 }
 
 export function resolveRole(
@@ -31,6 +72,7 @@ export function resolveRole(
     stateObj,
     missing: !stateObj,
     unavailable: !!stateObj && UNAVAILABLE_STATES.has(stateObj.state),
+    impossible: impossibleValue(stateObj),
   };
 }
 
@@ -46,6 +88,7 @@ export function formatRole(
   if (!hass || !role || !role.stateObj || role.missing || role.unavailable) {
     return undefined;
   }
+  if (role.impossible) return undefined;
   return hass.formatEntityState(role.stateObj);
 }
 
@@ -103,7 +146,7 @@ export function formatUnavailable(
 export function numericState(
   role: ResolvedRole | undefined
 ): number | undefined {
-  if (!role?.stateObj) return undefined;
+  if (!role?.stateObj || role.impossible) return undefined;
   const value = Number(role.stateObj.state);
   return Number.isFinite(value) ? value : undefined;
 }

@@ -95,6 +95,18 @@ describe("role resolution", () => {
   const hass = fakeHass([
     entity("sensor.temp", "27.4", { unit_of_measurement: "°C" }),
     entity("sensor.broken", "unavailable"),
+    entity("sensor.pm25_idle", "-1", {
+      device_class: "pm25",
+      unit_of_measurement: "μg/m³",
+    }),
+    entity("sensor.pm25_reading", "12", {
+      device_class: "pm25",
+      unit_of_measurement: "μg/m³",
+    }),
+    entity("sensor.export", "-450", {
+      device_class: "power",
+      unit_of_measurement: "W",
+    }),
   ]);
 
   it("an empty role does not resolve at all", () => {
@@ -111,6 +123,27 @@ describe("role resolution", () => {
     const role = resolveRole(hass, "sensor.broken");
     expect(role?.missing).toBe(false);
     expect(role?.unavailable).toBe(true);
+  });
+
+  it("a minus where the quantity has no minus is not a reading", () => {
+    const role = resolveRole(hass, "sensor.pm25_idle");
+    expect(role?.impossible).toBe(true);
+    expect(role?.unavailable).toBe(false);
+    expect(formatRole(hass, role)).toBeUndefined();
+    expect(numericState(role)).toBeUndefined();
+  });
+
+  it("a real reading of the same quantity goes through", () => {
+    const role = resolveRole(hass, "sensor.pm25_reading");
+    expect(role?.impossible).toBe(false);
+    expect(numericState(role)).toBe(12);
+  });
+
+  it("a minus stays a value where the quantity has one", () => {
+    // Power below zero is a house exporting to the grid, not a broken sensor.
+    const role = resolveRole(hass, "sensor.export");
+    expect(role?.impossible).toBe(false);
+    expect(numericState(role)).toBe(-450);
   });
 
   it("an unavailable role gives no text — it just leaves the line", () => {

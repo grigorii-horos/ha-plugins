@@ -838,7 +838,7 @@ Not by tests, but by measurements and clicks in the browser:
 
 ## The defects found during the review
 
-Checking the cards in code and in the browser produced eight defects. All are closed.
+Checking the cards in code and in the browser produced ten defects. All are closed.
 
 **Loading the bundle twice broke registration.** `customElements.define` on a name already
 taken throws, and the whole module dies with it. It would have happened routinely: the dev
@@ -878,6 +878,21 @@ had to be caught by screenshots by hand. A happy-dom environment was added, alon
 checks of the level rows' markup — fill width, clamping to the bounds, the alarm glyph,
 tap bubbling. Full cards cannot be assembled that way, they lean on HA components, but our
 own templates are under test now.
+
+**"All off" about lights that had stopped answering.** The light card counted anything
+that was not `on` as off, so a room whose lamps had lost connection was reported as a
+quiet, tidy room. Now an unreachable light keeps its row with the status Home Assistant
+itself gives it, the "N of M on" count is only about the ones that answer, and the number
+that do not is named on the line. Found on the real dashboard: two unavailable bedroom
+lamps under the heading "All off".
+
+**A minus was drawn as a measurement.** The living-room purifier reports `-1 μg/m³` for
+PM2.5 while its fan is off — a sentinel for "no reading", not a value. The card showed it
+in the secondary line and, worse, large in the right-hand column. There is a set of device
+classes whose quantity has no negative half — a concentration, a share of something
+present, a light level — and a minus there now means "nothing to show", the same as an
+empty role. Power stays out of that set on purpose: below zero it means a house exporting
+to the grid.
 
 **The `CartridgeConfig` type had drifted from its meaning.** Eight cards used it for an
 item of any list — consumables, sensors, areas, consumers. It became `EntityItem` in a
