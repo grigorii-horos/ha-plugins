@@ -264,7 +264,7 @@ ce.elementStyles = [], ce.shadowRootOptions = { mode: "open" }, ce[pe("elementPr
  */
 const Ye = globalThis, ct = (s) => s, Te = Ye.trustedTypes, ut = Te ? Te.createPolicy("lit-html", { createHTML: (s) => s }) : void 0, Rt = "$lit$", Y = `lit$${Math.random().toFixed(9).slice(2)}$`, Ht = "?" + Y, Js = `<${Ht}>`, re = document, fe = () => re.createComment(""), ge = (s) => s === null || typeof s != "object" && typeof s != "function", Ze = Array.isArray, Xs = (s) => Ze(s) || typeof s?.[Symbol.iterator] == "function", De = `[ 	
 \f\r]`, me = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ht = /-->/g, dt = />/g, ee = RegExp(`>|${De}(?:([^\\s"'>=/]+)(${De}*=${De}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), mt = /'/g, pt = /"/g, Nt = /^(?:script|style|textarea|title)$/i, Qs = (s) => (e, ...t) => ({ _$litType$: s, strings: e, values: t }), v = Qs(1), ue = Symbol.for("lit-noChange"), m = Symbol.for("lit-nothing"), ft = /* @__PURE__ */ new WeakMap(), se = re.createTreeWalker(re, 129);
+\f\r"'\`<>=]|("|')|))|$)`, "g"), mt = /'/g, pt = /"/g, Nt = /^(?:script|style|textarea|title)$/i, Qs = (s) => (e, ...t) => ({ _$litType$: s, strings: e, values: t }), y = Qs(1), ue = Symbol.for("lit-noChange"), m = Symbol.for("lit-nothing"), ft = /* @__PURE__ */ new WeakMap(), se = re.createTreeWalker(re, 129);
 function Lt(s, e) {
   if (!Ze(s) || !s.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return ut !== void 0 ? ut.createHTML(e) : e;
@@ -294,8 +294,8 @@ class _e {
     for (; (n = se.nextNode()) !== null && a.length < l; ) {
       if (n.nodeType === 1) {
         if (n.hasAttributes()) for (const u of n.getAttributeNames()) if (u.endsWith(Rt)) {
-          const _ = h[o++], f = n.getAttribute(u).split(Y), y = /([.?@])?(.*)/.exec(_);
-          a.push({ type: 1, index: i, name: y[2], strings: f, ctor: y[1] === "." ? sn : y[1] === "?" ? nn : y[1] === "@" ? rn : je }), n.removeAttribute(u);
+          const _ = h[o++], f = n.getAttribute(u).split(Y), v = /([.?@])?(.*)/.exec(_);
+          a.push({ type: 1, index: i, name: v[2], strings: f, ctor: v[1] === "." ? sn : v[1] === "?" ? nn : v[1] === "@" ? rn : je }), n.removeAttribute(u);
         } else u.startsWith(Y) && (a.push({ type: 6, index: i }), n.removeAttribute(u));
         if (Nt.test(n.tagName)) {
           const u = n.textContent.split(Y), _ = u.length - 1;
@@ -341,7 +341,7 @@ class tn {
     for (; a !== void 0; ) {
       if (o === a.index) {
         let c;
-        a.type === 2 ? c = new ve(i, i.nextSibling, this, e) : a.type === 1 ? c = new a.ctor(i, a.name, a.strings, this, e) : a.type === 6 && (c = new on(i, this, e)), this._$AV.push(c), a = r[++l];
+        a.type === 2 ? c = new ye(i, i.nextSibling, this, e) : a.type === 1 ? c = new a.ctor(i, a.name, a.strings, this, e) : a.type === 6 && (c = new on(i, this, e)), this._$AV.push(c), a = r[++l];
       }
       o !== a?.index && (i = se.nextNode(), o++);
     }
@@ -352,7 +352,7 @@ class tn {
     for (const r of this._$AV) r !== void 0 && (r.strings !== void 0 ? (r._$AI(e, r, t), t += r.strings.length - 2) : r._$AI(e[t])), t++;
   }
 }
-class ve {
+class ye {
   get _$AU() {
     return this._$AM?._$AU ?? this._$Cv;
   }
@@ -398,7 +398,7 @@ class ve {
     Ze(this._$AH) || (this._$AH = [], this._$AR());
     const t = this._$AH;
     let r, n = 0;
-    for (const i of e) n === t.length ? t.push(r = new ve(this.O(fe()), this.O(fe()), this, this.options)) : r = t[n], r._$AI(i), n++;
+    for (const i of e) n === t.length ? t.push(r = new ye(this.O(fe()), this.O(fe()), this, this.options)) : r = t[n], r._$AI(i), n++;
     n < t.length && (this._$AR(r && r._$AB.nextSibling, n), t.length = n);
   }
   _$AR(e = this._$AA.nextSibling, t) {
@@ -477,13 +477,13 @@ class on {
   }
 }
 const an = Ye.litHtmlPolyfillSupport;
-an?.(_e, ve), (Ye.litHtmlVersions ??= []).push("3.3.3");
+an?.(_e, ye), (Ye.litHtmlVersions ??= []).push("3.3.3");
 const ln = (s, e, t) => {
   const r = t?.renderBefore ?? e;
   let n = r._$litPart$;
   if (n === void 0) {
     const i = t?.renderBefore ?? null;
-    r._$litPart$ = n = new ve(e.insertBefore(fe(), i), i, void 0, t ?? {});
+    r._$litPart$ = n = new ye(e.insertBefore(fe(), i), i, void 0, t ?? {});
   }
   return n._$AI(s), n;
 };
@@ -559,7 +559,7 @@ function Me(s) {
 function b(s) {
   return Me({ ...s, state: !0, attribute: !1 });
 }
-const z = Pe`
+const D = Pe`
   :host {
     --tile-color: var(--state-inactive-color, #7b7b7b);
     display: block;
@@ -759,7 +759,7 @@ function Dt(s, e) {
   if (!(!s || !e?.stateObj || !e.unavailable))
     return s.formatEntityState(e.stateObj);
 }
-function D(s) {
+function z(s) {
   if (!s?.stateObj || s.impossible) return;
   const e = Number(s.stateObj.state);
   return Number.isFinite(e) ? e : void 0;
@@ -773,7 +773,7 @@ function fn(s, e) {
   const t = s.slice(0, s.length - e.length).trimEnd();
   return t ? { value: t, unit: e } : { value: s };
 }
-const qe = "unavailable", gn = "unknown", _n = "off", vn = /* @__PURE__ */ new Set(["button", "input_button", "scene"]), yn = /* @__PURE__ */ new Set([
+const qe = "unavailable", gn = "unknown", _n = "off", yn = /* @__PURE__ */ new Set(["button", "input_button", "scene"]), vn = /* @__PURE__ */ new Set([
   "alarm_control_panel",
   "alert",
   "automation",
@@ -808,7 +808,7 @@ const qe = "unavailable", gn = "unknown", _n = "off", vn = /* @__PURE__ */ new S
 ]), R = (s) => s.substring(0, s.indexOf(".")), bn = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "unknown";
 function zt(s, e) {
   const t = R(s.entity_id), r = s.state;
-  if (vn.has(t))
+  if (yn.has(t))
     return r !== qe;
   if (r === qe || r === gn || r === _n && t !== "alert")
     return !1;
@@ -860,7 +860,7 @@ function En(s, e) {
     const a = $n(s.state);
     if (a) return `var(${a})`;
   }
-  if (!yn.has(t))
+  if (!vn.has(t))
     return e;
   const n = zt(s), i = bn(s.state), o = n ? "active" : "inactive", l = [];
   return r && l.push(`--state-${t}-${r}-${i}-color`), l.push(
@@ -983,7 +983,7 @@ const Xe = 5e3, _t = [
   "ha-tile-icon",
   "ha-tile-info",
   "hui-card-features"
-], vt = [
+], yt = [
   "ha-control-button",
   "ha-control-button-group",
   "ha-control-select"
@@ -1010,7 +1010,7 @@ function et() {
 }
 function In() {
   return Se || (Se = (async () => {
-    if (vt.every((r) => customElements.get(r))) return !0;
+    if (yt.every((r) => customElements.get(r))) return !0;
     await et();
     const s = window.loadCardHelpers;
     let e;
@@ -1023,7 +1023,7 @@ function In() {
     } catch {
     }
     const t = await Promise.all(
-      vt.map((r) => Qe(r, Xe))
+      yt.map((r) => Qe(r, Xe))
     );
     return e?.remove(), t.every(Boolean);
   })(), Se);
@@ -1040,7 +1040,7 @@ function jn() {
     return Qe("hui-card-features-editor", Xe);
   })(), Ce);
 }
-const ye = {
+const ve = {
   temperature: "mdi:thermometer",
   humidity: "mdi:water-percent",
   moisture: "mdi:water-percent",
@@ -1217,7 +1217,7 @@ class $ extends ne {
     super(...arguments), this._ready = !1, this.base = {};
   }
   static {
-    this.styles = [z];
+    this.styles = [D];
   }
   /**
    * How much room the content below the line takes: level rows, features.
@@ -1284,7 +1284,7 @@ class $ extends ne {
   // ---- rendering -------------------------------------------------------
   /** A banner instead of the card: the config is invalid or the entity is gone. */
   renderWarning(e) {
-    return v`<ha-card><div class="warning">${e}</div></ha-card>`;
+    return y`<ha-card><div class="warning">${e}</div></ha-card>`;
   }
   /**
    * The main entity's state for the secondary line.
@@ -1297,7 +1297,7 @@ class $ extends ne {
     if (!(!e?.stateObj || e.unavailable))
       return !this.base.state_content && !this.base.time_format ? H(this.hass, e) : {
         entityId: e.entityId,
-        content: v`<state-display
+        content: y`<state-display
         .hass=${this.hass}
         .stateObj=${e.stateObj}
         .content=${this.base.state_content}
@@ -1325,9 +1325,9 @@ class $ extends ne {
    * says nothing about whose it is — neither on hover nor to a screen reader.
    */
   renderClickable(e, t) {
-    if (!t) return v`<span>${e}</span>`;
+    if (!t) return y`<span>${e}</span>`;
     const r = this.hass?.states[t]?.attributes.friendly_name ?? t;
-    return v`<button
+    return y`<button
       class="clickable"
       title=${r}
       aria-label=${r}
@@ -1352,8 +1352,8 @@ class $ extends ne {
     } = e;
     if (this._entityId = o, this._defaultIconAction = a, !this._ready)
       return this.renderWarning(d(this.hass, "internals.failed"));
-    const _ = this.base.color ? Vt(this.base.color) : r ?? "var(--state-inactive-color)", f = this.base.icon_tap_action ?? a, y = te(f) || te(this.base.icon_hold_action) || te(this.base.icon_double_tap_action), W = this.base.features?.length ? this.base.features : h, ae = this.base.features_position ?? "bottom";
-    return v`
+    const _ = this.base.color ? Vt(this.base.color) : r ?? "var(--state-inactive-color)", f = this.base.icon_tap_action ?? a, v = te(f) || te(this.base.icon_hold_action) || te(this.base.icon_double_tap_action), W = this.base.features?.length ? this.base.features : h, ae = this.base.features_position ?? "bottom";
+    return y`
       <ha-card style="--tile-color: ${_};">
         <ha-tile-container
           .featurePosition=${ae}
@@ -1368,7 +1368,7 @@ class $ extends ne {
           <ha-tile-icon
             slot="icon"
             class=${l ? "image" : ""}
-            .interactive=${y}
+            .interactive=${v}
             .imageUrl=${l}
             .icon=${this.base.icon ?? t}
             .actionHandlerOptions=${{
@@ -1381,10 +1381,10 @@ class $ extends ne {
           <div slot="info" class="info ${this.base.vertical ? "vertical" : ""}">
             <ha-tile-info>
               <span slot="primary">${n}</span>
-              ${i?.length && !this.base.hide_state ? v`<span slot="secondary"
+              ${i?.length && !this.base.hide_state ? y`<span slot="secondary"
                     >${i.map(
-      (U, Ue) => v`
-                        ${Ue ? v`<span>${mn}</span>` : m}${this.renderClickable(
+      (U, Ue) => y`
+                        ${Ue ? y`<span>${mn}</span>` : m}${this.renderClickable(
         U.content ?? U.text,
         U.entityId
       )}
@@ -1392,15 +1392,15 @@ class $ extends ne {
     )}</span
                   >` : m}
             </ha-tile-info>
-            ${c?.length ? v`<div class="values of-${c.length}">
+            ${c?.length ? y`<div class="values of-${c.length}">
                   ${c.map(
-      (U, Ue) => v`
-                      ${Ue ? v`<span class="values-separator">/</span>` : m}
+      (U, Ue) => y`
+                      ${Ue ? y`<span class="values-separator">/</span>` : m}
                       ${this.renderClickable(
-        v`${U.icon ? v`<ha-icon
+        y`${U.icon ? y`<ha-icon
                               class="value-icon"
                               .icon=${U.icon}
-                            ></ha-icon>` : m}${U.value}${U.unit ? v`<span class="unit"> ${U.unit}</span>` : m}`,
+                            ></ha-icon>` : m}${U.value}${U.unit ? y`<span class="unit"> ${U.unit}</span>` : m}`,
         U.entityId
       )}
                     `
@@ -1408,10 +1408,10 @@ class $ extends ne {
                 </div>` : m}
           </div>
 
-          ${u ? v`<div slot="features" class="custom-features">
+          ${u ? y`<div slot="features" class="custom-features">
                 ${u}
               </div>` : m}
-          ${W?.length ? v`<hui-card-features
+          ${W?.length ? y`<hui-card-features
                 slot=${ae === "inline" ? "features-inline" : "features"}
                 .hass=${this.hass}
                 .context=${{ entity_id: o }}
@@ -1426,7 +1426,7 @@ class $ extends ne {
    * The values of the right-hand column. `icons` names a value by its role key:
    * without it two percentages in a row are indistinguishable.
    */
-  bigValues(e, t = ye) {
+  bigValues(e, t = ve) {
     return e.map((r) => {
       const n = this.formatted(r.role?.stateObj);
       return n ? {
@@ -1464,12 +1464,12 @@ qt([
 function Vt(s) {
   return /^(#|rgb|hsl|var\()/.test(s) ? s : s === "state" ? "var(--state-icon-color)" : `var(--${s}-color, var(--state-icon-color))`;
 }
-const yt = 3;
+const vt = 3;
 function X(s, e, t) {
   if (!s || s.length === 0) return [e];
-  if (s.length > yt)
+  if (s.length > vt)
     throw new Error(
-      `At most ${yt} large values are allowed, got ${s.length}`
+      `At most ${vt} large values are allowed, got ${s.length}`
     );
   const r = s.filter((i) => !t.includes(i));
   if (r.length)
@@ -1780,7 +1780,7 @@ class Yt extends $ {
       role: p(this.hass, e[c])
     })), r = this.missingRolesWarning(t.map((c) => c.role));
     if (r) return this.renderWarning(r);
-    const { big: n, rest: i } = Q(t, this._bigKeys), o = t[0].role, l = D(o), a = Wn(
+    const { big: n, rest: i } = Q(t, this._bigKeys), o = t[0].role, l = z(o), a = Wn(
       l,
       e.dry_below ?? St,
       e.wet_above ?? Ct
@@ -1890,8 +1890,8 @@ class $e extends ne {
     super.updated(e), e.has("hass") && this._passHass();
   }
   render() {
-    return this._error ? v`<ha-card><div class="warning">${this._error}</div></ha-card>` : this._children.length ? v`
-      ${this._heading ? v`<div class="heading">${this._heading}</div>` : m}
+    return this._error ? y`<ha-card><div class="warning">${this._error}</div></ha-card>` : this._children.length ? y`
+      ${this._heading ? y`<div class="heading">${this._heading}</div>` : m}
       <div class="grid" style="--columns: ${this.columns()}">
         ${this._children}
       </div>
@@ -2065,10 +2065,10 @@ const K = Pe`
   }
 `;
 function G(s, e) {
-  return v`
+  return y`
     <div class="levels">
       ${s.map(
-    (t) => v`
+    (t) => y`
           <button
             class="level ${t.alarm ? "low" : ""}"
             style="--ink: ${t.ink};"
@@ -2078,7 +2078,7 @@ function G(s, e) {
     }}
           >
             <span class="name">
-              ${t.alarm ? v`<ha-icon
+              ${t.alarm ? y`<ha-icon
                     icon=${t.alarmIcon ?? "mdi:alert-circle"}
                   ></ha-icon>` : m}${t.name}
             </span>
@@ -2147,7 +2147,7 @@ var or = Object.defineProperty, ar = (s, e, t, r) => {
 };
 class Qt extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
@@ -2266,7 +2266,7 @@ var lr = Object.defineProperty, cr = (s, e, t, r) => {
 const ur = 20;
 class es extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
@@ -2290,7 +2290,7 @@ class es extends $ {
     const e = this._config, t = p(this.hass, e.vacuum), r = p(this.hass, e.battery), n = (e.sensors ?? []).map((c) => j(c)).map((c) => p(this.hass, c.entity)), i = this.missingRolesWarning([t, r, ...n]);
     if (i) return this.renderWarning(i);
     const o = t?.stateObj?.attributes.friendly_name, l = e.low_below ?? ur, a = (e.consumables ?? []).map((c) => j(c)).map((c) => {
-      const h = p(this.hass, c.entity), u = D(h) ?? 0, _ = c.name ?? ie(h?.stateObj?.attributes.friendly_name, o);
+      const h = p(this.hass, c.entity), u = z(h) ?? 0, _ = c.name ?? ie(h?.stateObj?.attributes.friendly_name, o);
       return {
         entityId: c.entity,
         name: _ ?? c.entity,
@@ -2363,7 +2363,7 @@ class ts extends $ {
         n.push(a.entity);
         continue;
       }
-      const h = D(c);
+      const h = z(c);
       h !== void 0 && r.push({
         entityId: a.entity,
         name: a.name ?? Xt(c?.stateObj?.attributes.friendly_name) ?? a.entity,
@@ -2555,14 +2555,14 @@ E("horos-server-tile", ns, {
   },
   preview: !0
 });
-var vr = Object.defineProperty, yr = (s, e, t, r) => {
+var yr = Object.defineProperty, vr = (s, e, t, r) => {
   for (var n = void 0, i = s.length - 1, o; i >= 0; i--)
     (o = s[i]) && (n = o(e, t, n) || n);
-  return n && vr(e, t, n), n;
+  return n && yr(e, t, n), n;
 };
 class rs extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
@@ -2586,7 +2586,7 @@ class rs extends $ {
     const e = this._config, t = p(this.hass, e.person), r = p(this.hass, e.battery), n = p(this.hass, e.location), i = this.missingRolesWarning([t, r, n]);
     if (i) return this.renderWarning(i);
     const o = (e.devices ?? []).map((l) => j(l)).map((l) => {
-      const a = p(this.hass, l.entity), c = D(a), h = l.name ?? Xt(
+      const a = p(this.hass, l.entity), c = z(a), h = l.name ?? Xt(
         ie(
           a?.stateObj?.attributes.friendly_name,
           e.name
@@ -2618,7 +2618,7 @@ class rs extends $ {
     });
   }
 }
-yr([
+vr([
   b()
 ], rs.prototype, "_config");
 E("horos-person-tile", rs, {
@@ -2642,7 +2642,7 @@ function ze(s, e, t) {
   if (!s || !e?.length) return;
   let r, n;
   for (const i of e) {
-    const o = p(s, i), l = D(o);
+    const o = p(s, i), l = z(o);
     l !== void 0 && (n === void 0 || (t === "max" ? l > n : l < n)) && (r = o, n = l);
   }
   return r ?? p(s, e[0]);
@@ -2664,14 +2664,14 @@ class is extends $ {
     super(...arguments), this._bigKeys = ["temperature"];
   }
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
     return Math.ceil(4 / 2);
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => vi), document.createElement(
+    return await Promise.resolve().then(() => yi), document.createElement(
       "horos-computer-tile-editor"
     );
   }
@@ -2709,7 +2709,7 @@ class is extends $ {
   }
   _levelRow(e, t) {
     if (!t) return;
-    const r = D(t);
+    const r = z(t);
     return {
       entityId: t.entityId,
       name: e,
@@ -2734,7 +2734,7 @@ class is extends $ {
         e.name
       ) ?? u.entity,
       entityId: u.entity
-    })), { big: l } = Q(t, this._bigKeys), a = this._freeDisk(), c = D(a), h = [
+    })), { big: l } = Q(t, this._bigKeys), a = this._freeDisk(), c = z(a), h = [
       this._levelRow(d(this.hass, "level.cpu"), t[1].role),
       this._levelRow(d(this.hass, "level.memory"), t[2].role),
       this._levelRow(d(this.hass, "level.gpu"), t[3].role),
@@ -2791,7 +2791,7 @@ class os extends $ {
     super(...arguments), this._bigKeys = ["pm25"];
   }
   static async getConfigElement() {
-    return await Promise.resolve().then(() => yi), document.createElement("horos-air-tile-editor");
+    return await Promise.resolve().then(() => vi), document.createElement("horos-air-tile-editor");
   }
   static getStubConfig() {
     return { appliance: "" };
@@ -2803,14 +2803,10 @@ class os extends $ {
   }
   render() {
     if (!this._config || !this.hass) return m;
-    const e = this._config, t = p(this.hass, e.appliance), r = Tt.map((c) => {
-      const h = p(this.hass, e[c]);
-      if (c === "pm25") {
-        const u = D(h);
-        if (u !== void 0 && u < 0) return { key: c, role: void 0 };
-      }
-      return { key: c, role: h };
-    }), n = (e.sensors ?? []).map((c) => j(c)).map((c) => p(this.hass, c.entity)), i = this.missingRolesWarning([
+    const e = this._config, t = p(this.hass, e.appliance), r = Tt.map((c) => ({
+      key: c,
+      role: p(this.hass, e[c])
+    })), n = (e.sensors ?? []).map((c) => j(c)).map((c) => p(this.hass, c.entity)), i = this.missingRolesWarning([
       t,
       ...r.map((c) => c.role),
       ...n
@@ -2872,7 +2868,7 @@ class as extends $ {
     super(...arguments), this._bigKeys = ["illuminance"];
   }
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
@@ -2893,20 +2889,20 @@ class as extends $ {
   }
   render() {
     if (!this._config || !this.hass) return m;
-    const e = this._config, t = p(this.hass, e.cover), r = p(this.hass, e.position), n = Pt.map((y) => ({
-      key: y,
-      role: p(this.hass, e[y])
+    const e = this._config, t = p(this.hass, e.cover), r = p(this.hass, e.position), n = Pt.map((v) => ({
+      key: v,
+      role: p(this.hass, e[v])
     })), i = this.missingRolesWarning([
       t,
       r,
-      ...n.map((y) => y.role)
+      ...n.map((v) => v.role)
     ]);
     if (i) return this.renderWarning(i);
     const { big: o, rest: l } = Q(n, this._bigKeys), a = Number(
       t?.stateObj?.attributes.supported_features ?? 0
     ), c = (a & Or) !== 0, h = (a & (kr | Ar)) !== 0, u = [];
     e.controls !== !1 && (c && u.push({ type: "cover-position" }), h && u.push({ type: "cover-open-close" }));
-    const _ = D(r), f = r && !c ? [
+    const _ = z(r), f = r && !c ? [
       {
         entityId: r.entityId,
         name: d(this.hass, "level.open"),
@@ -2923,11 +2919,11 @@ class as extends $ {
       secondary: A([
         F(this.hass, t),
         this.mainStateSegment(t),
-        ...l.map((y) => H(this.hass, y.role))
+        ...l.map((v) => H(this.hass, v.role))
       ]),
       values: this.bigValues(o),
       ownFeatures: u.length ? u : void 0,
-      customFeatures: f.length ? G(f, (y) => this.fireMoreInfo(y)) : void 0
+      customFeatures: f.length ? G(f, (v) => this.fireMoreInfo(v)) : void 0
     });
   }
 }
@@ -3044,7 +3040,7 @@ var Rr = Object.defineProperty, Hr = (s, e, t, r) => {
 const Nr = 5;
 class cs extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   /** Level rows under the tile: roughly two per grid row. */
   contentRows() {
@@ -3077,9 +3073,9 @@ class cs extends $ {
         n.push(f);
         continue;
       }
-      const y = D(_);
-      y === void 0 || y <= 0 || i.push({
-        watts: y,
+      const v = z(_);
+      v === void 0 || v <= 0 || i.push({
+        watts: v,
         row: {
           entityId: u.entity,
           name: f,
@@ -3225,7 +3221,7 @@ var Ur = Object.defineProperty, Dr = (s, e, t, r) => {
 const zr = 255;
 class hs extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   contentRows() {
     return Math.ceil((this._config?.lights.length ?? 0) / 2);
@@ -3259,14 +3255,14 @@ class hs extends $ {
       ...n.map((f) => f.role)
     ]);
     if (i) return this.renderWarning(i);
-    const o = n.filter((f) => f.role?.stateObj?.state === "on"), l = n.filter((f) => f.role?.unavailable), a = n.length - l.length, c = t ?? o[0]?.role ?? n[0].role, h = t?.stateObj?.attributes.friendly_name, u = n.map(({ item: f, role: y }) => {
-      const W = this._brightness(y), ae = y?.stateObj?.state === "on", U = Dt(this.hass, y);
+    const o = n.filter((f) => f.role?.stateObj?.state === "on"), l = n.filter((f) => f.role?.unavailable), a = n.length - l.length, c = t ?? o[0]?.role ?? n[0].role, h = t?.stateObj?.attributes.friendly_name, u = n.map(({ item: f, role: v }) => {
+      const W = this._brightness(v), ae = v?.stateObj?.state === "on", U = Dt(this.hass, v);
       return {
         entityId: f.entity,
-        name: f.name ?? ie(y?.stateObj?.attributes.friendly_name, h) ?? f.entity,
+        name: f.name ?? ie(v?.stateObj?.attributes.friendly_name, h) ?? f.entity,
         // A dimmable light says how bright, a plain one only that it is on.
         text: U ?? (ae ? W === void 0 ? d(this.hass, "light.on") : `${W}%` : d(this.hass, "light.off")),
-        ink: f.color ?? L(y?.stateObj),
+        ink: f.color ?? L(v?.stateObj),
         level: ae ? W ?? 100 : 0
       };
     }), _ = this._brightness(c);
@@ -3296,7 +3292,7 @@ class hs extends $ {
           value: String(_),
           unit: "%",
           entityId: c?.entityId,
-          icon: ye.brightness
+          icon: ve.brightness
         }
       ],
       // The slider is a stock HA feature, and it only makes sense for a group:
@@ -3334,7 +3330,7 @@ var Wr = Object.defineProperty, Br = (s, e, t, r) => {
 const It = ["playing", "paused", "buffering"];
 class ds extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   contentRows() {
     return Math.ceil((this._config?.players.length ?? 0) / 2);
@@ -3400,7 +3396,7 @@ class ds extends $ {
           value: String(o),
           unit: "%",
           entityId: i.role?.entityId,
-          icon: ye.volume
+          icon: ve.volume
         }
       ],
       // Playback is a stock HA feature; the buttons are not ours to draw.
@@ -3560,7 +3556,7 @@ class ps extends $ {
         {
           value: String(r.length),
           entityId: r[0]?.entityId,
-          icon: ye.updates
+          icon: ve.updates
         }
       ] : []
     });
@@ -3586,7 +3582,7 @@ var Jr = Object.defineProperty, Xr = (s, e, t, r) => {
 };
 class fs extends $ {
   static {
-    this.styles = [z, K];
+    this.styles = [D, K];
   }
   contentRows() {
     return Math.ceil((this._config?.lists.length ?? 0) / 2);
@@ -3608,7 +3604,7 @@ class fs extends $ {
     if (!this._config || !this.hass) return m;
     const e = this._config, t = p(this.hass, e.calendar), r = e.lists.map((c) => j(c)).map((c) => {
       const h = p(this.hass, c.entity);
-      return { item: c, role: h, count: D(h) ?? 0 };
+      return { item: c, role: h, count: z(h) ?? 0 };
     }), n = this.missingRolesWarning([
       t,
       ...r.map((c) => c.role)
@@ -3638,7 +3634,7 @@ class fs extends $ {
         {
           value: String(i),
           entityId: r[0]?.item.entity,
-          icon: ye.tasks
+          icon: ve.tasks
         }
       ] : [],
       customFeatures: l.length ? G(l, (c) => this.fireMoreInfo(c)) : void 0
@@ -3695,21 +3691,21 @@ class gs extends $ {
     const e = this._config, t = e.watch_offline !== !1, r = [], n = [], i = [];
     let o, l = 0;
     for (const _ of e.alerts) {
-      const f = j(_), y = p(this.hass, f.entity);
-      if (y?.missing) {
+      const f = j(_), v = p(this.hass, f.entity);
+      if (v?.missing) {
         i.push(f.entity);
         continue;
       }
       l += 1;
-      const W = f.name ?? y?.stateObj?.attributes.friendly_name ?? f.entity;
-      if (y?.unavailable) {
+      const W = f.name ?? v?.stateObj?.attributes.friendly_name ?? f.entity;
+      if (v?.unavailable) {
         t && n.push({
           text: d(this.hass, "alerts.offline", { name: W }),
           entityId: f.entity
         });
         continue;
       }
-      ti(f, y?.stateObj?.state) && (r.push({ text: W, entityId: f.entity }), o = o ?? (f.color ? Vt(f.color) : void 0));
+      ti(f, v?.stateObj?.state) && (r.push({ text: W, entityId: f.entity }), o = o ?? (f.color ? Vt(f.color) : void 0));
     }
     const a = [...r, ...n], c = e.limit ?? ri, h = a.slice(0, c), u = a.length - h.length;
     return this.renderTile({
@@ -3769,7 +3765,7 @@ class nt extends $ {
   }
   static {
     this.styles = [
-      z,
+      D,
       Pe`
       /*
        * The sizes are the stock feature's own: hui-card-features sets these
@@ -3867,10 +3863,10 @@ class nt extends $ {
   /** The two halves of brightness and of colour, in one stock button group. */
   _renderSteps(e) {
     const t = We.filter(({ key: r }) => e[r]);
-    return t.length ? v`
+    return t.length ? y`
       <ha-control-button-group>
         ${t.map(
-      ({ key: r, icon: n }) => v`
+      ({ key: r, icon: n }) => y`
             <ha-control-button
               .label=${this._stepLabel(r)}
               @click=${() => this._run(e[r])}
@@ -3888,7 +3884,7 @@ class nt extends $ {
     const t = e.presets.map(
       (n) => typeof n == "string" ? { entity: n } : n
     ), r = this.hass?.states[e.preset_state ?? ""]?.state;
-    return v`
+    return y`
       <ha-control-select
         .options=${t.map((n) => {
       const i = this.hass?.states[n.entity], o = n.name ?? Zt(i?.attributes.friendly_name) ?? n.entity, l = n.icon ?? i?.attributes.icon;
@@ -3896,7 +3892,7 @@ class nt extends $ {
         value: n.entity,
         label: o,
         ariaLabel: o,
-        icon: l ? v`<ha-icon .icon=${l}></ha-icon>` : void 0
+        icon: l ? y`<ha-icon .icon=${l}></ha-icon>` : void 0
       };
     })}
         .value=${t.find((n) => n.name === r)?.entity ?? r}
@@ -3930,7 +3926,7 @@ class nt extends $ {
       ]),
       // A real light keeps its stock slider: nothing we draw beats it.
       ownFeatures: i && e.brightness !== !1 ? [{ type: "light-brightness" }] : void 0,
-      customFeatures: this._controlsReady ? v`<div
+      customFeatures: this._controlsReady ? y`<div
             class="lamp-controls ${e.presets?.length && e.preset_labels !== !1 ? "labelled" : ""}"
           >
             ${this._renderSteps(e)}${this._renderPresets(e)}
@@ -4008,7 +4004,7 @@ class Fe extends ne {
     );
   }
   renderForm() {
-    return !this.hass || !this._config ? m : v`
+    return !this.hass || !this._config ? m : y`
       <ha-form
         .hass=${this.hass}
         .data=${this.formData}
@@ -4072,7 +4068,7 @@ class S extends Fe {
       ru: { bottom: "Снизу", inline: "В строке" },
       en: { bottom: "Bottom", inline: "Inline" }
     });
-    return v`
+    return y`
       <ha-expansion-panel outlined>
         <ha-icon slot="leading-icon" icon="mdi:list-box"></ha-icon>
         <h3 slot="header">${r.features}</h3>
@@ -4083,7 +4079,7 @@ class S extends Fe {
             .features=${t}
             @features-changed=${this._featuresChanged}
           ></hui-card-features-editor>
-          ${t.length ? v`
+          ${t.length ? y`
                 <ha-form
                   .hass=${this.hass}
                   .data=${this._config}
@@ -4111,7 +4107,7 @@ class S extends Fe {
     `;
   }
   render() {
-    return !this.hass || !this._config ? m : v`
+    return !this.hass || !this._config ? m : y`
       ${this.renderForm()}
       ${this._featuresEditorReady ? this._renderFeatures() : m}
     `;
@@ -4267,7 +4263,7 @@ const O = (s, e, t = []) => ({
 }), ai = { text: {} }, oe = (s) => ({
   select: { multiple: !0, mode: "list", options: s }
 }), J = { boolean: {} };
-class vs extends S {
+class ys extends S {
   get entityField() {
     return "temperature";
   }
@@ -4320,12 +4316,12 @@ class vs extends S {
     });
   }
 }
-x("horos-climate-tile-editor", vs);
+x("horos-climate-tile-editor", ys);
 const li = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  HorosClimateTileEditor: vs
+  HorosClimateTileEditor: ys
 }, Symbol.toStringTag, { value: "Module" }));
-class ys extends S {
+class vs extends S {
   get entityField() {
     return "switch";
   }
@@ -4370,10 +4366,10 @@ class ys extends S {
     });
   }
 }
-x("horos-plug-tile-editor", ys);
+x("horos-plug-tile-editor", vs);
 const ci = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  HorosPlugTileEditor: ys
+  HorosPlugTileEditor: vs
 }, Symbol.toStringTag, { value: "Module" }));
 class bs extends S {
   get entityField() {
@@ -4988,7 +4984,7 @@ class As extends S {
   }
 }
 x("horos-computer-tile-editor", As);
-const vi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const yi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   HorosComputerTileEditor: As
 }, Symbol.toStringTag, { value: "Module" }));
@@ -5086,7 +5082,7 @@ class Os extends S {
   }
 }
 x("horos-air-tile-editor", Os);
-const yi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const vi = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   HorosAirTileEditor: Os
 }, Symbol.toStringTag, { value: "Module" }));

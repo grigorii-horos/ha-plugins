@@ -4,7 +4,6 @@ import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileColor } from "../core/state-color";
 import {
   composeSegments,
-  numericState,
   resolveRole,
   roleSegment,
   unavailableSegment,
@@ -75,17 +74,12 @@ export class HorosAirTile extends BaseTileCard {
     const config = this._config;
 
     const appliance = resolveRole(this.hass, config.appliance);
-    const roles: KeyedRole[] = AIR_ROLES.map((key) => {
-      const role = resolveRole(this.hass, config[key]);
-      // A switched-off IKEA purifier reports PM2.5 as -1. A concentration is
-      // never negative, so that is not "zero" but "no data", and a figure like
-      // that must not be put in the card's headline.
-      if (key === "pm25") {
-        const value = numericState(role);
-        if (value !== undefined && value < 0) return { key, role: undefined };
-      }
-      return { key, role };
-    });
+    // The switched-off IKEA purifier's PM2.5 of -1 is handled where every
+    // impossible reading is, in resolveRole — nothing to special-case here.
+    const roles: KeyedRole[] = AIR_ROLES.map((key) => ({
+      key,
+      role: resolveRole(this.hass, config[key]),
+    }));
     const extras = (config.sensors ?? [])
       .map((raw) => normalizeItem(raw))
       .map((sensor) => resolveRole(this.hass, sensor.entity));
