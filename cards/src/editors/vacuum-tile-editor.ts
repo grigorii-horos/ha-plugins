@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   entitySelector,
@@ -26,7 +27,9 @@ export class HorosVacuumTileEditor extends BaseCardEditor {
       { name: "sensors", selector: { entity: { multiple: true } } },
       { name: "consumables", selector: { entity: { multiple: true } } },
       { name: "low_below", selector: numberSelector(0, 100, "%") },
-      contentSection("vacuum", lang),
+      contentSection("vacuum", lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection("vacuum", "none"),
     ];
   }
@@ -35,6 +38,7 @@ export class HorosVacuumTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки уровней",
         name: "Название",
         vacuum: "Пылесос",
         battery: "Заряд",
@@ -44,6 +48,7 @@ export class HorosVacuumTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Level rows",
         name: "Name",
         vacuum: "Vacuum",
         battery: "Battery",
@@ -64,17 +69,17 @@ export class HorosVacuumTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       sensors: mergeEntityList<EntityItem>(
         this._config?.sensors as (EntityItem | string)[] | undefined,
-        (data.sensors as string[]) ?? []
+        (data.sensors as string[]) ?? [],
       ),
       consumables: mergeEntityList<EntityItem>(
         this._config?.consumables as (EntityItem | string)[] | undefined,
-        (data.consumables as string[]) ?? []
+        (data.consumables as string[]) ?? [],
       ),
     };
   }

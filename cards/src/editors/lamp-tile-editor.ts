@@ -47,7 +47,9 @@ export class HorosLampTileEditor extends BaseCardEditor {
       { name: "sensors", selector: { entity: { multiple: true } } },
       { name: "brightness", selector: booleanSelector },
       { name: "preset_labels", selector: booleanSelector },
-      contentSection("state", lang),
+      contentSection("state", lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection("state", "toggle"),
     ];
   }
@@ -56,6 +58,7 @@ export class HorosLampTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Кнопки и режимы",
         name: "Название",
         state: "Где лежит состояние",
         power: "Включить/выключить",
@@ -71,6 +74,7 @@ export class HorosLampTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Buttons and presets",
         name: "Name",
         state: "Where the state lives",
         power: "Power on/off",
@@ -97,17 +101,17 @@ export class HorosLampTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       presets: mergeEntityList<EntityItem>(
         this._config?.presets as (EntityItem | string)[] | undefined,
-        (data.presets as string[]) ?? []
+        (data.presets as string[]) ?? [],
       ),
       sensors: mergeEntityList<EntityItem>(
         this._config?.sensors as (EntityItem | string)[] | undefined,
-        (data.sensors as string[]) ?? []
+        (data.sensors as string[]) ?? [],
       ),
     };
   }

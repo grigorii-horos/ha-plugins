@@ -62,6 +62,13 @@ export interface TileBaseConfig {
   state_content?: string | string[];
   /** How to render time values. */
   time_format?: string;
+  /**
+   * The card's own line under the tile — level rows, controls of its own. On by
+   * default; set it to false and the card is its main line and nothing else.
+   * The stock `features` are a separate list and are added and removed in the
+   * editor's Features panel.
+   */
+  levels?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -70,6 +77,12 @@ export interface TileBaseConfig {
   icon_double_tap_action?: ActionConfig;
   features?: Record<string, unknown>[];
   features_position?: FeaturesPosition;
+  /**
+   * The dashboard's own layout options, as the sections view writes them into
+   * the card config. The card reads one thing from them: whether its height was
+   * fixed by hand or left to the content.
+   */
+  grid_options?: { rows?: number | "auto"; columns?: number | "full" };
 }
 
 export interface TileParts {
@@ -124,11 +137,46 @@ export abstract class BaseTileCard extends LitElement {
   private _defaultIconAction?: ActionConfig;
 
   /**
-   * How much room the content below the line takes: level rows, features.
-   * A subclass overrides this if it has any.
+   * How much room the content below the line takes, in layout rows: level rows,
+   * features, controls of our own. A subclass overrides this if it has any.
    */
   protected contentRows(): number {
-    return 0;
+    return this.fixedRows();
+  }
+
+  /**
+   * Layout rows for a list of level rows: two of them fit in one, and none of
+   * them are there at all when the card's own line is switched off.
+   */
+  protected levelRows(count: number): number {
+    if (this.base.levels === false) return 0;
+    return Math.ceil(count / 2);
+  }
+
+  /**
+   * The part of that content which cannot be squeezed.
+   *
+   * A list of level rows lives with whatever height it is given — it spreads or
+   * crowds. A row of buttons or a slider is 42px and stays 42px, so a card that
+   * has one must not be allowed to shrink under it. This is what `min_rows`
+   * reports, and it is why the two numbers are counted separately.
+   */
+  protected fixedRows(): number {
+    return this.featureRows(0);
+  }
+
+  /**
+   * Rows taken by the features line, counted the way the stock tile counts
+   * them: one row each, except that an `inline` first feature shares the main
+   * row and the rest pair up into two columns. The user's list wins over the
+   * card's own, exactly as it does in render.
+   */
+  protected featureRows(own: number): number {
+    const count = this.base.features?.length ?? own;
+    if (!count) return 0;
+    if ((this.base.features_position ?? "bottom") !== "inline") return count;
+    const below = count - 1;
+    return below <= 0 ? 0 : Math.ceil(below / Math.min(below, 2));
   }
 
   public getCardSize(): number {
@@ -148,7 +196,8 @@ export abstract class BaseTileCard extends LitElement {
       columns: 6,
       rows: "auto",
       min_columns: this.base.vertical ? 3 : 6,
-      min_rows: 1,
+      // One row for the line plus whatever cannot be squeezed under it.
+      min_rows: 1 + this.fixedRows(),
     };
   }
 
@@ -307,6 +356,15 @@ export abstract class BaseTileCard extends LitElement {
       ? this.base.features
       : ownFeatures;
     const position: FeaturesPosition = this.base.features_position ?? "bottom";
+    // The card's own line under the tile, unless the config turned it off.
+    const own = this.base.levels === false ? undefined : customFeatures;
+    // A card fills its slot only when the height was fixed by hand and there is
+    // something under the line to fill it with; see the note by :host([filled]).
+    const fixedHeight = typeof this.base.grid_options?.rows === "number";
+    this.toggleAttribute(
+      "filled",
+      fixedHeight && Boolean(own || features?.length)
+    );
 
     return html`
       <ha-card style="--tile-color: ${tileColor};">
@@ -375,9 +433,9 @@ export abstract class BaseTileCard extends LitElement {
               : nothing}
           </div>
 
-          ${customFeatures
+          ${own
             ? html`<div slot="features" class="custom-features">
-                ${customFeatures}
+                ${own}
               </div>`
             : nothing}
           ${features?.length

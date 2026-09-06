@@ -16,6 +16,23 @@ export const tileStyles = css`
     display: block;
   }
 
+  /*
+   * A card takes the height it is given when a height was actually given: rows
+   * set by hand rather than left on auto, and something under the line to fill
+   * them with. A block host with an automatic height ignores that height
+   * outright — a card told to be four rows tall drew 130px inside a 248px slot
+   * and left the rest as a hole — and inheriting it is what finally gives
+   * ha-card's own height: 100% something to resolve against.
+   *
+   * On auto the card keeps its natural height even when a taller neighbour
+   * makes the grid row taller, exactly as the stock tile does. Filling there
+   * looked worse, not better: three rows of heating spread over 350px because
+   * the card beside it had a lot to say.
+   */
+  :host([filled]) {
+    height: 100%;
+  }
+
   ha-card {
     height: 100%;
     transition:
@@ -37,6 +54,25 @@ export const tileStyles = css`
   hui-card-features {
     --feature-color: var(--tile-color);
   }
+
+  /*
+   * Where the spare height goes.
+   *
+   * ha-tile-container gives its top row flex: 1, so on a card with a fixed
+   * height every extra pixel lands in the icon-and-text row — the stock tile at
+   * four rows is 248px of a single line. That row is the card's identity and
+   * belongs at exactly one layout row; the room underneath is what the rest of
+   * the content is for. The row lives in HA's shadow and cannot be restyled
+   * from out here, so it is outvoted instead: our half of the card asks for the
+   * free space with a growth factor two orders of magnitude larger and the row
+   * keeps its 56px minimum plus a rounding error.
+   */
+  .custom-features,
+  hui-card-features[slot="features"] {
+    flex: 100 1 auto;
+    min-height: 0;
+  }
+
 
   /* The texts and the right-hand column share one row of the info slot. */
   .info {
@@ -141,9 +177,16 @@ export const tileStyles = css`
 
   /* Our own features line: the same padding as the stock row. */
   .custom-features {
-    display: block;
+    display: flex;
+    flex-direction: column;
     padding: 0 var(--ha-space-3, 12px) var(--ha-space-3, 12px);
     pointer-events: auto;
+  }
+
+  /* Whatever is inside takes the whole line: rows spread, controls space out. */
+  .custom-features > * {
+    flex: 1;
+    min-height: 0;
   }
 
   .warning {

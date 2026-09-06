@@ -75,7 +75,7 @@ export class HorosComputerTile extends BaseTileCard {
 
   /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
-    return Math.ceil((4) / 2);
+    return this.levelRows(4) + this.fixedRows();
   }
 
   private _bigKeys: string[] = ["temperature"];

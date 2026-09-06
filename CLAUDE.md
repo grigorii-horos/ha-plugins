@@ -67,8 +67,14 @@ npm run build   # tsc --noEmit && vite build → ../dist/ha-plugins-cards.js
   `var(--ha-font-size-m, 14px)`. Don't invent pixel numbers.
 - A new card means card + editor + a row in the README + a screenshot, plus a
   `suggest` rule when the entity it starts from can be recognised objectively.
-- The shared config fields (`name`, `icon`, `state_content`, `features`, the six actions)
-  live in `TileBaseConfig`; a subclass's `setConfig` must put them into `this.base`.
+- The shared config fields (`name`, `icon`, `state_content`, `levels`, `features`, the six
+  actions) live in `TileBaseConfig`; a subclass's `setConfig` must put them into
+  `this.base`.
+- Height is one layout row for the line and the rest for what is under it. A card counts
+  its rows twice: `contentRows()` is how tall it is (two level rows to a layout row, one
+  row per feature or control), `fixedRows()` is how small it may be made and counts only
+  what cannot be squeezed. Controls take their size from `--feature-height`, never from a
+  number of their own.
 
 ## Checking the result
 

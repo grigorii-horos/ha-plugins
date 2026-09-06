@@ -62,7 +62,12 @@ export class HorosPrinterTile extends BaseTileCard {
 
   /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
-    return Math.ceil(((this._config?.cartridges.length ?? 0) + (this._config?.sensors?.length ?? 0)) / 2);
+    return (
+      this.levelRows(
+        (this._config?.cartridges.length ?? 0) +
+          (this._config?.sensors?.length ?? 0)
+      ) + this.fixedRows()
+    );
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

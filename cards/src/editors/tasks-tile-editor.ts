@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   entitySelector,
@@ -20,9 +21,15 @@ export class HorosTasksTileEditor extends BaseCardEditor {
   protected get schema(): SchemaItem[] {
     const lang = languageOf(this.hass);
     return [
-      { name: "lists", required: true, selector: { entity: { multiple: true, filter: { domain: "todo" } } } },
+      {
+        name: "lists",
+        required: true,
+        selector: { entity: { multiple: true, filter: { domain: "todo" } } },
+      },
       { name: "calendar", selector: entitySelector("calendar") },
-      contentSection(undefined, lang),
+      contentSection(undefined, lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection(undefined, "more-info"),
     ];
   }
@@ -31,12 +38,14 @@ export class HorosTasksTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки списков",
         name: "Название",
         lists: "Списки дел",
         calendar: "Календарь",
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "List rows",
         name: "Name",
         lists: "To-do lists",
         calendar: "Calendar",
@@ -53,13 +62,13 @@ export class HorosTasksTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       lists: mergeEntityList<EntityItem>(
         this._config?.lists as (EntityItem | string)[] | undefined,
-        (data.lists as string[]) ?? []
+        (data.lists as string[]) ?? [],
       ),
     };
   }

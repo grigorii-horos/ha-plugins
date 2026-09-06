@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   bigValuesSelector,
@@ -21,17 +22,24 @@ export class HorosCoverTileEditor extends BaseCardEditor {
     return [
       { name: "cover", required: true, selector: entitySelector("cover") },
       { name: "position", selector: entitySelector("sensor") },
-      { name: "illuminance", selector: entitySelector("sensor", "illuminance") },
+      {
+        name: "illuminance",
+        selector: entitySelector("sensor", "illuminance"),
+      },
       { name: "battery", selector: entitySelector("sensor", "battery") },
       { name: "controls", selector: { boolean: {} } },
       contentSection("cover", lang, [
         {
           name: "big_values",
           selector: bigValuesSelector([
-            { value: "illuminance", label: lang === "ru" ? "Освещённость" : "Illuminance" },
+            {
+              value: "illuminance",
+              label: lang === "ru" ? "Освещённость" : "Illuminance",
+            },
             { value: "battery", label: lang === "ru" ? "Заряд" : "Battery" },
           ]),
         },
+        { name: "levels", selector: booleanSelector },
       ]),
       interactionsSection("cover", "none"),
     ];
@@ -41,6 +49,7 @@ export class HorosCoverTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строка положения",
         name: "Название",
         cover: "Штора",
         position: "Насколько открыто",
@@ -51,6 +60,7 @@ export class HorosCoverTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Position row",
         name: "Name",
         cover: "Cover",
         position: "Position",

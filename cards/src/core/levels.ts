@@ -31,10 +31,18 @@ export interface LevelRow {
 }
 
 export const levelStyles = css`
+  /*
+   * The rows fill whatever height they are given and spread evenly in it —
+   * the same thing hui-card-features does with its own spare room, so a list
+   * of rows and a stack of features behave alike on a card of a fixed height.
+   */
   .levels {
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
     gap: var(--ha-space-1, 4px);
+    height: 100%;
+    min-height: 0;
   }
 
   .level {

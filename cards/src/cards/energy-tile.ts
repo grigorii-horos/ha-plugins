@@ -48,7 +48,11 @@ export class HorosEnergyTile extends BaseTileCard {
 
   /** Level rows under the tile: roughly two per grid row. */
   protected override contentRows(): number {
-    return Math.ceil((Math.min(this._config?.consumers.length ?? 0, this._config?.limit ?? 5)) / 2);
+    return (
+      this.levelRows(
+        Math.min(this._config?.consumers.length ?? 0, this._config?.limit ?? 5)
+      ) + this.fixedRows()
+    );
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

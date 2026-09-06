@@ -84,7 +84,15 @@ Wherever a field takes a list, an item can be either an `entity_id` string or
 `{entity, name, icon, color}` if you want your own label or row colour.
 
 `big_values` picks which values move into the right-hand column in a large font (up to
-three).
+three). `levels: false` drops the card's own line under the tile — the rows, or the
+buttons on the lamp — and leaves the card as its top line and nothing else.
+
+**Height.** The top line is always one row of the dashboard grid: give a card a fixed
+height and the extra goes to what is under the line, not into the line itself. Rows spread
+through it the way stock features do; buttons and sliders stay 42px, the same on every
+card, and each of them asks for a row of its own. A card that has nothing under the line
+keeps its one row and leaves the rest of the slot empty rather than growing an empty
+body.
 
 ### Room — `horos-climate-tile`
 

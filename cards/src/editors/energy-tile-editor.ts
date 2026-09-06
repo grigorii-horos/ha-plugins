@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   entitySelector,
@@ -33,7 +34,9 @@ export class HorosEnergyTileEditor extends BaseCardEditor {
         },
       },
       { name: "limit", selector: numberSelector(1, 12) },
-      contentSection("total", lang),
+      contentSection("total", lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection("total", "none"),
     ];
   }
@@ -42,6 +45,7 @@ export class HorosEnergyTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки потребителей",
         name: "Название",
         total: "Общая мощность",
         consumers: "Потребители",
@@ -49,6 +53,7 @@ export class HorosEnergyTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Consumer rows",
         name: "Name",
         total: "Total power",
         consumers: "Consumers",
@@ -66,13 +71,13 @@ export class HorosEnergyTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       consumers: mergeEntityList<EntityItem>(
         this._config?.consumers as (EntityItem | string)[] | undefined,
-        (data.consumers as string[]) ?? []
+        (data.consumers as string[]) ?? [],
       ),
     };
   }

@@ -80,19 +80,25 @@ export class HorosLampTile extends BaseTileCard {
     tileStyles,
     css`
       /*
-       * The sizes are the stock feature's own: hui-card-features sets these
-       * variables for the features it hosts, and our row lives outside it.
+       * The sizes are the stock feature's own, taken from the same variables
+       * hui-card-features sets for the features it hosts — our row lives
+       * outside it, and a row of lamp buttons must not be a different height
+       * from a row of climate buttons on the card next to it.
+       *
+       * Spare height spreads between the rows rather than growing them: a
+       * button is 42px on every card, whatever the card was told to be.
        */
       .lamp-controls {
         display: flex;
         flex-direction: column;
-        gap: var(--ha-space-2, 8px);
+        justify-content: space-evenly;
+        gap: var(--ha-card-feature-gap, 12px);
         pointer-events: auto;
       }
 
       ha-control-button-group {
-        --control-button-group-spacing: 12px;
-        --control-button-group-thickness: 42px;
+        --control-button-group-spacing: var(--feature-button-spacing, 12px);
+        --control-button-group-thickness: var(--feature-height, 42px);
       }
 
       ha-control-button-group > ha-control-button {
@@ -108,7 +114,7 @@ export class HorosLampTile extends BaseTileCard {
       ha-control-select {
         --control-select-color: var(--tile-color);
         --control-select-padding: 0;
-        --control-select-thickness: 42px;
+        --control-select-thickness: var(--feature-height, 42px);
         --control-select-border-radius: 12px;
         --control-select-button-border-radius: 12px;
       }
@@ -140,14 +146,20 @@ export class HorosLampTile extends BaseTileCard {
     });
   }
 
-  protected override contentRows(): number {
+  /**
+   * A row of buttons and a row of presets are each one layout row, the same as
+   * a stock feature: they are 42px whatever happens, so the card must ask for
+   * the room and must not be squeezed under it.
+   */
+  protected override fixedRows(): number {
     const config = this._config;
     if (!config) return 0;
-    // Every row of controls is about half a grid row tall.
-    const rows =
+    const controls =
       (STEPS.some(({ key }) => config[key]) ? 1 : 0) +
       (config.presets?.length ? 1 : 0);
-    return Math.ceil(rows / 2);
+    const brightness =
+      config.state?.startsWith("light.") && config.brightness !== false ? 1 : 0;
+    return controls + this.featureRows(brightness);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

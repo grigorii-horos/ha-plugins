@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   bigValuesSelector,
@@ -38,7 +39,9 @@ export class HorosHeatingTileEditor extends BaseCardEditor {
       { name: "energy", selector: entitySelector("sensor", "energy") },
       {
         name: "zones",
-        selector: { entity: { multiple: true, filter: [{ domain: "climate" }] } },
+        selector: {
+          entity: { multiple: true, filter: [{ domain: "climate" }] },
+        },
       },
       contentSection("mode", lang, [
         {
@@ -48,6 +51,7 @@ export class HorosHeatingTileEditor extends BaseCardEditor {
             { value: "energy", label: lang === "ru" ? "Энергия" : "Energy" },
           ]),
         },
+        { name: "levels", selector: booleanSelector },
       ]),
       interactionsSection("mode", "more-info"),
     ];
@@ -57,6 +61,7 @@ export class HorosHeatingTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки комнат",
         name: "Название",
         mode: "Что котёл делает сейчас",
         burner: "Горелка",
@@ -69,6 +74,7 @@ export class HorosHeatingTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Room rows",
         name: "Name",
         mode: "What the boiler is doing",
         burner: "Burner",
@@ -91,13 +97,13 @@ export class HorosHeatingTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       zones: mergeEntityList<EntityItem>(
         this._config?.zones as (EntityItem | string)[] | undefined,
-        (data.zones as string[]) ?? []
+        (data.zones as string[]) ?? [],
       ),
     };
   }

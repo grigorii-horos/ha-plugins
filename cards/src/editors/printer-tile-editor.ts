@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   entitySelector,
@@ -25,17 +26,23 @@ export class HorosPrinterTileEditor extends BaseCardEditor {
       {
         name: "cartridges",
         required: true,
-        selector: { entity: { multiple: true, filter: [{ domain: "sensor" }] } },
+        selector: {
+          entity: { multiple: true, filter: [{ domain: "sensor" }] },
+        },
       },
       {
         name: "low_below",
-        selector: { number: { min: 0, max: 100, mode: "box", unit_of_measurement: "%" } },
+        selector: {
+          number: { min: 0, max: 100, mode: "box", unit_of_measurement: "%" },
+        },
       },
       {
         name: "sensors",
         selector: { entity: { multiple: true } },
       },
-      contentSection("status", lang),
+      contentSection("status", lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection("status", "none"),
     ];
   }
@@ -44,6 +51,7 @@ export class HorosPrinterTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки уровней",
         name: "Название принтера",
         status: "Состояние принтера",
         cartridges: "Картриджи",
@@ -52,6 +60,7 @@ export class HorosPrinterTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Level rows",
         name: "Printer name",
         status: "Printer status",
         cartridges: "Cartridges",
@@ -65,25 +74,23 @@ export class HorosPrinterTileEditor extends BaseCardEditor {
     const config = this._config ?? {};
     return {
       ...config,
-      cartridges: entityIdsOf(
-        config.cartridges as (EntityItem | string)[]
-      ),
+      cartridges: entityIdsOf(config.cartridges as (EntityItem | string)[]),
       sensors: entityIdsOf(config.sensors as (EntityItem | string)[]),
     };
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       cartridges: mergeEntityList<EntityItem>(
         this._config?.cartridges as (EntityItem | string)[] | undefined,
-        (data.cartridges as string[]) ?? []
+        (data.cartridges as string[]) ?? [],
       ),
       sensors: mergeEntityList<EntityItem>(
         this._config?.sensors as (EntityItem | string)[] | undefined,
-        (data.sensors as string[]) ?? []
+        (data.sensors as string[]) ?? [],
       ),
     };
   }

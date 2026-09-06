@@ -60,9 +60,34 @@ export class HorosCoverTile extends BaseTileCard {
 
   @state() private _config?: CoverTileConfig;
 
-  /** Level rows under the tile: roughly two per grid row. */
+  /** One row for our own bar, plus whatever controls sit under it. */
   protected override contentRows(): number {
-    return Math.ceil((2) / 2);
+    return this.levelRows(1) + this.fixedRows();
+  }
+
+  protected override fixedRows(): number {
+    return this.featureRows(this._controls().length);
+  }
+
+  /**
+   * The stock controls this cover can take. A cover that cannot be sent to a
+   * position gets no slider, and one that cannot be opened gets no buttons —
+   * asked in one place so the height and the markup cannot disagree.
+   */
+  private _controls(): Record<string, unknown>[] {
+    if (this._config?.controls === false) return [];
+    const supported = Number(
+      this.hass?.states[this._config?.cover ?? ""]?.attributes
+        .supported_features ?? 0
+    );
+    const controls: Record<string, unknown>[] = [];
+    if ((supported & COVER_SET_POSITION) !== 0) {
+      controls.push({ type: "cover-position" });
+    }
+    if ((supported & (COVER_OPEN | COVER_CLOSE)) !== 0) {
+      controls.push({ type: "cover-open-close" });
+    }
+    return controls;
   }
 
   private _bigKeys: string[] = ["illuminance"];
@@ -111,13 +136,7 @@ export class HorosCoverTile extends BaseTileCard {
       cover?.stateObj?.attributes.supported_features ?? 0
     );
     const canSetPosition = (supported & COVER_SET_POSITION) !== 0;
-    const canOpenClose = (supported & (COVER_OPEN | COVER_CLOSE)) !== 0;
-
-    const controls: Record<string, unknown>[] = [];
-    if (config.controls !== false) {
-      if (canSetPosition) controls.push({ type: "cover-position" });
-      if (canOpenClose) controls.push({ type: "cover-open-close" });
-    }
+    const controls = this._controls();
 
     // Our own bar is only needed where there will be no slider.
     const open = numericState(position);

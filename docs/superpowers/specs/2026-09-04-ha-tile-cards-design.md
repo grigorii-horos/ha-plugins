@@ -672,6 +672,44 @@ that the pair does not crowd the bar out of the row.
 pump cannot be told from the registry, and a card must not guess a role from a name. This
 one is assembled by hand.
 
+## Height
+
+A card is one layout row for the line and everything else underneath.
+
+`ha-tile-container` does not agree: its top row is `flex: 1`, so a tile of a fixed height
+puts every spare pixel into the icon-and-text row — the stock tile at four rows is 248px
+of a single line, with the features still pinned at the bottom. That row is the card's
+identity and belongs at exactly one row; the room under it is what the content is for.
+The row lives in HA's shadow and cannot be restyled from outside, so it is outvoted
+instead: our half of the card asks for the free space with a growth factor two orders of
+magnitude larger, and the row keeps its 56px minimum plus a rounding error.
+
+**A card takes the height it is given only when it has something to fill it with.** A
+block host with an automatic height ignores that height outright — a card told to be four
+rows tall drew 130px inside a 248px slot and left the rest as a hole, which is what
+started all this. Inheriting the height fixes that, but a card that is one line and
+nothing else does not inherit it: an empty card body reads as a bug, while a gap under a
+short card is what the stock tile leaves there too. Hence the `filled` attribute on the
+host.
+
+**What fills the space depends on what is in it.** A list of level rows spreads evenly,
+the way `hui-card-features` spreads features with `align-content: space-evenly`. Buttons,
+sliders and selectors do not stretch: they are 42px on every card, because they take that
+number from `--feature-height`, the same variable the stock features use — a row of lamp
+buttons must not be a different height from a row of climate buttons on the card next to
+it. They spread apart instead.
+
+**Two row counts, not one.** `getCardSize` answers "how tall is this card" and counts
+everything below the line: two level rows to a layout row, one row per feature or control.
+`min_rows` answers "how small may it be made" and counts only what cannot be squeezed —
+the controls. A list of rows lives with whatever it is given; a row of buttons does not,
+so a card with buttons cannot be dragged shorter than they are.
+
+**The card's own line can be switched off.** `levels: false` — the shared field, so it
+works on every card that has one — leaves the top line alone. What sits below through the
+stock `features` list is switched on and off in the editor's own Features panel, which is
+where a Home Assistant user already looks for it.
+
 ## Level rows
 
 The device invented for ink turned out to be a general one: several homogeneous levels

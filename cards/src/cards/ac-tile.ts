@@ -81,9 +81,9 @@ export class HorosAcTile extends BaseTileCard {
     this._config = config;
   }
 
-  protected override contentRows(): number {
-    // Two stock features stack under the line: the modes and the target.
-    return this._config?.controls === false ? 0 : 2;
+  // Two stock features stack under the line: the modes and the target.
+  protected override fixedRows(): number {
+    return this.featureRows(this._config?.controls === false ? 0 : 2);
   }
 
   protected render() {

@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   bigValuesSelector,
@@ -39,19 +40,28 @@ export class HorosComputerTileEditor extends BaseCardEditor {
       { name: "sensors", selector: { entity: { multiple: true } } },
       {
         name: "alerts",
-        selector: { entity: { multiple: true, filter: [{ domain: "binary_sensor" }] } },
+        selector: {
+          entity: { multiple: true, filter: [{ domain: "binary_sensor" }] },
+        },
       },
       contentSection("status", lang, [
         {
           name: "big_values",
           selector: bigValuesSelector([
-            { value: "temperature", label: lang === "ru" ? "Самая горячая точка" : "Hottest spot" },
+            {
+              value: "temperature",
+              label: lang === "ru" ? "Самая горячая точка" : "Hottest spot",
+            },
             { value: "cpu", label: lang === "ru" ? "Процессор" : "CPU" },
             { value: "memory", label: lang === "ru" ? "Память" : "Memory" },
             { value: "gpu", label: lang === "ru" ? "Видеокарта" : "GPU" },
-            { value: "disk", label: lang === "ru" ? "Самый полный диск" : "Fullest disk" },
+            {
+              value: "disk",
+              label: lang === "ru" ? "Самый полный диск" : "Fullest disk",
+            },
           ]),
         },
+        { name: "levels", selector: booleanSelector },
       ]),
       interactionsSection("status", "none"),
     ];
@@ -61,6 +71,7 @@ export class HorosComputerTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки нагрузки",
         name: "Название",
         status: "Состояние",
         cpu: "Процессор",
@@ -75,6 +86,7 @@ export class HorosComputerTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Load rows",
         name: "Name",
         status: "Status",
         cpu: "CPU",
@@ -100,17 +112,17 @@ export class HorosComputerTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       sensors: mergeEntityList<EntityItem>(
         this._config?.sensors as (EntityItem | string)[] | undefined,
-        (data.sensors as string[]) ?? []
+        (data.sensors as string[]) ?? [],
       ),
       alerts: mergeEntityList<EntityItem>(
         this._config?.alerts as (EntityItem | string)[] | undefined,
-        (data.alerts as string[]) ?? []
+        (data.alerts as string[]) ?? [],
       ),
     };
   }

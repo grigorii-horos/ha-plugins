@@ -21,10 +21,16 @@ export class HorosLightTileEditor extends BaseCardEditor {
   protected get schema(): SchemaItem[] {
     const lang = languageOf(this.hass);
     return [
-      { name: "lights", required: true, selector: { entity: { multiple: true, filter: { domain: "light" } } } },
+      {
+        name: "lights",
+        required: true,
+        selector: { entity: { multiple: true, filter: { domain: "light" } } },
+      },
       { name: "group", selector: entitySelector("light") },
       { name: "brightness", selector: booleanSelector },
-      contentSection("group", lang),
+      contentSection("group", lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection("group", "toggle"),
     ];
   }
@@ -33,6 +39,7 @@ export class HorosLightTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки ламп",
         name: "Название",
         lights: "Лампы",
         group: "Группа (главная сущность)",
@@ -40,6 +47,7 @@ export class HorosLightTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Light rows",
         name: "Name",
         lights: "Lights",
         group: "Group (the main entity)",
@@ -57,13 +65,13 @@ export class HorosLightTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       lights: mergeEntityList<EntityItem>(
         this._config?.lights as (EntityItem | string)[] | undefined,
-        (data.lights as string[]) ?? []
+        (data.lights as string[]) ?? [],
       ),
     };
   }

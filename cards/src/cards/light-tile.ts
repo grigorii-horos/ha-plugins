@@ -55,7 +55,14 @@ export class HorosLightTile extends BaseTileCard {
   @state() private _config?: LightTileConfig;
 
   protected override contentRows(): number {
-    return Math.ceil((this._config?.lights.length ?? 0) / 2);
+    return this.levelRows(this._config?.lights.length ?? 0) + this.fixedRows();
+  }
+
+  protected override fixedRows(): number {
+    const config = this._config;
+    return this.featureRows(
+      config?.group && config.brightness !== false ? 1 : 0
+    );
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

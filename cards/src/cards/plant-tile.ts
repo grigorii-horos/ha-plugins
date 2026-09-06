@@ -48,6 +48,11 @@ export class HorosPlantTile extends BaseTileCard {
 
   private _bigKeys: string[] = ["moisture"];
 
+  // The moisture gauge is a stock feature and keeps its own row.
+  protected override fixedRows(): number {
+    return this.featureRows(1);
+  }
+
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editors/plant-tile-editor");
     return document.createElement(

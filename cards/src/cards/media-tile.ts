@@ -45,7 +45,11 @@ export class HorosMediaTile extends BaseTileCard {
   @state() private _config?: MediaTileConfig;
 
   protected override contentRows(): number {
-    return Math.ceil((this._config?.players.length ?? 0) / 2);
+    return this.levelRows(this._config?.players.length ?? 0) + this.fixedRows();
+  }
+
+  protected override fixedRows(): number {
+    return this.featureRows(this._config?.controls === false ? 0 : 1);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

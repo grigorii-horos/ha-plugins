@@ -39,6 +39,10 @@ export class HorosPlugTile extends BaseTileCard {
 
   private _bigKeys: string[] = ["power"];
 
+  protected override fixedRows(): number {
+    return this.featureRows(this._config?.toggle_button ? 1 : 0);
+  }
+
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editors/plug-tile-editor");
     return document.createElement("horos-plug-tile-editor") as LovelaceCardEditor;

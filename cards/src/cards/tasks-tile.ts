@@ -41,7 +41,7 @@ export class HorosTasksTile extends BaseTileCard {
   @state() private _config?: TasksTileConfig;
 
   protected override contentRows(): number {
-    return Math.ceil((this._config?.lists.length ?? 0) / 2);
+    return this.levelRows(this._config?.lists.length ?? 0) + this.fixedRows();
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {

@@ -2,6 +2,7 @@ import {
   COMMON_LABELS_EN,
   COMMON_LABELS_RU,
   BaseCardEditor,
+  booleanSelector,
   contentSection,
   interactionsSection,
   entitySelector,
@@ -40,7 +41,9 @@ export class HorosPersonTileEditor extends BaseCardEditor {
           },
         },
       },
-      contentSection("person", lang),
+      contentSection("person", lang, [
+        { name: "levels", selector: booleanSelector },
+      ]),
       interactionsSection("person", "none"),
     ];
   }
@@ -49,6 +52,7 @@ export class HorosPersonTileEditor extends BaseCardEditor {
     return this.pick({
       ru: {
         ...COMMON_LABELS_RU,
+        levels: "Строки устройств",
         name: "Имя",
         person: "Человек",
         battery: "Заряд основного устройства",
@@ -57,6 +61,7 @@ export class HorosPersonTileEditor extends BaseCardEditor {
       },
       en: {
         ...COMMON_LABELS_EN,
+        levels: "Device rows",
         name: "Name",
         person: "Person",
         battery: "Main device battery",
@@ -75,13 +80,13 @@ export class HorosPersonTileEditor extends BaseCardEditor {
   }
 
   protected override fromForm(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Record<string, unknown> {
     return {
       ...data,
       devices: mergeEntityList<EntityItem>(
         this._config?.devices as (EntityItem | string)[] | undefined,
-        (data.devices as string[]) ?? []
+        (data.devices as string[]) ?? [],
       ),
     };
   }
