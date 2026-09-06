@@ -67,6 +67,10 @@ npm run build   # tsc --noEmit && vite build → ../dist/ha-plugins-cards.js
   `var(--ha-font-size-m, 14px)`. Don't invent pixel numbers.
 - A new card means card + editor + a row in the README + a screenshot, plus a
   `suggest` rule when the entity it starts from can be recognised objectively.
+- Anything under the line that HA already draws is a **feature**, never a field of our
+  own: the card exports a `<name>Features(hass, config)` function, uses it for
+  `ownFeatures` and for `fixedRows()`, and the editor returns it from `defaultFeatures()`
+  so the Features panel shows it and can remove it. `features: []` means none.
 - The shared config fields (`name`, `icon`, `state_content`, `levels`, `features`, the six
   actions) live in `TileBaseConfig`; a subclass's `setConfig` must put them into
   `this.base`.

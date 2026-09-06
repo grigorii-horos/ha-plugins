@@ -152,6 +152,16 @@ export abstract class BaseCardEditor extends FormCardEditor {
     };
   }
 
+  /**
+   * What the card puts under the line when the config says nothing about it.
+   * The editor shows those as the current list — that is what makes them
+   * switchable: a card's own controls are removed the same way a stock feature
+   * is, and there is no second switch for them anywhere else.
+   */
+  protected defaultFeatures(): Record<string, unknown>[] {
+    return [];
+  }
+
   private _featuresChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     this.dispatchEvent(
@@ -175,13 +185,25 @@ export abstract class BaseCardEditor extends FormCardEditor {
   }
 
   /** The features section repeats the markup of the stock tile's editor. */
-  private _renderFeatures() {
-    const entityId = this.entityField
+  /**
+   * The entity the features act on. Usually the card's main one; a card built
+   * from a list of equal entities has to name one itself, or the panel has
+   * nothing to address the features to and stays hidden.
+   */
+  protected get featuresEntity(): string | undefined {
+    return this.entityField
       ? (this._config?.[this.entityField] as string | undefined)
       : undefined;
+  }
+
+  private _renderFeatures() {
+    const entityId = this.featuresEntity;
     if (!entityId) return nothing;
 
-    const features = (this._config?.features ?? []) as unknown[];
+    // Without a list of its own the card shows the features it would put there
+    // itself, so they can be removed here like any other feature.
+    const features = (this._config?.features ??
+      this.defaultFeatures()) as unknown[];
     const labels = this.pick({ ru: COMMON_LABELS_RU, en: COMMON_LABELS_EN });
     const positions = this.pick({
       ru: { bottom: "Снизу", inline: "В строке" },

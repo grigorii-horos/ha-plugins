@@ -10,6 +10,7 @@ import {
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
+import { lampFeatures, type LampTileConfig } from "../cards/lamp-tile";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
@@ -45,13 +46,17 @@ export class HorosLampTileEditor extends BaseCardEditor {
       },
       { name: "preset_state", selector: entitySelector("input_select") },
       { name: "sensors", selector: { entity: { multiple: true } } },
-      { name: "brightness", selector: booleanSelector },
       { name: "preset_labels", selector: booleanSelector },
       contentSection("state", lang, [
         { name: "levels", selector: booleanSelector },
       ]),
       interactionsSection("state", "toggle"),
     ];
+  }
+
+  protected override defaultFeatures(): Record<string, unknown>[] {
+    const config = this._config as unknown as LampTileConfig | undefined;
+    return lampFeatures(config);
   }
 
   protected get labels(): Record<string, string> {
@@ -69,7 +74,6 @@ export class HorosLampTileEditor extends BaseCardEditor {
         presets: "Режимы",
         preset_state: "Где лежит текущий режим",
         sensors: "Что ещё сказать",
-        brightness: "Слайдер яркости (для настоящей лампы)",
         preset_labels: "Подписи у режимов",
       },
       en: {
@@ -85,7 +89,6 @@ export class HorosLampTileEditor extends BaseCardEditor {
         presets: "Presets",
         preset_state: "Where the current preset lives",
         sensors: "What else to show",
-        brightness: "Brightness slider (for a real light)",
         preset_labels: "Names next to the presets",
       },
     });

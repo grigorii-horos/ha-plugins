@@ -51,10 +51,26 @@ export interface LampTileConfig extends TileBaseConfig {
   preset_state?: string;
   /** Anything else worth a word: a brightness helper, the last preset used. */
   sensors?: (EntityItem | string)[];
-  /** The stock brightness slider, when `state` is a real light. On by default. */
+  /** @deprecated Removed in the Features panel instead. */
   brightness?: boolean;
   /** Names next to the preset icons. On by default: five icons say nothing. */
   preset_labels?: boolean;
+}
+
+/**
+ * The stock brightness slider, as the card's default feature — but only where
+ * the state role is a real light: nothing we draw beats it there, and there is
+ * nothing for it to move anywhere else. Removed in the Features panel.
+ */
+export function lampFeatures(
+  config: LampTileConfig | undefined
+): Record<string, unknown>[] {
+  // `brightness: false` is how this used to be switched off; a config that
+  // still says it keeps working.
+  if (!config?.state?.startsWith("light.") || config.brightness === false) {
+    return [];
+  }
+  return [{ type: "light-brightness" }];
 }
 
 /**
@@ -157,9 +173,7 @@ export class HorosLampTile extends BaseTileCard {
     const controls =
       (STEPS.some(({ key }) => config[key]) ? 1 : 0) +
       (config.presets?.length ? 1 : 0);
-    const brightness =
-      config.state?.startsWith("light.") && config.brightness !== false ? 1 : 0;
-    return controls + this.featureRows(brightness);
+    return controls + this.featureRows(lampFeatures(config).length);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -277,8 +291,6 @@ export class HorosLampTile extends BaseTileCard {
     const warning = this.missingRolesWarning([lamp, ...extras]);
     if (warning) return this.renderWarning(warning);
 
-    const isLight = config.state?.startsWith("light.");
-
     return this.renderTile({
       icon: config.icon ?? "mdi:coach-lamp-variant",
       color: lamp ? tileColor(lamp.stateObj) : "var(--state-icon-color)",
@@ -300,11 +312,7 @@ export class HorosLampTile extends BaseTileCard {
         this.mainStateSegment(lamp),
         ...extras.map((extra) => roleSegment(this.hass, extra)),
       ]),
-      // A real light keeps its stock slider: nothing we draw beats it.
-      ownFeatures:
-        isLight && config.brightness !== false
-          ? [{ type: "light-brightness" }]
-          : undefined,
+      ownFeatures: lampFeatures(config),
       customFeatures: this._controlsReady
         ? html`<div
             class="lamp-controls ${config.presets?.length &&

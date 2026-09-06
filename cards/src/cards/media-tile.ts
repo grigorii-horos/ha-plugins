@@ -24,8 +24,21 @@ const BUSY = ["playing", "paused", "buffering"];
 export interface MediaTileConfig extends TileBaseConfig {
   type: string;
   players: (EntityItem | string)[];
-  /** Playback buttons under the line. On by default. */
+  /** @deprecated Removed in the Features panel instead. */
   controls?: boolean;
+}
+
+/**
+ * The playback buttons, as the card's default feature: stock markup, switched
+ * off by removing it in the editor's Features panel.
+ */
+export function mediaFeatures(
+  config: MediaTileConfig | undefined
+): Record<string, unknown>[] {
+  // `controls: false` is how this used to be switched off; a config that still
+  // says it keeps working.
+  if (!config || config.controls === false) return [];
+  return [{ type: "media-player-playback" }];
 }
 
 /**
@@ -49,7 +62,7 @@ export class HorosMediaTile extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    return this.featureRows(this._config?.controls === false ? 0 : 1);
+    return this.featureRows(mediaFeatures(this._config).length);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -154,9 +167,7 @@ export class HorosMediaTile extends BaseTileCard {
                 icon: ROLE_ICONS.volume,
               },
             ],
-      // Playback is a stock HA feature; the buttons are not ours to draw.
-      ownFeatures:
-        config.controls === false ? undefined : [{ type: "media-player-playback" }],
+      ownFeatures: mediaFeatures(config),
       customFeatures:
         players.length > 1
           ? renderLevels(rows, (entityId) => this.fireMoreInfo(entityId))

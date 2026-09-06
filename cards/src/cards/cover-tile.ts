@@ -13,7 +13,7 @@ import {
 } from "../core/format";
 import { levelColor } from "../core/labels";
 import { resolveBigKeys, splitRoles, type KeyedRole } from "../core/big-values";
-import type { LovelaceCardEditor } from "../core/types";
+import type { HomeAssistant, LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { byClass, byDomain, devicePool, filled, suggestion } from "../core/suggest";
 import { t } from "../core/i18n";
@@ -36,12 +36,43 @@ export interface CoverTileConfig extends TileBaseConfig {
    * need it: on the rest the stock slider shows it.
    */
   position?: string;
-  /** Open/close buttons and the position slider. On by default. */
+  /** @deprecated Removed in the Features panel instead. */
   controls?: boolean;
   illuminance?: string;
   battery?: string;
   /** What to show large on the right. Illuminance by default. */
   big_values?: CoverRole[];
+}
+
+/**
+ * The controls this cover can take, as a features list.
+ *
+ * They are the card's default features rather than markup of its own: the
+ * editor shows them in the Features panel, and that is where they are removed —
+ * a cover with no buttons is one with an empty features list, not one with a
+ * switch of its own somewhere else.
+ *
+ * The set comes from the cover's `supported_features`: a slider is only offered
+ * to a cover that can be sent to a position, buttons to one that can be opened.
+ */
+export function coverFeatures(
+  hass: HomeAssistant | undefined,
+  config: CoverTileConfig | undefined
+): Record<string, unknown>[] {
+  // `controls: false` is how this used to be switched off; a config that still
+  // says it keeps working.
+  if (!config || config.controls === false) return [];
+  const supported = Number(
+    hass?.states[config.cover]?.attributes.supported_features ?? 0
+  );
+  const features: Record<string, unknown>[] = [];
+  if ((supported & COVER_SET_POSITION) !== 0) {
+    features.push({ type: "cover-position" });
+  }
+  if ((supported & (COVER_OPEN | COVER_CLOSE)) !== 0) {
+    features.push({ type: "cover-open-close" });
+  }
+  return features;
 }
 
 /**
@@ -66,28 +97,7 @@ export class HorosCoverTile extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    return this.featureRows(this._controls().length);
-  }
-
-  /**
-   * The stock controls this cover can take. A cover that cannot be sent to a
-   * position gets no slider, and one that cannot be opened gets no buttons —
-   * asked in one place so the height and the markup cannot disagree.
-   */
-  private _controls(): Record<string, unknown>[] {
-    if (this._config?.controls === false) return [];
-    const supported = Number(
-      this.hass?.states[this._config?.cover ?? ""]?.attributes
-        .supported_features ?? 0
-    );
-    const controls: Record<string, unknown>[] = [];
-    if ((supported & COVER_SET_POSITION) !== 0) {
-      controls.push({ type: "cover-position" });
-    }
-    if ((supported & (COVER_OPEN | COVER_CLOSE)) !== 0) {
-      controls.push({ type: "cover-open-close" });
-    }
-    return controls;
+    return this.featureRows(coverFeatures(this.hass, this._config).length);
   }
 
   private _bigKeys: string[] = ["illuminance"];
@@ -136,7 +146,7 @@ export class HorosCoverTile extends BaseTileCard {
       cover?.stateObj?.attributes.supported_features ?? 0
     );
     const canSetPosition = (supported & COVER_SET_POSITION) !== 0;
-    const controls = this._controls();
+    const controls = coverFeatures(this.hass, config);
 
     // Our own bar is only needed where there will be no slider.
     const open = numericState(position);
@@ -168,7 +178,7 @@ export class HorosCoverTile extends BaseTileCard {
         ...rest.map((item) => roleSegment(this.hass, item.role)),
       ]),
       values: this.bigValues(big),
-      ownFeatures: controls.length ? controls : undefined,
+      ownFeatures: controls,
       customFeatures: levels.length
         ? renderLevels(levels, (entityId) => this.fireMoreInfo(entityId))
         : undefined,

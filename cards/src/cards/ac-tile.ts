@@ -41,10 +41,26 @@ export interface AcTileConfig extends TileBaseConfig {
   power?: string;
   /** Anything else worth a word: mode, fan speed, filter. */
   sensors?: (EntityItem | string)[];
-  /** Mode buttons and the target temperature under the line. On by default. */
+  /** @deprecated Removed in the Features panel instead. */
   controls?: boolean;
   /** What to show large on the right. The room temperature by default. */
   big_values?: AcRole[];
+}
+
+/**
+ * The unit's controls, as the card's default features.
+ *
+ * Modes and a target temperature are stock features — the climate domain has
+ * more shapes than a card should try to draw — and they are switched off the
+ * way every other feature is: by removing them in the editor's Features panel.
+ */
+export function acFeatures(
+  config: AcTileConfig | undefined
+): Record<string, unknown>[] {
+  // `controls: false` is how this used to be switched off; a config that still
+  // says it keeps working.
+  if (!config || config.controls === false) return [];
+  return [{ type: "climate-hvac-modes" }, { type: "target-temperature" }];
 }
 
 /**
@@ -81,9 +97,8 @@ export class HorosAcTile extends BaseTileCard {
     this._config = config;
   }
 
-  // Two stock features stack under the line: the modes and the target.
   protected override fixedRows(): number {
-    return this.featureRows(this._config?.controls === false ? 0 : 2);
+    return this.featureRows(acFeatures(this._config).length);
   }
 
   protected render() {
@@ -121,12 +136,7 @@ export class HorosAcTile extends BaseTileCard {
         ...extras.map((extra) => roleSegment(this.hass, extra)),
       ]),
       values: this.bigValues(big),
-      // Modes and the target temperature are stock features: the climate domain
-      // has more shapes than a card should try to draw.
-      ownFeatures:
-        config.controls === false
-          ? undefined
-          : [{ type: "climate-hvac-modes" }, { type: "target-temperature" }],
+      ownFeatures: acFeatures(config),
     });
   }
 }

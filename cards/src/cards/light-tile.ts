@@ -31,8 +31,23 @@ export interface LightTileConfig extends TileBaseConfig {
    * line speaks for the whole list and the icon toggles nothing.
    */
   group?: string;
-  /** A brightness slider for the group under the line. On when a group is set. */
+  /** @deprecated Removed in the Features panel instead. */
   brightness?: boolean;
+}
+
+/**
+ * The brightness slider, as the card's default feature.
+ *
+ * Only a group gets one: a single slider cannot mean five different lights.
+ * It is switched off by removing it in the editor's Features panel.
+ */
+export function lightFeatures(
+  config: LightTileConfig | undefined
+): Record<string, unknown>[] {
+  // `brightness: false` is how this used to be switched off; a config that
+  // still says it keeps working.
+  if (!config?.group || config.brightness === false) return [];
+  return [{ type: "light-brightness" }];
 }
 
 /**
@@ -59,10 +74,7 @@ export class HorosLightTile extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    const config = this._config;
-    return this.featureRows(
-      config?.group && config.brightness !== false ? 1 : 0
-    );
+    return this.featureRows(lightFeatures(this._config).length);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -178,12 +190,7 @@ export class HorosLightTile extends BaseTileCard {
                 icon: ROLE_ICONS.brightness,
               },
             ],
-      // The slider is a stock HA feature, and it only makes sense for a group:
-      // a single slider cannot mean five different lights.
-      ownFeatures:
-        group && config.brightness !== false
-          ? [{ type: "light-brightness" }]
-          : undefined,
+      ownFeatures: lightFeatures(config),
       customFeatures: renderLevels(rows, (entityId) =>
         this.fireMoreInfo(entityId)
       ),

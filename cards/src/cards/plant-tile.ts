@@ -10,7 +10,7 @@ import {
   unavailableSegment,
 } from "../core/format";
 import { defaultIconAction } from "../core/actions";
-import type { LovelaceCardEditor } from "../core/types";
+import type { HomeAssistant, LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { byClass, deviceClassOf, devicePool, suggestion } from "../core/suggest";
 import { computeDomain } from "../core/state-color";
@@ -40,6 +40,24 @@ export interface PlantTileConfig extends TileBaseConfig {
 }
 
 /**
+ * The moisture gauge, as the card's default feature.
+ *
+ * It is a stock feature, not a bar of our own, and it takes its colour from
+ * --tile-color — that is, from our dryness thresholds. A plant with a sensor
+ * that says nothing gets no gauge; one whose owner does not want it gets none
+ * either, by removing it in the editor's Features panel.
+ */
+export function plantFeatures(
+  hass: HomeAssistant | undefined,
+  config: PlantTileConfig | undefined
+): Record<string, unknown>[] {
+  const state = hass?.states[config?.moisture ?? ""]?.state;
+  const value = Number(state);
+  if (state === undefined || !Number.isFinite(value)) return [];
+  return [{ type: "bar-gauge", min: 0, max: 100 }];
+}
+
+/**
  * A plant. Soil moisture as the large value on the right, and the same moisture
  * in the stock bar below the line. The thresholds only set the colour of the bar
  */
@@ -48,9 +66,8 @@ export class HorosPlantTile extends BaseTileCard {
 
   private _bigKeys: string[] = ["moisture"];
 
-  // The moisture gauge is a stock feature and keeps its own row.
   protected override fixedRows(): number {
-    return this.featureRows(1);
+    return this.featureRows(plantFeatures(this.hass, this._config).length);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -113,10 +130,7 @@ export class HorosPlantTile extends BaseTileCard {
       ]),
       mainEntityId: moisture?.entityId,
       values: this.bigValues(big),
-      // The gauge is a stock HA feature, not a bar of our own. It takes its
-      // colour from --tile-color, that is, from our dryness thresholds.
-      ownFeatures:
-        value === undefined ? undefined : [{ type: "bar-gauge", min: 0, max: 100 }],
+      ownFeatures: plantFeatures(this.hass, config),
     });
   }
 }

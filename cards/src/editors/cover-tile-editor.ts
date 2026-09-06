@@ -11,6 +11,7 @@ import {
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
+import { coverFeatures, type CoverTileConfig } from "../cards/cover-tile";
 
 export class HorosCoverTileEditor extends BaseCardEditor {
   protected get entityField(): string | undefined {
@@ -27,7 +28,6 @@ export class HorosCoverTileEditor extends BaseCardEditor {
         selector: entitySelector("sensor", "illuminance"),
       },
       { name: "battery", selector: entitySelector("sensor", "battery") },
-      { name: "controls", selector: { boolean: {} } },
       contentSection("cover", lang, [
         {
           name: "big_values",
@@ -45,6 +45,11 @@ export class HorosCoverTileEditor extends BaseCardEditor {
     ];
   }
 
+  protected override defaultFeatures(): Record<string, unknown>[] {
+    const config = this._config as unknown as CoverTileConfig | undefined;
+    return coverFeatures(this.hass, config);
+  }
+
   protected get labels(): Record<string, string> {
     return this.pick({
       ru: {
@@ -55,7 +60,6 @@ export class HorosCoverTileEditor extends BaseCardEditor {
         position: "Насколько открыто",
         illuminance: "Освещённость",
         battery: "Заряд",
-        controls: "Кнопки управления",
         big_values: "Крупно справа (не больше трёх)",
       },
       en: {
@@ -66,7 +70,6 @@ export class HorosCoverTileEditor extends BaseCardEditor {
         position: "Position",
         illuminance: "Illuminance",
         battery: "Battery",
-        controls: "Controls",
         big_values: "Large on the right (up to three)",
       },
     });

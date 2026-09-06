@@ -5,12 +5,12 @@ import {
   contentSection,
   interactionsSection,
   entitySelector,
-  booleanSelector,
   bigValuesSelector,
   type SchemaItem,
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
+import { acFeatures, type AcTileConfig } from "../cards/ac-tile";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
@@ -27,7 +27,6 @@ export class HorosAcTileEditor extends BaseCardEditor {
       { name: "humidity", selector: entitySelector("sensor", "humidity") },
       { name: "power", selector: entitySelector("sensor", "power") },
       { name: "sensors", selector: { entity: { multiple: true } } },
-      { name: "controls", selector: booleanSelector },
       contentSection("climate", lang, [
         {
           name: "big_values",
@@ -42,6 +41,11 @@ export class HorosAcTileEditor extends BaseCardEditor {
     ];
   }
 
+  protected override defaultFeatures(): Record<string, unknown>[] {
+    const config = this._config as unknown as AcTileConfig | undefined;
+    return acFeatures(config);
+  }
+
   protected get labels(): Record<string, string> {
     return this.pick({
       ru: {
@@ -52,7 +56,6 @@ export class HorosAcTileEditor extends BaseCardEditor {
         humidity: "Влажность в комнате",
         power: "Мощность",
         sensors: "Что ещё сказать",
-        controls: "Режимы и уставка",
         big_values: "Крупно справа (не больше трёх)",
       },
       en: {
@@ -63,7 +66,6 @@ export class HorosAcTileEditor extends BaseCardEditor {
         humidity: "Room humidity",
         power: "Power",
         sensors: "What else to show",
-        controls: "Modes and target",
         big_values: "Large on the right (up to three)",
       },
     });

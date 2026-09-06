@@ -2,13 +2,13 @@ import {
   BaseCardEditor,
   contentSection,
   bigValuesSelector,
-  booleanSelector,
   entitySelector,
   interactionsSection,
   type SchemaItem,
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
+import { plugFeatures, type PlugTileConfig } from "../cards/plug-tile";
 
 export class HorosPlugTileEditor extends BaseCardEditor {
   protected get entityField(): string {
@@ -21,7 +21,6 @@ export class HorosPlugTileEditor extends BaseCardEditor {
       { name: "switch", required: true, selector: entitySelector("switch") },
       { name: "power", selector: entitySelector("sensor", "power") },
       { name: "energy", selector: entitySelector("sensor", "energy") },
-      { name: "toggle_button", selector: booleanSelector },
       contentSection("switch", lang, [
         {
           name: "big_values",
@@ -36,6 +35,11 @@ export class HorosPlugTileEditor extends BaseCardEditor {
     ];
   }
 
+  protected override defaultFeatures(): Record<string, unknown>[] {
+    const config = this._config as unknown as PlugTileConfig | undefined;
+    return plugFeatures(config);
+  }
+
   protected get labels(): Record<string, string> {
     return this.pick({
       ru: {
@@ -44,7 +48,6 @@ export class HorosPlugTileEditor extends BaseCardEditor {
         power: "Мощность",
         energy: "Энергия",
         big_values: "Крупно справа (не больше двух)",
-        toggle_button: "Кнопка переключения под строкой",
       },
       en: {
         name: "Name",
@@ -52,7 +55,6 @@ export class HorosPlugTileEditor extends BaseCardEditor {
         power: "Power",
         energy: "Energy",
         big_values: "Large on the right (up to two)",
-        toggle_button: "Toggle button below the row",
       },
     });
   }

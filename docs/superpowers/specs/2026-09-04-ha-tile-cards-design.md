@@ -354,12 +354,13 @@ type: custom:horos-cover-tile
 cover: cover.device_curtain_robot_balcony
 illuminance: sensor.device_curtain_robot_balcony_illuminance
 battery: sensor.device_curtain_robot_balcony_battery
-controls: true   # the default
 big_values: [illuminance, battery]
 ```
 
 Open, close and set a position straight from the card. The controls are stock HA features
-(`cover-position`, `cover-open-close`); we draw no buttons of our own.
+(`cover-position`, `cover-open-close`); we draw no buttons of our own, and the card only
+supplies them as the default features list — the editor's Features panel is where they are
+removed.
 
 **The set of controls is picked from the cover's own `supported_features`:** the position
 slider is only offered to a cover that can set one. The balcony one has
@@ -706,9 +707,21 @@ the controls. A list of rows lives with whatever it is given; a row of buttons d
 so a card with buttons cannot be dragged shorter than they are.
 
 **The card's own line can be switched off.** `levels: false` — the shared field, so it
-works on every card that has one — leaves the top line alone. What sits below through the
-stock `features` list is switched on and off in the editor's own Features panel, which is
-where a Home Assistant user already looks for it.
+works on every card that has one — leaves the top line alone.
+
+**Controls are features, and only features.** Everything under the line that HA already
+draws — cover buttons and slider, climate modes and target, playback, the brightness
+slider, the plant gauge — is a stock feature; the card only decides what the default list
+is, from the entity's own `supported_features` where that is the question. The editor
+shows that default list as the current one, so a control is removed exactly where a stock
+feature is removed, and there is no second switch for it in the card's own fields. An
+empty `features: []` therefore has to mean "none", not "back to the defaults" — that is
+what the editor writes when the last one is deleted.
+
+The card fields this replaced — `controls`, `brightness`, `toggle_button` — are still read
+so that an existing config keeps working, and are gone from the editors. A card built from
+a list of equal entities has no main entity to address features to; the media card names
+its first player for that, and the ones with nothing of their own simply have no panel.
 
 ## Level rows
 

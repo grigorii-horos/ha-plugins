@@ -351,10 +351,10 @@ export abstract class BaseTileCard extends LitElement {
       hasAction(this.base.icon_hold_action) ||
       hasAction(this.base.icon_double_tap_action);
 
-    // The user's list replaces the card's own features entirely.
-    const features = this.base.features?.length
-      ? this.base.features
-      : ownFeatures;
+    // The user's list replaces the card's own — including when they emptied it:
+    // the editor shows the card's own features as the current list, so removing
+    // the last one there means "none", not "back to the defaults".
+    const features = this.base.features ?? ownFeatures;
     const position: FeaturesPosition = this.base.features_position ?? "bottom";
     // The card's own line under the tile, unless the config turned it off.
     const own = this.base.levels === false ? undefined : customFeatures;

@@ -9,6 +9,7 @@ import {
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
+import { plantFeatures, type PlantTileConfig } from "../cards/plant-tile";
 
 export class HorosPlantTileEditor extends BaseCardEditor {
   protected get entityField(): string {
@@ -42,6 +43,11 @@ export class HorosPlantTileEditor extends BaseCardEditor {
       ]),
       interactionsSection("moisture", "none"),
     ];
+  }
+
+  protected override defaultFeatures(): Record<string, unknown>[] {
+    const config = this._config as unknown as PlantTileConfig | undefined;
+    return plantFeatures(this.hass, config);
   }
 
   protected get labels(): Record<string, string> {

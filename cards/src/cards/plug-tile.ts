@@ -25,9 +25,22 @@ export interface PlugTileConfig extends TileBaseConfig {
   switch: string;
   power?: string;
   energy?: string;
+  /** @deprecated Added in the Features panel instead. */
   toggle_button?: boolean;
   /** What to show large on the right. Power alone by default. */
   big_values?: PlugRole[];
+}
+
+/**
+ * The plug's own button, when a config still asks for one.
+ *
+ * There is no default: the card's icon already switches the plug, and a second
+ * switch is added — like any other feature — in the editor's Features panel.
+ */
+export function plugFeatures(
+  config: PlugTileConfig | undefined
+): Record<string, unknown>[] {
+  return config?.toggle_button ? [{ type: "toggle" }] : [];
 }
 
 /**
@@ -40,7 +53,7 @@ export class HorosPlugTile extends BaseTileCard {
   private _bigKeys: string[] = ["power"];
 
   protected override fixedRows(): number {
-    return this.featureRows(this._config?.toggle_button ? 1 : 0);
+    return this.featureRows(plugFeatures(this._config).length);
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -97,8 +110,7 @@ export class HorosPlugTile extends BaseTileCard {
       imageUrl: this.entityImage(sw.stateObj),
       defaultIconAction: defaultIconAction(entityId),
       values: this.bigValues(big),
-      // The button is a stock HA feature; there is no markup of our own left for it.
-      ownFeatures: config.toggle_button ? [{ type: "toggle" }] : undefined,
+      ownFeatures: plugFeatures(config),
     });
   }
 }

@@ -10,6 +10,7 @@ import {
 } from "./base-editor";
 import { languageOf } from "../core/i18n";
 import { registerEditor } from "../core/register";
+import { lightFeatures, type LightTileConfig } from "../cards/light-tile";
 import { entityIdsOf, mergeEntityList } from "../core/entity-lists";
 import type { EntityItem } from "../core/entity-item";
 
@@ -27,12 +28,16 @@ export class HorosLightTileEditor extends BaseCardEditor {
         selector: { entity: { multiple: true, filter: { domain: "light" } } },
       },
       { name: "group", selector: entitySelector("light") },
-      { name: "brightness", selector: booleanSelector },
       contentSection("group", lang, [
         { name: "levels", selector: booleanSelector },
       ]),
       interactionsSection("group", "toggle"),
     ];
+  }
+
+  protected override defaultFeatures(): Record<string, unknown>[] {
+    const config = this._config as unknown as LightTileConfig | undefined;
+    return lightFeatures(config);
   }
 
   protected get labels(): Record<string, string> {
@@ -43,7 +48,6 @@ export class HorosLightTileEditor extends BaseCardEditor {
         name: "Название",
         lights: "Лампы",
         group: "Группа (главная сущность)",
-        brightness: "Слайдер яркости группы",
       },
       en: {
         ...COMMON_LABELS_EN,
@@ -51,7 +55,6 @@ export class HorosLightTileEditor extends BaseCardEditor {
         name: "Name",
         lights: "Lights",
         group: "Group (the main entity)",
-        brightness: "Brightness slider for the group",
       },
     });
   }

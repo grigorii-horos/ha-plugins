@@ -87,6 +87,14 @@ Wherever a field takes a list, an item can be either an `entity_id` string or
 three). `levels: false` drops the card's own line under the tile — the rows, or the
 buttons on the lamp — and leaves the card as its top line and nothing else.
 
+**Controls.** Everything a card puts under the line that Home Assistant already draws —
+the cover's buttons and slider, the climate modes and target, the playback buttons, the
+brightness slider, the plant's gauge — is a **feature**, and the card only supplies the
+default list. They are added, reordered and removed in the editor's Features panel, the
+same place a stock tile's features live; an empty list means none of them. The card fields
+`controls`, `brightness` and `toggle_button` still work in old configs but are no longer
+offered in the editor.
+
 **Height.** The top line is always one row of the dashboard grid: give a card a fixed
 height and the extra goes to what is under the line, not into the line itself. Rows spread
 through it the way stock features do; buttons and sliders stay 42px, the same on every
@@ -132,8 +140,8 @@ lights:
 
 ![Plug](docs/images/plug.png)
 
-Switch, current power draw and accumulated energy. `toggle_button: true` adds a
-full-width toggle.
+Switch, current power draw and accumulated energy. The icon toggles the plug; add the
+stock `toggle` feature for a full-width button.
 
 ```yaml
 type: custom:horos-plug-tile
@@ -161,12 +169,12 @@ dry_below: 25
 
 ![Cover](docs/images/cover.png)
 
-Cover position on a slider plus up/stop/down buttons (`controls: true`).
+Cover position on a slider plus up/stop/down buttons — stock features, offered by the card
+and removed in the Features panel. The set follows the cover's own `supported_features`.
 
 ```yaml
 type: custom:horos-cover-tile
 cover: cover.balcony
-controls: true
 illuminance: sensor.balcony_illuminance
 battery: sensor.balcony_battery
 ```
@@ -195,7 +203,6 @@ the end.
 
 ```yaml
 type: custom:horos-media-tile
-controls: true
 players:
   - media_player.living_room_tv
   - media_player.kitchen_speaker
@@ -216,7 +223,6 @@ climate: climate.living_room_ac
 temperature: sensor.living_room_temperature
 humidity: sensor.living_room_humidity
 power: sensor.ac_plug_power
-controls: true
 ```
 
 ### Heating — `horos-heating-tile`
