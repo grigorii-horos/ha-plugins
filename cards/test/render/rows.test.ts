@@ -56,9 +56,11 @@ describe("how many rows a card asks for", () => {
     expect(tile.getGridOptions().min_rows).toBe(1);
   });
 
-  it("two level rows share one layout row", () => {
+  it("three level rows share one layout row", () => {
+    expect(card({}, 3).getCardSize()).toBe(2);
     expect(card({}, 4).getCardSize()).toBe(3);
-    expect(card({}, 5).getCardSize()).toBe(4);
+    expect(card({}, 6).getCardSize()).toBe(3);
+    expect(card({}, 7).getCardSize()).toBe(4);
   });
 
   it("a list may be squeezed: it does not raise the minimum", () => {

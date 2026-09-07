@@ -78,7 +78,7 @@ npm run build   # tsc --noEmit && vite build → ../dist/ha-plugins-cards.js
   actions) live in `TileBaseConfig`; a subclass's `setConfig` must put them into
   `this.base`.
 - Height is one layout row for the line and the rest for what is under it. A card counts
-  its rows twice: `contentRows()` is how tall it is (two level rows to a layout row, one
+  its rows twice: `contentRows()` is how tall it is (three level rows to a layout row, one
   row per feature or control), `fixedRows()` is how small it may be made and counts only
   what cannot be squeezed. Controls take their size from `--feature-height`, never from a
   number of their own.
@@ -111,5 +111,7 @@ Rakes already stepped on:
   person card is anonymised before the shot (`show_entity_picture: false`, no `location`),
   the media title is replaced, and the computer card drops `current_users`. Those four are
   the only runtime overrides left.
-- The picture at the top of the README comes from the lab's own `Hero` section: nine
-  cards, half a section wide each, in a known order, so the shot can be repeated.
+- The picture at the top of the README comes from the lab's own `Hero` section: ten
+  cards, half a section wide each, in a known order, so the shot can be repeated. A card
+  added there without `grid_options` takes the six columns the card itself asks for and
+  comes out a quarter of the width, with its name cut off.

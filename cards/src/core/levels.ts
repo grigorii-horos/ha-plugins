@@ -45,12 +45,24 @@ export const levelStyles = css`
     min-height: 0;
   }
 
+  /*
+   * A row is its line of text and nothing more — no padding of its own.
+   *
+   * Three rows have to fit in one layout row, which is 64px of content: 3 * 14
+   * of text plus two 4px gaps and the 12px of padding under the last one comes
+   * to 62. Padding on the row itself pushed that to 74, and a card told to be
+   * two rows tall then had its list spill over the bottom edge — the padding
+   * under the last bar disappeared and the bar sat on the card's border.
+   *
+   * padding: 0 is written out because a button without it takes the browser's
+   * own 1px 6px and the bars stop lining up with the texts above.
+   */
   .level {
     display: flex;
     align-items: center;
     gap: var(--ha-space-2, 8px);
     width: 100%;
-    padding: 2px 0;
+    padding: 0;
     border: none;
     background: none;
     font-family: inherit;

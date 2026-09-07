@@ -154,12 +154,19 @@ export abstract class BaseTileCard extends LitElement {
   }
 
   /**
-   * Layout rows for a list of level rows: two of them fit in one, and none of
+   * Layout rows for a list of level rows: three of them fit in one, and none of
    * them are there at all when the card's own line is switched off.
+   *
+   * Three, not two, because that is what a level row actually measures. A
+   * layout row gives the content under the line 64px (56 of row plus the 8 of
+   * gap it swallows); a row is a 12px line of text and an 8px bar — 14px — and
+   * with a 4px gap between them and the stock 12px of padding under the last
+   * one three come to 62. Counting two per row asked the grid for a whole
+   * spare row and the card then stood in a hole a third of its height.
    */
   protected levelRows(count: number): number {
     if (this.base.levels === false) return 0;
-    return Math.ceil(count / 2);
+    return Math.ceil(count / 3);
   }
 
   /**

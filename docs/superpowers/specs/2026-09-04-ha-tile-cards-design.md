@@ -746,10 +746,20 @@ buttons must not be a different height from a row of climate buttons on the card
 it. They spread apart instead.
 
 **Two row counts, not one.** `getCardSize` answers "how tall is this card" and counts
-everything below the line: two level rows to a layout row, one row per feature or control.
+everything below the line: three level rows to a layout row, one row per feature or control.
 `min_rows` answers "how small may it be made" and counts only what cannot be squeezed —
 the controls. A list of rows lives with whatever it is given; a row of buttons does not,
 so a card with buttons cannot be dragged shorter than they are.
+
+**Three rows to a layout row, because that is what a row measures.** A layout row hands
+the content under the line 64px — 56 of row plus the 8 of gap it swallows — and a level
+row is one 12px line of text with an 8px bar in it: 14px. Three of them with a 4px gap
+between and the stock 12px of padding under the last come to 62. The rows used to carry
+2px of padding of their own, which made the same three 74px: a card set to two rows had
+its list slide out under the bottom edge, the padding under the last bar gone and the bar
+sitting on the card's border, and a card left on auto asked the grid for a whole extra
+row and then stood in a hole a third of its own height. Counting two rows to a layout row
+was the same error stated in arithmetic.
 
 **The card's own line can be switched off.** `levels: false` — the shared field, so it
 works on every card that has one — leaves the top line alone.

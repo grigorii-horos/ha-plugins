@@ -1338,11 +1338,18 @@ class E extends le {
     return this.fixedRows();
   }
   /**
-   * Layout rows for a list of level rows: two of them fit in one, and none of
+   * Layout rows for a list of level rows: three of them fit in one, and none of
    * them are there at all when the card's own line is switched off.
+   *
+   * Three, not two, because that is what a level row actually measures. A
+   * layout row gives the content under the line 64px (56 of row plus the 8 of
+   * gap it swallows); a row is a 12px line of text and an 8px bar — 14px — and
+   * with a 4px gap between them and the stock 12px of padding under the last
+   * one three come to 62. Counting two per row asked the grid for a whole
+   * spare row and the card then stood in a hole a third of its height.
    */
   levelRows(e) {
-    return this.base.levels === !1 ? 0 : Math.ceil(e / 2);
+    return this.base.levels === !1 ? 0 : Math.ceil(e / 3);
   }
   /**
    * The part of that content which cannot be squeezed.
@@ -2170,12 +2177,24 @@ const G = be`
     min-height: 0;
   }
 
+  /*
+   * A row is its line of text and nothing more — no padding of its own.
+   *
+   * Three rows have to fit in one layout row, which is 64px of content: 3 * 14
+   * of text plus two 4px gaps and the 12px of padding under the last one comes
+   * to 62. Padding on the row itself pushed that to 74, and a card told to be
+   * two rows tall then had its list spill over the bottom edge — the padding
+   * under the last bar disappeared and the bar sat on the card's border.
+   *
+   * padding: 0 is written out because a button without it takes the browser's
+   * own 1px 6px and the bars stop lining up with the texts above.
+   */
   .level {
     display: flex;
     align-items: center;
     gap: var(--ha-space-2, 8px);
     width: 100%;
-    padding: 2px 0;
+    padding: 0;
     border: none;
     background: none;
     font-family: inherit;
@@ -4442,7 +4461,7 @@ S("horos-greenhouse-tile", Ls, {
   }
 });
 console.info(
-  "%c HOROS-CARDS %c 0.6.4 ",
+  "%c HOROS-CARDS %c 0.6.5 ",
   "background:#03a9f4;color:#fff;border-radius:3px 0 0 3px;padding:2px 4px",
   "background:#555;color:#fff;border-radius:0 3px 3px 0;padding:2px 4px"
 );
