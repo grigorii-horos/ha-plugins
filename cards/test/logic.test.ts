@@ -24,12 +24,14 @@ import { findOffline } from "../src/core/offline";
 import { findUpdates } from "../src/core/updates";
 import { firingStates, isFiring } from "../src/core/alerts";
 import { countDemand, zoneState } from "../src/core/heating";
+import { countPlants, greenhouseStatus } from "../src/core/greenhouse";
 import { featureLayout, featureRowCount } from "../src/core/features";
 import {
   levelColor,
   loadColor,
   stripBatterySuffix,
   stripDeviceName,
+  stripMoistureSuffix,
 } from "../src/core/labels";
 import { pickExtreme } from "../src/core/reduce";
 import { stateActive, tileColor } from "../src/core/state-color";
@@ -685,6 +687,73 @@ describe('the "Battery level" tail in a name', () => {
   it("unrelated names are left alone", () => {
     expect(stripBatterySuffix("Watch")).toBe("Watch");
     expect(stripBatterySuffix(undefined)).toBeUndefined();
+  });
+});
+
+describe('the "moisture" tail in a name', () => {
+  it("is removed: every row on the card is a moisture reading", () => {
+    expect(
+      stripMoistureSuffix("Soil Sensor Balcony - Orange Soil moisture")
+    ).toBe("Soil Sensor Balcony - Orange");
+    expect(stripMoistureSuffix("Ficus Moisture")).toBe("Ficus");
+  });
+
+  it("the Russian variant too", () => {
+    expect(stripMoistureSuffix("Фикус влажность почвы")).toBe("Фикус");
+  });
+
+  it("the name is not cut down to nothing", () => {
+    expect(stripMoistureSuffix("Moisture")).toBe("Moisture");
+  });
+
+  it("unrelated names are left alone", () => {
+    expect(stripMoistureSuffix("Ficus")).toBe("Ficus");
+    expect(stripMoistureSuffix(undefined)).toBeUndefined();
+  });
+});
+
+describe("counting the plants of a greenhouse", () => {
+  const plant = (status: "dry" | "ok" | "wet" | "unknown", offline = false) =>
+    ({ status, offline }) as const;
+
+  it("the dry ones and the total that answered", () => {
+    expect(
+      countPlants([plant("dry"), plant("ok"), plant("ok"), plant("wet")])
+    ).toEqual({ thirsty: 1, soaked: 1, reporting: 4, offline: 0 });
+  });
+
+  it("a silent sensor is not a watered plant", () => {
+    // The whole point: it is counted apart and kept out of the denominator,
+    // so the card cannot say "watered, 3 plants" over two dead sensors.
+    expect(
+      countPlants([plant("ok"), plant("unknown", true), plant("dry", true)])
+    ).toEqual({ thirsty: 0, soaked: 0, reporting: 1, offline: 2 });
+  });
+
+  it("a sensor that answers with nonsense is left out of both", () => {
+    expect(countPlants([plant("ok"), plant("unknown")])).toEqual({
+      thirsty: 0,
+      soaked: 0,
+      reporting: 1,
+      offline: 0,
+    });
+  });
+
+  it("the greenhouse is its worst plant, and dry beats soaked", () => {
+    expect(greenhouseStatus(countPlants([plant("wet"), plant("dry")]))).toBe(
+      "dry"
+    );
+    expect(greenhouseStatus(countPlants([plant("wet"), plant("ok")]))).toBe(
+      "wet"
+    );
+    expect(greenhouseStatus(countPlants([plant("ok")]))).toBe("ok");
+  });
+
+  it("nobody answering is not the same as everybody being fine", () => {
+    expect(greenhouseStatus(countPlants([plant("unknown", true)]))).toBe(
+      "unknown"
+    );
+    expect(greenhouseStatus(countPlants([]))).toBe("unknown");
   });
 });
 

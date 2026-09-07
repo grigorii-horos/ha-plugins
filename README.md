@@ -1,6 +1,6 @@
 # Horos cards for Home Assistant
 
-Twenty-four Lovelace cards that pack several entities into a single tile — grouped by
+Twenty-five Lovelace cards that pack several entities into a single tile — grouped by
 device or by meaning.
 
 ![Cards](docs/images/hero.png)
@@ -163,6 +163,31 @@ moisture: sensor.orange_moisture
 temperature: sensor.orange_temperature
 battery: sensor.orange_battery
 dry_below: 25
+```
+
+### Greenhouse — `horos-greenhouse-tile`
+
+![Greenhouse](docs/images/greenhouse.png)
+
+Every plant in one tile: a row each with soil moisture as the bar, coloured by that
+plant's own dry and overwatered thresholds, and the line answering the one question worth
+asking — how many need watering today. The air they share stands above them, because a
+whole shelf drying out at once is usually about the room. A sensor that has gone quiet is
+counted apart, never as a watered plant.
+
+```yaml
+type: custom:horos-greenhouse-tile
+name: Greenhouse
+plants:
+  - entity: sensor.cactus_moisture
+    name: Cactus
+    dry_below: 10
+  - entity: sensor.fern_moisture
+    name: Fern
+    dry_below: 40
+temperature: sensor.balcony_temperature
+humidity: sensor.balcony_humidity
+illuminance: sensor.balcony_illuminance
 ```
 
 ### Cover — `horos-cover-tile`

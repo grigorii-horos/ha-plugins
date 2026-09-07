@@ -34,6 +34,25 @@ export function stripBatterySuffix(
 }
 
 /**
+ * Strips the "moisture" tail off a soil sensor name. On a card whose every row
+ * is a moisture reading, "Balcony Orange Soil moisture" says the last two words
+ * for nothing — "Balcony Orange" is the plant.
+ */
+export function stripMoistureSuffix(
+  name: string | undefined
+): string | undefined {
+  if (!name) return undefined;
+  // The Russian is there on purpose: entity names follow the HA UI language.
+  const stripped = name
+    .replace(
+      /[\s—-]*(soil\s+)?(moisture|влажность(\s+почвы)?)\s*$/i,
+      ""
+    )
+    .trim();
+  return stripped || name;
+}
+
+/**
  * Level colour — the same steps HA paints batteries with: 70 and 30 per cent.
  * It suits consumables too: the question there is the same, "will it run out
  * soon".

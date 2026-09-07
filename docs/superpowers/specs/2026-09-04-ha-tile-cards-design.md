@@ -50,13 +50,14 @@ same way, through the stock tile's `getConfigElement()`.
 
 ## Scope
 
-Twenty-four cards. Twenty-three are tiles: one line, roles, a right-hand column of
+Twenty-five cards. Twenty-four are tiles: one line, roles, a right-hand column of
 values. Script buttons are a grid: a heading and a lattice of ready-made HA cards.
 
 Seven of them came later, once the first sixteen had been living on a real dashboard:
 lights, media, a climate unit, updates, to-do lists, alerts and a script-driven lamp.
-Heating came last, when the rooms had been filled in and it turned out to be the only
-system left with nothing to call its own.
+Heating came after that, when the rooms had been filled in and it turned out to be the
+only system left with nothing to call its own; the greenhouse last, for the same reason
+one floor down — the plants had a card each and the shelf had none.
 
 A thermostatic valve card was considered and dropped — the air conditioner card covers
 one valve; what was missing was the system above them.
@@ -672,6 +673,50 @@ that the pair does not crowd the bar out of the row.
 **No suggestion rule.** Which of two `heat` binary sensors is the burner and which is the
 pump cannot be told from the registry, and a card must not guess a role from a name. This
 one is assembled by hand.
+
+### Greenhouse
+
+```yaml
+type: custom:horos-greenhouse-tile
+name: Greenhouse
+plants:
+  - entity: sensor.cactus_moisture
+    name: Cactus
+    dry_below: 10
+  - entity: sensor.fern_moisture
+    name: Fern
+    dry_below: 40
+temperature: sensor.balcony_temperature
+humidity: sensor.balcony_humidity
+illuminance: sensor.balcony_illuminance
+```
+
+**The plant card and this one answer different questions.** "How is the orange tree
+doing" is one plant with a name, and that card is right for it. "Does anything need
+watering today" is the shelf, and eight separate tiles answer it worst of all: the eye
+has to walk the whole dashboard and compare eight numbers by hand. So the plants become
+rows and the line answers outright — how many of them are asking.
+
+**The thresholds are per plant.** A cactus at 20% is fine and a fern at 20% is dying, so
+one pair of numbers for the whole shelf would make half the bars lie. An item may carry
+its own `dry_below`/`wet_above`; the card's pair is the default for the rest.
+
+**The air stands above the plants.** Temperature, humidity and light are roles of the
+card, not of any plant, because a whole shelf drying out at once is usually about the
+room. They are what the right-hand column shows.
+
+**Dry beats soaked** in the icon — a plant running out of water dies faster than one
+standing in it, and there is one icon to spend — and the line says both.
+
+**A silent sensor is not a watered plant.** The same rule as the heating rooms: a plant
+that says nothing is counted apart and kept out of the denominator, so the card cannot
+say "watered, 5 plants" over three sensors that have been dead for a month. Its bar stays
+empty rather than full: an empty bar reads as "nothing is known here", a full one as
+"soaked".
+
+**The suggestion needs at least two.** Soil moisture is a device class of its own, so the
+set is objective — but one soil sensor is the plant card's job, and offering a greenhouse
+built out of a single plant would say less than the stock tile does.
 
 ## Height
 

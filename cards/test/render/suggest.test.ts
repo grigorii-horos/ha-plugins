@@ -25,6 +25,8 @@ const STATES: HassEntity[] = [
   entity("sensor.boiler_energy", "368", { device_class: "energy" }),
   entity("sensor.orange_moisture", "63", { device_class: "moisture" }),
   entity("sensor.orange_temperature", "22", { device_class: "temperature" }),
+  entity("sensor.ficus_moisture", "18", { device_class: "moisture" }),
+  entity("sensor.spare_moisture", "0", { device_class: "moisture" }),
   entity("sensor.printer_status", "Idle"),
   entity("sensor.printer_black", "40", { marker_type: "ink-cartridge" }),
   entity("sensor.printer_cyan", "50", { marker_type: "ink-cartridge" }),
@@ -89,6 +91,7 @@ const hass = {
       Object.entries(AREAS).map(([id, area_id]) => [id, { area_id }])
     ),
     "sensor.hidden_battery": { hidden: true },
+    "sensor.spare_moisture": { hidden: true },
   },
   localize: (key: string) => key,
   formatEntityState: (stateObj: HassEntity) => stateObj.state,
@@ -154,6 +157,28 @@ describe("entity suggestions", () => {
       moisture: "sensor.orange_moisture",
       temperature: "sensor.orange_temperature",
     });
+  });
+
+  it("several soil sensors suggest the greenhouse, the picked one first", () => {
+    expect(config("horos-greenhouse-tile", "sensor.ficus_moisture")).toEqual({
+      type: "custom:horos-greenhouse-tile",
+      plants: ["sensor.ficus_moisture", "sensor.orange_moisture"],
+    });
+  });
+
+  it("a soil sensor hidden from the UI is not a plant on the shelf", () => {
+    const plants = config("horos-greenhouse-tile", "sensor.orange_moisture")
+      ?.plants as string[];
+    expect(plants).not.toContain("sensor.spare_moisture");
+  });
+
+  it("a leak detector is not a plant", () => {
+    // Both carry device_class moisture; only one of them is a sensor with a
+    // reading, and the other belongs to the safety card.
+    expect(suggest("horos-greenhouse-tile", "binary_sensor.kitchen_leak")).toEqual(
+      []
+    );
+    expect(suggest("horos-plant-tile", "binary_sensor.kitchen_leak")).toEqual([]);
   });
 
   it("a printer marker suggests every cartridge of that printer", () => {
