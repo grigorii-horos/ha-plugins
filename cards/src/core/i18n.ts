@@ -56,6 +56,8 @@ const RU: Dict = {
   "lamp.dim": "Тусклее",
   "lamp.warm": "Теплее",
   "lamp.cold": "Холоднее",
+  "weather.noForecast": "прогноза на дни нет",
+
   "greenhouse.title": "Оранжерея",
   "greenhouse.thirsty.one": "{count} из {total} просит воды",
   "greenhouse.thirsty.few": "{count} из {total} просят воды",
@@ -152,6 +154,8 @@ const EN: Dict = {
   "lamp.dim": "Dimmer",
   "lamp.warm": "Warmer",
   "lamp.cold": "Colder",
+  "weather.noForecast": "no daily forecast",
+
   "greenhouse.title": "Greenhouse",
   "greenhouse.thirsty.one": "{count} of {total} needs water",
   "greenhouse.thirsty.many": "{count} of {total} need water",

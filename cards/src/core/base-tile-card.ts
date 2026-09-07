@@ -276,9 +276,18 @@ export abstract class BaseTileCard extends LitElement {
    * the rendering: it handles attributes, last changed and time formats — no
    * reason to redo that by hand.
    */
-  protected mainStateSegment(role: ResolvedRole | undefined): Segment | undefined {
+  protected mainStateSegment(
+    role: ResolvedRole | undefined,
+    /**
+     * What the line says when the config says nothing. A card whose entity
+     * keeps everything in attributes needs one — a weather entity's own state
+     * is the word "partlycloudy" and nothing else.
+     */
+    defaultContent?: string | string[]
+  ): Segment | undefined {
     if (!role?.stateObj || role.unavailable) return undefined;
-    if (!this.base.state_content && !this.base.time_format) {
+    const content = this.base.state_content ?? defaultContent;
+    if (!content && !this.base.time_format) {
       return roleSegment(this.hass, role);
     }
     return {
@@ -286,7 +295,7 @@ export abstract class BaseTileCard extends LitElement {
       content: html`<state-display
         .hass=${this.hass}
         .stateObj=${role.stateObj}
-        .content=${this.base.state_content}
+        .content=${content}
         .timeFormat=${this.base.time_format}
       ></state-display>`,
     };

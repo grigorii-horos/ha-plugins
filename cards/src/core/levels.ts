@@ -22,13 +22,23 @@ export interface LevelRow {
   text: string;
   /** CSS fill colour. */
   ink: string;
-  /** Bar fill, 0..100. */
+  /** Where the fill ends, 0..100. */
   level: number;
+  /**
+   * Where the fill starts, 0..100. A tank is full from the bottom and has none;
+   * a day of weather is a span between its night and its afternoon, and a bar
+   * that started at zero would say the night was the reading.
+   */
+  from?: number;
+  /** A glyph before the name, in the row's own colour: the day's condition. */
+  icon?: string;
   /** Needs attention. */
   alarm?: boolean;
   /** The alarm glyph: running out and overflowing get different ones. */
   alarmIcon?: string;
 }
+
+const clamp = (value: number): number => Math.max(0, Math.min(100, value));
 
 export const levelStyles = css`
   /*
@@ -98,24 +108,49 @@ export const levelStyles = css`
     --mdc-icon-size: 14px;
   }
 
-  /* The bar as in the stock hui-bar-gauge-card-feature, only thinner. */
+  /* The row's own glyph is not an alarm and is not painted like one. */
+  .level .name ha-icon.mark {
+    color: var(--ink);
+  }
+
+  /*
+   * The bar as in the stock hui-bar-gauge-card-feature, only thinner.
+   *
+   * The fill is placed on the track rather than flowing before it: a span has
+   * to start away from the left edge, and a flex row can only grow from it.
+   */
   .level .bar {
     flex: 1 1 auto;
-    display: flex;
+    position: relative;
     height: 8px;
     border-radius: var(--ha-border-radius-pill, 9999px);
     overflow: hidden;
   }
 
-  .level .bar .fill {
-    background-color: var(--ink);
-    transition: width 400ms ease-in-out;
-  }
-
-  .level .bar .rest {
-    flex: 1;
+  .level .bar .track {
+    position: absolute;
+    inset: 0;
     background-color: var(--ink);
     opacity: 0.2;
+  }
+
+  .level .bar .fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: var(--ink);
+    transition:
+      width 400ms ease-in-out,
+      inset-inline-start 400ms ease-in-out;
+  }
+
+  /*
+   * A span is rounded at both ends and never thinner than it is tall: a day
+   * whose night and afternoon are the same would otherwise have no bar at all.
+   */
+  .level .bar .fill.span {
+    border-radius: var(--ha-border-radius-pill, 9999px);
+    min-width: 8px;
   }
 
   .level .value {
@@ -160,14 +195,21 @@ export function renderLevels(
                 ? html`<ha-icon
                     icon=${row.alarmIcon ?? "mdi:alert-circle"}
                   ></ha-icon>`
-                : nothing}${row.name}
+                : row.icon
+                  ? html`<ha-icon class="mark" icon=${row.icon}></ha-icon>`
+                  : nothing}${row.name}
             </span>
             <span class="bar">
+              <span class="track"></span>
               <span
-                class="fill"
-                style="width: ${Math.max(0, Math.min(100, row.level))}%"
+                class="fill ${row.from === undefined ? "" : "span"}"
+                style="inset-inline-start: ${clamp(
+                  row.from ?? 0
+                )}%; width: ${Math.max(
+                  0,
+                  clamp(row.level) - clamp(row.from ?? 0)
+                )}%"
               ></span>
-              <span class="rest"></span>
             </span>
             <span class="value">${row.text}</span>
           </button>

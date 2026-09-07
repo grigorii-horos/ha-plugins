@@ -50,14 +50,16 @@ same way, through the stock tile's `getConfigElement()`.
 
 ## Scope
 
-Twenty-five cards. Twenty-four are tiles: one line, roles, a right-hand column of
+Twenty-six cards. Twenty-five are tiles: one line, roles, a right-hand column of
 values. Script buttons are a grid: a heading and a lattice of ready-made HA cards.
 
 Seven of them came later, once the first sixteen had been living on a real dashboard:
 lights, media, a climate unit, updates, to-do lists, alerts and a script-driven lamp.
 Heating came after that, when the rooms had been filled in and it turned out to be the
-only system left with nothing to call its own; the greenhouse last, for the same reason
-one floor down — the plants had a card each and the shelf had none.
+only system left with nothing to call its own; the greenhouse after it, for the same
+reason one floor down — the plants had a card each and the shelf had none; the weather
+last, and for once not because a device was missing a card but because a whole kind of
+data was: a forecast is not in the state machine at all.
 
 A thermostatic valve card was considered and dropped — the air conditioner card covers
 one valve; what was missing was the system above them.
@@ -718,6 +720,50 @@ empty rather than full: an empty bar reads as "nothing is known here", a full on
 set is objective — but one soil sensor is the plant card's job, and offering a greenhouse
 built out of a single plant would say less than the stock tile does.
 
+### Weather
+
+```yaml
+type: custom:horos-weather-tile
+weather: weather.forecast_home
+days: 7
+bar: temperature
+big_values: [temperature]
+```
+
+**The forecast is the one thing that is not in the state machine.** Home Assistant took
+it out of the attributes and now streams it to whoever subscribes over the websocket, so
+this is the only card here that holds a subscription of its own. That is also why the
+stock tile has nothing to say about a weather entity: it shows one word, `partlycloudy`,
+because one word is all the state is.
+
+**A day is a span, not a level.** Every other bar on these cards is a tank filled from
+the bottom; a day of weather is the stretch between its night and its afternoon, and a
+bar that started at zero would claim the night was the reading. All the days are drawn
+against one scale — the week's coldest night to its warmest afternoon — because the
+question a week of numbers answers badly is which days stand out. `core/levels.ts` grew
+a `from` for it, and the fill moved off the flex flow and onto the track: a row can only
+grow from the left edge, a span has to start away from it.
+
+**A day with one number left is a dot, not a bar.** Late in the evening an integration
+stops sending a low for today, and a span whose ends meet would otherwise vanish. The
+fill is never thinner than it is tall, so the row still says "here is the one reading".
+
+**The colours are HA's own.** `--state-weather-<condition>-color` already exists for
+every one of the fifteen conditions, and `stateColorCss` already builds that chain for a
+live entity. A forecast day has no entity to ask but has the same conditions, so it gets
+the same colours — and follows the user's theme. Nothing here is a colour of our own.
+
+**The line is `state_content`.** A weather entity keeps everything in attributes, so the
+secondary line is the stock `state-display` with a default of condition, humidity and
+wind, and the user changes it in the same field as on any tile. The default drops an
+attribute that went into the right-hand column, and any the entity does not report at
+all — otherwise an integration without humidity would put "Unknown" on the line.
+
+**What the bars measure is a choice, not a guess.** `bar` names one of five quantities of
+the forecast itself. Temperature is the span; a share of a hundred is drawn against a
+hundred; rain and wind have no ceiling of their own and are drawn against the largest the
+week holds — a week without a drop stays empty rather than crowning some day the wettest.
+
 ## Height
 
 A card is one layout row for the line and everything else underneath.
@@ -800,7 +846,8 @@ thing that says whether someone is home.
 
 The device invented for ink turned out to be a general one: several homogeneous levels
 that have to be seen together to tell what is about to run out. It lives in
-`core/levels.ts` and is used by four cards — printer, vacuum, person, computer.
+`core/levels.ts` and is used by a dozen cards — printer, vacuum, person, computer, the
+heating rooms, the greenhouse plants, the days of a weather forecast.
 
 Every row is a label on the left, a bar in the middle, a value on the right. The bar is
 built like the stock `hui-bar-gauge-card-feature`: a solid fill in the colour of the

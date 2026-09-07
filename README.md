@@ -1,6 +1,6 @@
 # Horos cards for Home Assistant
 
-Twenty-five Lovelace cards that pack several entities into a single tile — grouped by
+Twenty-six Lovelace cards that pack several entities into a single tile — grouped by
 device or by meaning.
 
 ![Cards](docs/images/hero.png)
@@ -116,6 +116,34 @@ humidity: sensor.bedroom_humidity
 illuminance: sensor.bedroom_illuminance
 pm25: sensor.bedroom_pm25
 big_values: [temperature]
+```
+
+### Weather — `horos-weather-tile`
+
+![Weather](docs/images/weather.png)
+
+Today on the line — the condition, the humidity, the wind, the temperature large on the
+right — and the week under it, a row per day. The bar is a span from the night to the
+afternoon, drawn against the whole week's range, so the warm stretch and the cold one are
+visible before a single number is read; each day is painted in the colour of its own
+condition, Home Assistant's own, and carries its icon.
+
+A forecast is the one thing that is not in the state machine: HA streams it over the
+websocket, so the card subscribes for it. An integration that has no daily forecast says
+so on the line instead of leaving an empty half.
+
+`bar` chooses what the bars measure: `temperature` (the default), `precipitation`,
+`precipitation_probability`, `humidity` or `wind_speed`. Everything but temperature is a
+level — a share of a hundred against a hundred, rain and wind against the week's largest.
+
+```yaml
+type: custom:horos-weather-tile
+weather: weather.forecast_home
+name: Weather
+days: 7
+bar: temperature
+big_values:
+  - temperature
 ```
 
 ### Lights — `horos-light-tile`

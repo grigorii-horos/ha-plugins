@@ -52,7 +52,7 @@ export const computeDomain = (entityId: string): string =>
   entityId.substring(0, entityId.indexOf("."));
 
 /** The same slugify HA builds state CSS variable names with. */
-const slugify = (value: string): string =>
+export const slugify = (value: string): string =>
   value
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")

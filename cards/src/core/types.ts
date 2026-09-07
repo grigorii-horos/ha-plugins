@@ -49,6 +49,17 @@ export interface HomeAssistant {
     service: string,
     data?: Record<string, unknown>
   ) => Promise<unknown>;
+  /**
+   * The websocket. Needed by the one thing that is not in the state machine:
+   * a weather forecast, which HA stopped putting into attributes and now only
+   * streams to whoever subscribes.
+   */
+  connection?: {
+    subscribeMessage: <T>(
+      callback: (message: T) => void,
+      subscribeMessage: Record<string, unknown>
+    ) => Promise<() => Promise<void>>;
+  };
 }
 
 /** A role in the card layout: which entity fills which slot with which meaning. */

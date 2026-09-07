@@ -111,7 +111,7 @@ Rakes already stepped on:
   person card is anonymised before the shot (`show_entity_picture: false`, no `location`),
   the media title is replaced, and the computer card drops `current_users`. Those four are
   the only runtime overrides left.
-- The picture at the top of the README comes from the lab's own `Hero` section: ten
+- The picture at the top of the README comes from the lab's own `Hero` section: eleven
   cards, half a section wide each, in a known order, so the shot can be repeated. A card
   added there without `grid_options` takes the six columns the card itself asks for and
   comes out a quarter of the width, with its name cut off.

@@ -50,6 +50,11 @@ const STATES: HassEntity[] = [
   entity("update.core", "on", { latest_version: "2026.9.1" }),
   entity("todo.shopping", "3"),
   entity("todo.chores", "1"),
+  entity("weather.home", "partlycloudy", {
+    temperature: 17.4,
+    humidity: 55,
+    supported_features: 3,
+  }),
   entity("binary_sensor.pump_problem", "on", { device_class: "problem" }),
   entity("binary_sensor.box_tamper", "off", { device_class: "tamper" }),
 ];
@@ -170,6 +175,19 @@ describe("entity suggestions", () => {
     const plants = config("horos-greenhouse-tile", "sensor.orange_moisture")
       ?.plants as string[];
     expect(plants).not.toContain("sensor.spare_moisture");
+  });
+
+  it("a weather entity suggests the weather card", () => {
+    expect(config("horos-weather-tile", "weather.home")).toEqual({
+      type: "custom:horos-weather-tile",
+      weather: "weather.home",
+    });
+  });
+
+  it("nothing but a weather entity does", () => {
+    expect(suggest("horos-weather-tile", "sensor.bedroom_temperature")).toEqual(
+      []
+    );
   });
 
   it("a leak detector is not a plant", () => {

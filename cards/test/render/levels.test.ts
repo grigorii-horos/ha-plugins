@@ -89,6 +89,43 @@ describe("level rows", () => {
     expect(bubbled).toBe(0);
   });
 
+  it("a span starts where it was told and is rounded at both ends", () => {
+    const bar = draw([
+      { ...rows[0], from: 25, level: 75 },
+    ]).querySelector<HTMLElement>(".bar .fill")!;
+    expect(bar.style.getPropertyValue("inset-inline-start")).toBe("25%");
+    expect(bar.style.width).toBe("50%");
+    expect(bar.classList.contains("span")).toBe(true);
+  });
+
+  it("a level bar is not a span and keeps its square end", () => {
+    const bar = draw().querySelector<HTMLElement>(".bar .fill")!;
+    expect(bar.style.getPropertyValue("inset-inline-start")).toBe("0%");
+    expect(bar.classList.contains("span")).toBe(false);
+  });
+
+  it("a span that ends before it starts draws nothing rather than backwards", () => {
+    const bar = draw([
+      { ...rows[0], from: 80, level: 20 },
+    ]).querySelector<HTMLElement>(".bar .fill")!;
+    expect(bar.style.width).toBe("0%");
+  });
+
+  it("the row's own glyph is not painted as an alarm", () => {
+    const icon = draw([
+      { ...rows[0], icon: "mdi:weather-sunny" },
+    ]).querySelector("ha-icon")!;
+    expect(icon.getAttribute("icon")).toBe("mdi:weather-sunny");
+    expect(icon.classList.contains("mark")).toBe(true);
+  });
+
+  it("an alarm wins the one place a glyph has", () => {
+    const icon = draw([
+      { ...rows[1], icon: "mdi:weather-sunny" },
+    ]).querySelector("ha-icon")!;
+    expect(icon.getAttribute("icon")).toBe("mdi:delete-alert");
+  });
+
   it("an empty list draws an empty row instead of crashing", () => {
     expect(draw([]).querySelectorAll("button.level")).toHaveLength(0);
   });

@@ -25,6 +25,14 @@ import { findUpdates } from "../src/core/updates";
 import { firingStates, isFiring } from "../src/core/alerts";
 import { countDemand, zoneState } from "../src/core/heating";
 import { countPlants, greenhouseStatus } from "../src/core/greenhouse";
+import {
+  forecastBars,
+  supportsDailyForecast,
+  weatherColor,
+  weatherIcon,
+  weatherUnit,
+  type ForecastDay,
+} from "../src/core/weather";
 import { featureLayout, featureRowCount } from "../src/core/features";
 import {
   levelColor,
@@ -1032,5 +1040,126 @@ describe("how a features list is laid out", () => {
 
   it("no features at all is no rows", () => {
     expect(featureRowCount(featureLayout(undefined, "bottom"))).toBe(0);
+  });
+});
+
+describe("the bars of a week of weather", () => {
+  const day = (
+    temperature: number | undefined,
+    templow?: number,
+    extra: Partial<ForecastDay> = {}
+  ): ForecastDay => ({
+    datetime: "2026-09-07T09:00:00+00:00",
+    temperature,
+    templow,
+    ...extra,
+  });
+
+  it("a day's span is measured against the whole week", () => {
+    // 10..30 over the week: the 10..20 day fills the lower half of the bar.
+    const [first, second] = forecastBars(
+      [day(20, 10), day(30, 20)],
+      "temperature"
+    );
+    expect(first).toEqual({ from: 0, level: 50, low: 10, high: 20 });
+    expect(second).toEqual({ from: 50, level: 100, low: 20, high: 30 });
+  });
+
+  it("a day without a night is a span of nothing, not a bar from zero", () => {
+    const [only] = forecastBars([day(20), day(30, 10)], "temperature");
+    // 20 sits half way between 10 and 30, and starts exactly where it ends.
+    expect(only.from).toBe(50);
+    expect(only.level).toBe(50);
+  });
+
+  it("a week that never changed temperature is full, not empty", () => {
+    // An empty bar would read as "no data", and the data is there.
+    expect(forecastBars([day(15, 15), day(15, 15)], "temperature")).toEqual([
+      { from: 0, level: 100, low: 15, high: 15 },
+      { from: 0, level: 100, low: 15, high: 15 },
+    ]);
+  });
+
+  it("a day the forecast says nothing about gets an empty bar", () => {
+    const [silent] = forecastBars([day(undefined), day(30, 10)], "temperature");
+    expect(silent).toEqual({ level: 0 });
+    expect(silent.from).toBeUndefined();
+  });
+
+  it("a forecast with no temperatures at all draws nothing", () => {
+    expect(forecastBars([day(undefined), day(undefined)], "temperature")).toEqual(
+      [{ level: 0 }, { level: 0 }]
+    );
+  });
+
+  it("a share of a hundred is drawn against a hundred", () => {
+    const days = [
+      day(20, 10, { humidity: 40 }),
+      day(20, 10, { humidity: 80 }),
+    ];
+    expect(forecastBars(days, "humidity")).toEqual([
+      { level: 40, high: 40 },
+      { level: 80, high: 80 },
+    ]);
+  });
+
+  it("rain has no ceiling, so it is drawn against the wettest day", () => {
+    const days = [
+      day(20, 10, { precipitation: 1 }),
+      day(20, 10, { precipitation: 4 }),
+    ];
+    expect(forecastBars(days, "precipitation")).toEqual([
+      { level: 25, high: 1 },
+      { level: 100, high: 4 },
+    ]);
+  });
+
+  it("a dry week stays empty instead of naming a wettest day", () => {
+    const days = [day(20, 10, { precipitation: 0 }), day(20, 10, { precipitation: 0 })];
+    expect(forecastBars(days, "precipitation")).toEqual([
+      { level: 0, high: 0 },
+      { level: 0, high: 0 },
+    ]);
+  });
+
+  it("a level bar never starts away from the left edge", () => {
+    const [bar] = forecastBars([day(20, 10, { humidity: 40 })], "humidity");
+    expect(bar.from).toBeUndefined();
+  });
+});
+
+describe("what a weather condition looks like", () => {
+  it("a condition takes HA's own colour variable", () => {
+    expect(weatherColor("clear-night")).toContain("--state-weather-clear_night-color");
+    expect(weatherColor("partlycloudy")).toContain("--state-weather-partlycloudy-color");
+  });
+
+  it("an unknown condition falls back rather than losing the bar", () => {
+    expect(weatherColor(undefined)).toBe("var(--state-inactive-color)");
+    expect(weatherIcon("mistral")).toBe("mdi:weather-partly-cloudy");
+  });
+
+  it("every quantity knows where its unit lives", () => {
+    const stateObj = {
+      entity_id: "weather.home",
+      state: "sunny",
+      attributes: { temperature_unit: "°C", wind_speed_unit: "km/h" },
+    };
+    expect(weatherUnit(stateObj, "temperature")).toBe("°C");
+    expect(weatherUnit(stateObj, "templow")).toBe("°C");
+    expect(weatherUnit(stateObj, "wind_speed")).toBe("km/h");
+    expect(weatherUnit(stateObj, "humidity")).toBe("%");
+    expect(weatherUnit(stateObj, "uv_index")).toBeUndefined();
+  });
+
+  it("an integration with only an hourly forecast is not asked for days", () => {
+    const features = (value: number) => ({
+      entity_id: "weather.home",
+      state: "sunny",
+      attributes: { supported_features: value },
+    });
+    expect(supportsDailyForecast(features(3))).toBe(true);
+    expect(supportsDailyForecast(features(2))).toBe(false);
+    expect(supportsDailyForecast(undefined)).toBe(false);
   });
 });
