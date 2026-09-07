@@ -860,6 +860,16 @@ A feature with settings of its own — a gauge's bounds, a list of modes — is 
 sub-view of the card dialog, which opens on `edit-sub-element`. Without forwarding it the
 pencil on a feature row does nothing.
 
+**Where the features go** is HA's control, taken whole: a `select` in `mode: box`, both
+options carrying the description and the illustration
+(`/static/images/form/tile_features_position_*.svg`) the stock tile shows, `inline`
+greyed out with an explanation when the layout is vertical, and `bottom` filled in when
+the config says nothing — two empty radio buttons are not what the card actually does.
+The strings come from HA's own dictionary
+(`ui.panel.lovelace.editor.card.tile.features_position_options.*`) through
+`hass.localize`; ours are only a fallback for an HA old enough to lack the keys. Written
+out by hand it degenerates into a bare pair of radio labels, which is exactly what it was.
+
 ## Technical part
 
 **Location.** The `cards/` folder at the repository root. The `frontend/` folder is a

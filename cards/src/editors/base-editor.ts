@@ -286,10 +286,48 @@ export abstract class BaseCardEditor extends FormCardEditor {
     const features = (this._config?.features ??
       this.defaultFeatures()) as unknown[];
     const labels = this.pick({ ru: COMMON_LABELS_RU, en: COMMON_LABELS_EN });
-    const positions = this.pick({
-      ru: { bottom: "Снизу", inline: "В строке" },
-      en: { bottom: "Bottom", inline: "Inline" },
+
+    /*
+     * The position selector belongs to Home Assistant, so it is taken whole:
+     * the two option boxes, their descriptions and the two illustrations the
+     * stock tile shows. The strings come from HA's own dictionary — that is
+     * what keeps them identical to the tile's and translated wherever HA is;
+     * ours are a fallback for an HA old enough to lack the keys.
+     */
+    const fallback = this.pick({
+      ru: {
+        bottom: "Снизу",
+        bottom_description: "Все features друг под другом",
+        inline: "В строке",
+        inline_description:
+          "Features в две колонки, начиная со строки с названием",
+        helper_vertical:
+          "При вертикальном содержимом всегда отображаются снизу",
+      },
+      en: {
+        bottom: "Bottom",
+        bottom_description: "Displays all features stacked",
+        inline: "Inline",
+        inline_description:
+          "Displays features in two columns, starting next to the name",
+        helper_vertical:
+          "Always displayed at the bottom if the content layout is vertical",
+      },
     });
+    const tr = (key: string, alt: string): string =>
+      this.hass?.localize(`ui.panel.lovelace.editor.card.tile.${key}`) || alt;
+
+    // Inline has no meaning with a vertical layout: HA greys the box out and
+    // says why, rather than letting a value be picked that the card ignores.
+    const vertical = Boolean(this._config?.vertical);
+    // Nothing chosen reads as an empty pair of radio buttons, so the default
+    // the card actually uses is filled in, exactly as the stock editor does.
+    const data = {
+      ...this._config,
+      features_position: vertical
+        ? "bottom"
+        : ((this._config?.features_position as string | undefined) ?? "bottom"),
+    };
 
     return html`
       <ha-expansion-panel outlined>
@@ -308,7 +346,7 @@ export abstract class BaseCardEditor extends FormCardEditor {
                 <ha-form
                   class="features-form"
                   .hass=${this.hass}
-                  .data=${this._config}
+                  .data=${data}
                   .schema=${[
                     {
                       name: "features_position",
@@ -316,15 +354,37 @@ export abstract class BaseCardEditor extends FormCardEditor {
                       selector: {
                         select: {
                           mode: "box",
-                          options: [
-                            { value: "bottom", label: positions.bottom },
-                            { value: "inline", label: positions.inline },
-                          ],
+                          options: (["bottom", "inline"] as const).map(
+                            (value) => ({
+                              value,
+                              label: tr(
+                                `features_position_options.${value}`,
+                                fallback[value]
+                              ),
+                              description: tr(
+                                `features_position_options.${value}_description`,
+                                fallback[`${value}_description`]
+                              ),
+                              image: {
+                                src: `/static/images/form/tile_features_position_${value}.svg`,
+                                src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
+                                flip_rtl: true,
+                              },
+                              disabled: vertical && value === "inline",
+                            })
+                          ),
                         },
                       },
                     },
                   ]}
                   .computeLabel=${this._computeLabel}
+                  .computeHelper=${() =>
+                    vertical
+                      ? tr(
+                          "features_position_helper_vertical",
+                          fallback.helper_vertical
+                        )
+                      : undefined}
                   @value-changed=${this._valueChanged}
                 ></ha-form>
               `
