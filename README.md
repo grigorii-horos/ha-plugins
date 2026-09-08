@@ -122,11 +122,11 @@ big_values: [temperature]
 
 ![Weather](docs/images/weather.png)
 
-Today on the line — the condition, the humidity, the wind, the temperature large on the
-right — and the week under it, a row per day. The bar is a span from the night to the
-afternoon, drawn against the whole week's range, so the warm stretch and the cold one are
-visible before a single number is read; each day is painted in the colour of its own
-condition, Home Assistant's own, and carries its icon.
+Today on the line — the condition and the wind, with the temperature and the humidity
+large on the right — and the week under it, a row per day. The bar is a span from the
+night to the afternoon, drawn against the whole week's range, so the warm stretch and the
+cold one are visible before a single number is read; each day is painted in the colour of
+its own condition, Home Assistant's own, and carries its icon.
 
 A forecast is the one thing that is not in the state machine: HA streams it over the
 websocket, so the card subscribes for it. An integration that has no daily forecast says
@@ -144,6 +144,7 @@ days: 7
 bar: temperature
 big_values:
   - temperature
+  - humidity
 ```
 
 ### Lights — `horos-light-tile`

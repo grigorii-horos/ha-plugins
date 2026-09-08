@@ -1,6 +1,10 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { render } from "lit";
-import { renderLevels, type LevelRow } from "../../src/core/levels";
+import {
+  renderLevels,
+  type LevelRow,
+  type LevelsOptions,
+} from "../../src/core/levels";
 
 /**
  * The markup of the level rows. Every visual bug this session was caught by
@@ -28,9 +32,10 @@ describe("level rows", () => {
 
   const draw = (
     list: LevelRow[] = rows,
-    onTap: (entityId: string) => void = () => {}
+    onTap: (entityId: string) => void = () => {},
+    options?: LevelsOptions
   ) => {
-    render(renderLevels(list, onTap), host);
+    render(renderLevels(list, onTap, options), host);
     return host;
   };
 
@@ -124,6 +129,17 @@ describe("level rows", () => {
       { ...rows[1], icon: "mdi:weather-sunny" },
     ]).querySelector("ha-icon")!;
     expect(icon.getAttribute("icon")).toBe("mdi:delete-alert");
+  });
+
+  it("a card with short labels can move the bars left", () => {
+    const list = draw(rows, () => {}, { nameWidth: "4.5em" })
+      .querySelector<HTMLElement>(".levels")!;
+    expect(list.style.getPropertyValue("--level-name")).toBe("4.5em");
+  });
+
+  it("without asking, the label column keeps the width the CSS gives it", () => {
+    const list = draw().querySelector<HTMLElement>(".levels")!;
+    expect(list.hasAttribute("style")).toBe(false);
   });
 
   it("an empty list draws an empty row instead of crashing", () => {

@@ -727,7 +727,7 @@ type: custom:horos-weather-tile
 weather: weather.forecast_home
 days: 7
 bar: temperature
-big_values: [temperature]
+big_values: [temperature, humidity]
 ```
 
 **The forecast is the one thing that is not in the state machine.** Home Assistant took
@@ -744,6 +744,12 @@ question a week of numbers answers badly is which days stand out. `core/levels.t
 a `from` for it, and the fill moved off the flex flow and onto the track: a row can only
 grow from the left edge, a span has to start away from it.
 
+**A slash between the two temperatures, not an arrow.** The heating card writes
+`26.2 → 20` and means it — the room is on its way to the target. A day's night and
+afternoon are not going anywhere; the arrow read as though the morning were striving for
+the afternoon, which is the one thing the pair does not say. The same slash already
+separates the large values above.
+
 **A day with one number left is a dot, not a bar.** Late in the evening an integration
 stops sending a low for today, and a span whose ends meet would otherwise vanish. The
 fill is never thinner than it is tall, so the row still says "here is the one reading".
@@ -755,7 +761,9 @@ the same colours — and follows the user's theme. Nothing here is a colour of o
 
 **The line is `state_content`.** A weather entity keeps everything in attributes, so the
 secondary line is the stock `state-display` with a default of condition, humidity and
-wind, and the user changes it in the same field as on any tile. The default drops an
+wind, and the user changes it in the same field as on any tile. Two numbers go large by
+default, not one: how warm it is outside is half the answer in summer, and the humidity is
+the half that says whether that warmth is bearable. The default drops an
 attribute that went into the right-hand column, and any the entity does not report at
 all — otherwise an integration without humidity would put "Unknown" on the line.
 
@@ -859,8 +867,12 @@ flasks turned into slivers with nothing to make out, and that same height shrank
 vacuum and the computer. A horizontal row gives the same thing — a fill up to the level in
 the colour of the contents — plus a label and a number.
 
-The label width is a fraction rather than automatic: otherwise names of different lengths
-drag the bars around and the row stops reading as one scale.
+The label width is one width for the whole list rather than automatic: otherwise names of
+different lengths drag the bars around and the list stops reading as one scale. A third of
+the row by default, because a name is as long as the card is wide — but a card whose
+labels are known to be short says so (`nameWidth`, a `--level-name` on the list), and the
+weather gives its weekdays four and a half ems and the bars everything else. A third of a
+row spent on "Tue" is a third of the scale not spent on the week.
 
 A row is clickable: a tap opens more-info for its entity. On alarm a glyph appears next to
 the label and the value goes to the error colour. The glyph differs per case: ink running

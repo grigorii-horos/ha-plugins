@@ -301,6 +301,16 @@ describe("picking the large values", () => {
     expect(resolveBigKeys([], "temperature", allowed)).toEqual(["temperature"]);
   });
 
+  it("a card whose subject is two numbers names both as its default", () => {
+    expect(
+      resolveBigKeys(undefined, ["temperature", "humidity"], allowed)
+    ).toEqual(["temperature", "humidity"]);
+    // The config still wins: one value asked for is one value shown.
+    expect(
+      resolveBigKeys(["humidity"], ["temperature", "humidity"], allowed)
+    ).toEqual(["humidity"]);
+  });
+
   it("two roles are allowed", () => {
     expect(
       resolveBigKeys(["temperature", "humidity"], "temperature", allowed)

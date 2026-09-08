@@ -41,10 +41,21 @@ const MAX_DAYS = 14;
 
 /**
  * What the line says about today when the config says nothing: the condition
- * and the two numbers that decide what to wear. Temperature is not there — it
- * stands large on the right.
+ * and the numbers that decide what to wear. Whatever went large is dropped from
+ * it — it would otherwise be written twice.
  */
 const DEFAULT_LINE = ["humidity", "wind_speed"];
+
+/**
+ * Large on the right by default. Two numbers, not one: how warm it is outside
+ * is only half the answer in summer, and humidity is the half that decides
+ * whether that warmth is bearable. An entity that does not report it simply
+ * shows the temperature — a missing value is skipped, not written as "Unknown".
+ */
+const DEFAULT_BIG = ["temperature", "humidity"];
+
+/** Weekday abbreviations are a few letters everywhere; the bars get the rest. */
+const NAME_WIDTH = "4.5em";
 
 export interface WeatherTileConfig extends TileBaseConfig {
   type: string;
@@ -67,8 +78,8 @@ export interface WeatherTileConfig extends TileBaseConfig {
  * "partlycloudy", and the stock weather card is a wide block of numbers that
  * does not sit in a row of tiles.
  *
- * So: the line is today — the condition, the humidity, the wind, and the
- * temperature large on the right — and under it one row per day, the way the
+ * So: the line is today — the condition and the wind, with the temperature and
+ * the humidity large on the right — and under it one row per day, the way the
  * other list cards do it. The bar is a span, from the night to the afternoon,
  * drawn against the whole week's range: a week of numbers is bad at showing
  * which days stand out, and a row of bars is good at exactly that. Each day is
@@ -83,7 +94,7 @@ export class HorosWeatherTile extends BaseTileCard {
   /** The forecast as it arrives over the websocket. */
   @state() private _forecast?: ForecastDay[];
 
-  private _bigKeys: string[] = ["temperature"];
+  private _bigKeys: string[] = DEFAULT_BIG;
 
   private _subscribed?: Promise<() => Promise<void>>;
 
@@ -124,7 +135,7 @@ export class HorosWeatherTile extends BaseTileCard {
     }
     this._bigKeys = resolveBigKeys(
       config.big_values,
-      "temperature",
+      DEFAULT_BIG,
       WEATHER_ATTRIBUTES
     );
     this.base = config;
@@ -230,9 +241,11 @@ export class HorosWeatherTile extends BaseTileCard {
   /**
    * What is written on the right of a row.
    *
-   * A temperature row names both ends of its span the way the heating card
-   * names a room's two numbers: the night without a unit, the afternoon with
-   * one. Everything else is a single reading.
+   * A temperature row names both ends of its span: the night without a unit,
+   * the afternoon with one. A slash between them, not the arrow the heating
+   * card uses — there an arrow is the truth, the room is on its way to the
+   * target; here both numbers are simply the day, and the arrow read as if the
+   * morning were heading for the afternoon. Everything else is one reading.
    */
   private _rowText(
     stateObj: HassEntity,
@@ -251,7 +264,7 @@ export class HorosWeatherTile extends BaseTileCard {
       return highText;
     }
     const low = this._attribute(stateObj, "templow", item.low);
-    return low ? `${low.value} → ${highText}` : highText;
+    return low ? `${low.value} / ${highText}` : highText;
   }
 
   protected render() {
@@ -319,7 +332,9 @@ export class HorosWeatherTile extends BaseTileCard {
       ]),
       values,
       customFeatures: rows.length
-        ? renderLevels(rows, (entityId) => this.fireMoreInfo(entityId))
+        ? renderLevels(rows, (entityId) => this.fireMoreInfo(entityId), {
+            nameWidth: NAME_WIDTH,
+          })
         : undefined,
     });
   }

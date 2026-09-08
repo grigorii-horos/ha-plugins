@@ -17,14 +17,17 @@ export interface KeyedRole {
 
 /**
  * Validates the list of roles from the config. An empty or missing list means
- * "as before": one value, the card's main role.
+ * "as before": what the card names as its own default — usually its main role,
+ * but a card whose subject is two numbers may name both.
  */
 export function resolveBigKeys(
   configured: string[] | undefined,
-  fallback: string,
+  fallback: string | readonly string[],
   allowed: readonly string[]
 ): string[] {
-  if (!configured || configured.length === 0) return [fallback];
+  if (!configured || configured.length === 0) {
+    return typeof fallback === "string" ? [fallback] : [...fallback];
+  }
 
   if (configured.length > MAX_BIG_VALUES) {
     throw new Error(

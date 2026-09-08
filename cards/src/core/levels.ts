@@ -38,6 +38,17 @@ export interface LevelRow {
   alarmIcon?: string;
 }
 
+export interface LevelsOptions {
+  /**
+   * The width of the label column, any CSS length.
+   *
+   * A third of the row by default — that is what a room name or a device name
+   * needs. A card whose labels are known to be short (a weekday) asks for less,
+   * otherwise the bars start a third of the way in with nothing beside them.
+   */
+  nameWidth?: string;
+}
+
 const clamp = (value: number): number => Math.max(0, Math.min(100, value));
 
 export const levelStyles = css`
@@ -86,11 +97,13 @@ export const levelStyles = css`
   }
 
   /*
-   * A fraction, not auto width: otherwise names of different lengths drag the
-   * bars around and the row stops reading as one scale.
+   * One width for every row, not auto: otherwise names of different lengths
+   * drag the bars around and the list stops reading as one scale. A fraction
+   * of the row by default, because a name is as long as the card is wide; a
+   * card with short labels sets --level-name to a length of its own.
    */
   .level .name {
-    flex: 0 0 34%;
+    flex: 0 0 var(--level-name, 34%);
     min-width: 0;
     display: flex;
     align-items: center;
@@ -175,10 +188,16 @@ export const levelStyles = css`
 
 export function renderLevels(
   rows: LevelRow[],
-  onTap: (entityId: string) => void
+  onTap: (entityId: string) => void,
+  options?: LevelsOptions
 ): TemplateResult {
   return html`
-    <div class="levels">
+    <div
+      class="levels"
+      style=${options?.nameWidth
+        ? `--level-name: ${options.nameWidth};`
+        : nothing}
+    >
       ${rows.map(
         (row) => html`
           <button
