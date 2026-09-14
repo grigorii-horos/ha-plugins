@@ -3,6 +3,8 @@ import {
   cardName,
   composeSegments,
   formatRole,
+  isCharging,
+  limitValue,
   numericState,
   formatUnavailable,
   resolveRole,
@@ -195,6 +197,91 @@ describe("role resolution", () => {
   it("a non-numeric state does not turn into a number", () => {
     expect(numericState(resolveRole(hass, "sensor.broken"))).toBeUndefined();
     expect(numericState(resolveRole(hass, "sensor.temp"))).toBe(27.4);
+  });
+});
+
+describe("on the charger", () => {
+  const hass = fakeHass([
+    entity("binary_sensor.phone_charging", "on"),
+    entity("binary_sensor.tablet_charging", "off"),
+    entity("sensor.watch_charger", "wireless"),
+    entity("sensor.reader_charger", "none"),
+    entity("sensor.vacuum_charge", "Not Charging"),
+    entity("sensor.robot_charge", "Go Charging"),
+    entity("sensor.mouse_charge", "fully charged"),
+    entity("sensor.curtain_charge", "uncharged"),
+    entity("sensor.dead", "unavailable"),
+  ]);
+  const charging = (entityId: string | undefined) =>
+    isCharging(resolveRole(hass, entityId));
+
+  it("a binary sensor is read as a binary sensor", () => {
+    expect(charging("binary_sensor.phone_charging")).toBe(true);
+    expect(charging("binary_sensor.tablet_charging")).toBe(false);
+  });
+
+  it("a charger type is charging unless there is no charger", () => {
+    expect(charging("sensor.watch_charger")).toBe(true);
+    expect(charging("sensor.reader_charger")).toBe(false);
+  });
+
+  it("a vendor enum is taken at its word, whatever it invented", () => {
+    expect(charging("sensor.robot_charge")).toBe(true);
+    expect(charging("sensor.vacuum_charge")).toBe(false);
+    expect(charging("sensor.curtain_charge")).toBe(false);
+  });
+
+  it("a battery that finished charging is not charging", () => {
+    expect(charging("sensor.mouse_charge")).toBe(false);
+  });
+
+  it("the charger's own socket sensor is read by its five states", () => {
+    const socket = fakeHass([
+      entity("sensor.cradle", "charging"),
+      entity("sensor.plug", "idle"),
+      entity("sensor.desk", "sleep"),
+      entity("sensor.shelf", "cooldown"),
+      entity("sensor.lamp", "generic"),
+    ]);
+    const state = (id: string) => isCharging(resolveRole(socket, id));
+    expect(state("sensor.cradle")).toBe(true);
+    expect(state("sensor.plug")).toBe(false);
+    expect(state("sensor.desk")).toBe(false);
+    expect(state("sensor.shelf")).toBe(false);
+    expect(state("sensor.lamp")).toBe(false);
+  });
+
+  it("no role and no answer mean no animation", () => {
+    expect(charging(undefined)).toBe(false);
+    expect(charging("sensor.missing")).toBe(false);
+    expect(charging("sensor.dead")).toBe(false);
+  });
+});
+
+describe("the charge cutoffs", () => {
+  const hass = fakeHass([
+    entity("number.watch_min_charge", "40", { unit_of_measurement: "%" }),
+    entity("number.watch_max_charge", "75", { unit_of_measurement: "%" }),
+    entity("number.gone", "unavailable"),
+    entity("sensor.words", "seventy"),
+  ]);
+
+  it("a number written by hand is taken as it is", () => {
+    expect(limitValue(hass, 80)).toBe(80);
+    expect(limitValue(hass, 0)).toBe(0);
+  });
+
+  it("an entity is asked for its number", () => {
+    expect(limitValue(hass, "number.watch_min_charge")).toBe(40);
+    expect(limitValue(hass, "number.watch_max_charge")).toBe(75);
+  });
+
+  it("nothing to mark is not a mark at zero", () => {
+    expect(limitValue(hass, undefined)).toBeUndefined();
+    expect(limitValue(hass, "number.missing")).toBeUndefined();
+    expect(limitValue(hass, "number.gone")).toBeUndefined();
+    expect(limitValue(hass, "sensor.words")).toBeUndefined();
+    expect(limitValue(hass, Number.NaN)).toBeUndefined();
   });
 });
 

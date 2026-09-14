@@ -451,12 +451,24 @@ person: person.alice
 battery: sensor.phone_alice_battery_level
 location: sensor.phone_alice_geocoded_location
 devices:
-  - { entity: sensor.google_pixel_watch_battery_level, name: Watch }
+  - entity: sensor.google_pixel_watch_battery_level
+    name: Watch
+    charging: sensor.google_pixel_watch_charger_type
+    min: number.watch_cradle_pixel_watch_min_charge
+    max: number.watch_cradle_pixel_watch_max_charge
 ```
 
 Whether they are home, where exactly, how much charge. The person's portrait is shown by
 default — it says more than a faceless icon. The other devices' batteries use the same
 level rows.
+
+A device may also name what says it is charging and the two cutoffs its charge is held
+between. All three are roles like any other — a human points them at entities, the card
+guesses nothing. `charging` takes whatever the device happens to have: a `binary_sensor`,
+the companion app's charger type, a vendor enum, the socket sensor of ha-smart-charging.
+The reading is done by denial (`core/format.ts`, `isCharging`): every state means charging
+except the ones that plainly say otherwise, because the affirmations are many and
+device-specific while the denials are few and stable.
 
 ## Suggestions in the add-card dialog
 
@@ -880,6 +892,26 @@ out, an overflowing absorber, an overloaded processor.
 
 A role shown as a row does not also go into the card's secondary line — there it would be
 a nameless per cent.
+
+### Charging, and the marks on the track
+
+Two things on a row come from the sibling plugin, `ha-smart-charging`, whose socket rows
+draw the same battery on the same dashboards: **the shimmer** that runs along a fill while
+the charge goes in, and **the two cutoff marks** — where a device is topped up from and
+where it is stopped. Both were taken as they are rather than invented again, because two
+plugins side by side must not have two ways of saying the same thing. What was left behind
+is that card's pulsing thumb at the end of the fill: a level row is a scale to be read, not
+a slider to be dragged. There is no translucent band between the marks either — at eight
+pixels of height it only muddies the fill colour, which is the thing being read.
+
+The marks do not come and go with the cable: they say what the limits are, not whether the
+charger is on. And the module holds no words of its own — the card composes `limitsText`
+with `t()` and the row's tooltip carries it — so the two repositories can share the file
+byte for byte while keeping different dictionaries.
+
+The fill is a pill in its own right rather than a rectangle the track clips. Clipping
+rounds only the end that touches the track's edge, and a battery bar came out with a
+knife-cut right end next to a weather span rounded at both.
 
 ## Features
 

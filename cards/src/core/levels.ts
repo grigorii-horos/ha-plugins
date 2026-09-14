@@ -36,6 +36,18 @@ export interface LevelRow {
   alarm?: boolean;
   /** The alarm glyph: running out and overflowing get different ones. */
   alarmIcon?: string;
+  /** On the charger: the bar has a light running along it. */
+  charging?: boolean;
+  /** The lower cutoff to mark on the track, 0..100. */
+  minLimit?: number;
+  /** The upper cutoff to mark on the track, 0..100. */
+  maxLimit?: number;
+  /**
+   * What the marks mean, in the interface language. The words are composed by
+   * the card because `hass` lives there; this module holds none of its own, so
+   * the two plugins that share it can keep different dictionaries.
+   */
+  limitsText?: string;
 }
 
 export interface LevelsOptions {
@@ -147,10 +159,17 @@ export const levelStyles = css`
     opacity: 0.2;
   }
 
+  /*
+   * The fill is a pill of its own, not a rectangle the track happens to round
+   * off. Clipping alone rounds only the end that touches the track's edge, so
+   * a battery bar came out with a knife-cut right end while a weather span next
+   * to it was rounded at both — one list of bars, two shapes.
+   */
   .level .bar .fill {
     position: absolute;
     top: 0;
     bottom: 0;
+    border-radius: var(--ha-border-radius-pill, 9999px);
     background-color: var(--ink);
     transition:
       width 400ms ease-in-out,
@@ -158,12 +177,71 @@ export const levelStyles = css`
   }
 
   /*
-   * A span is rounded at both ends and never thinner than it is tall: a day
-   * whose night and afternoon are the same would otherwise have no bar at all.
+   * A span is never thinner than it is tall: a day whose night and afternoon
+   * are the same would otherwise have no bar at all. A level starts at zero and
+   * has no such floor — an empty tank must be able to show nothing.
    */
   .level .bar .fill.span {
-    border-radius: var(--ha-border-radius-pill, 9999px);
     min-width: 8px;
+  }
+
+  /*
+   * Charging: a shimmer runs along the fill.
+   *
+   * Taken as is from ha-smart-charging, which draws its own battery bars on the
+   * same dashboards: a soft white band twice the width of the bar, drifting at
+   * an even pace. Two plugins of ours must not have two different ways of
+   * saying "charging" next to each other. What is deliberately not taken is
+   * that card's pulsing thumb at the end of the fill — a level row is a scale
+   * to be read, not a slider to be dragged.
+   */
+  .level .bar .fill.charging {
+    background-image: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0) 0%,
+      rgb(255 255 255 / 0.3) 50%,
+      rgb(255 255 255 / 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: level-charging 2s linear infinite;
+  }
+
+  @keyframes level-charging {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  /*
+   * The cutoffs: where a charge is topped up from and where it is stopped.
+   *
+   * Taken from ha-smart-charging, whose socket rows draw the same two marks —
+   * a level row and a socket row show the same battery on one dashboard, so a
+   * limit must look the same in both. Two thin marks and no band between them:
+   * at eight pixels of height a translucent band only muddies the fill colour,
+   * which is the thing actually being read.
+   */
+  .level .bar .tick-min,
+  .level .bar .tick-max {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 1px;
+    z-index: 2;
+    transform: translateX(-50%);
+  }
+
+  .level .bar .tick-min {
+    background: var(--info-color, #0288d1);
+  }
+
+  .level .bar .tick-max {
+    background: var(--primary-text-color);
+    opacity: 0.85;
   }
 
   .level .value {
@@ -182,6 +260,11 @@ export const levelStyles = css`
   @media (prefers-reduced-motion: reduce) {
     .level .bar .fill {
       transition: none;
+    }
+
+    /* Motion is off, but charging still has to be visible: the band stands still. */
+    .level .bar .fill.charging {
+      animation: none;
     }
   }
 `;
@@ -203,7 +286,9 @@ export function renderLevels(
           <button
             class="level ${row.alarm ? "low" : ""}"
             style="--ink: ${row.ink};"
-            title="${row.name}: ${row.text}"
+            title="${row.name}: ${row.text}${row.limitsText
+              ? ` · ${row.limitsText}`
+              : ""}"
             @click=${(ev: Event) => {
               ev.stopPropagation();
               onTap(row.entityId);
@@ -221,7 +306,9 @@ export function renderLevels(
             <span class="bar">
               <span class="track"></span>
               <span
-                class="fill ${row.from === undefined ? "" : "span"}"
+                class="fill ${row.from === undefined ? "" : "span"} ${row.charging
+                  ? "charging"
+                  : ""}"
                 style="inset-inline-start: ${clamp(
                   row.from ?? 0
                 )}%; width: ${Math.max(
@@ -229,6 +316,18 @@ export function renderLevels(
                   clamp(row.level) - clamp(row.from ?? 0)
                 )}%"
               ></span>
+              ${row.minLimit === undefined
+                ? nothing
+                : html`<span
+                    class="tick-min"
+                    style="inset-inline-start: ${clamp(row.minLimit)}%"
+                  ></span>`}
+              ${row.maxLimit === undefined
+                ? nothing
+                : html`<span
+                    class="tick-max"
+                    style="inset-inline-start: ${clamp(row.maxLimit)}%"
+                  ></span>`}
             </span>
             <span class="value">${row.text}</span>
           </button>

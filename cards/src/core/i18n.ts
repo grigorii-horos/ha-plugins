@@ -104,6 +104,9 @@ const RU: Dict = {
   "printer.title": "Принтер",
   "computer.title": "Компьютер",
   "person.title": "Человек",
+  "person.limits": "заряжается с {min}% до {max}%",
+  "person.limits.min": "заряжается с {min}%",
+  "person.limits.max": "заряжается до {max}%",
   "air.title": "Воздух",
   "cover.title": "Шторы",
 
@@ -196,6 +199,9 @@ const EN: Dict = {
   "printer.title": "Printer",
   "computer.title": "Computer",
   "person.title": "Person",
+  "person.limits": "charged from {min}% to {max}%",
+  "person.limits.min": "charged from {min}%",
+  "person.limits.max": "charged to {max}%",
   "air.title": "Air",
   "cover.title": "Curtains",
 

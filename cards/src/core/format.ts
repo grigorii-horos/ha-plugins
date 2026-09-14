@@ -168,6 +168,65 @@ export function numericState(
   return Number.isFinite(value) ? value : undefined;
 }
 
+/**
+ * The states that plainly say "not on the charger".
+ *
+ * Everything else counts as charging, because the role can be filled by any of
+ * the things Home Assistant calls charging and they agree on nothing: a
+ * binary_sensor says `on`, the companion app's charger type says `ac`, `usb`,
+ * `wireless` or `dock`, a vendor enum says "Charging" or "Go Charging". Listing
+ * the denials is a short, stable list; listing the affirmations is not.
+ */
+const NOT_CHARGING = new Set([
+  "off",
+  "false",
+  "no",
+  "none",
+  "not charging",
+  "no charge",
+  "uncharged",
+  "discharging",
+  "full",
+  "fully charged",
+  "charged",
+  // ha-smart-charging's socket sensor, whose vocabulary is closed and is
+  // exactly idle / charging / cooldown / sleep / generic. Its own "charging"
+  // is the only one of the five that means the current is flowing; without the
+  // other four an idle socket would light every bar hanging off it.
+  "idle",
+  "cooldown",
+  "sleep",
+  "generic",
+]);
+
+/**
+ * Whether a charging role says the device is on the charger.
+ *
+ * A full battery is not charging: the light running along a bar means energy is
+ * going in, and on a device that finished hours ago it would never stop.
+ */
+export function isCharging(role: ResolvedRole | undefined): boolean {
+  if (!role?.stateObj || role.missing || role.unavailable) return false;
+  const state = role.stateObj.state.trim().toLowerCase().replace(/[_-]+/g, " ");
+  return !NOT_CHARGING.has(state);
+}
+
+/**
+ * A limit to mark on a bar: either written in the config as a number, or the
+ * entity that holds it — ha-smart-charging publishes a `number` per device and
+ * socket, so the mark follows the cutoff the charger is actually obeying.
+ */
+export function limitValue(
+  hass: HomeAssistant | undefined,
+  limit: string | number | undefined
+): number | undefined {
+  if (limit === undefined) return undefined;
+  if (typeof limit === "number") {
+    return Number.isFinite(limit) ? limit : undefined;
+  }
+  return numericState(resolveRole(hass, limit));
+}
+
 /** The card name: from the config, otherwise the main entity's name. */
 export function cardName(
   configName: string | undefined,

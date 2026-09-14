@@ -103,10 +103,77 @@ describe("level rows", () => {
     expect(bar.classList.contains("span")).toBe(true);
   });
 
-  it("a level bar is not a span and keeps its square end", () => {
+  it("a level bar is not a span: it starts at the left edge", () => {
     const bar = draw().querySelector<HTMLElement>(".bar .fill")!;
     expect(bar.style.getPropertyValue("inset-inline-start")).toBe("0%");
     expect(bar.classList.contains("span")).toBe(false);
+  });
+
+  it("a bar on the charger is marked, a calm one is not", () => {
+    const fills = draw([
+      { ...rows[0], charging: true },
+      rows[1],
+    ]).querySelectorAll<HTMLElement>(".bar .fill");
+    expect(fills[0].classList.contains("charging")).toBe(true);
+    expect(fills[1].classList.contains("charging")).toBe(false);
+  });
+
+  it("the cutoffs are marked where they were told", () => {
+    const bar = draw([
+      { ...rows[0], minLimit: 40, maxLimit: 75 },
+    ]).querySelector(".bar")!;
+    expect(
+      bar.querySelector<HTMLElement>(".tick-min")!.style.getPropertyValue(
+        "inset-inline-start"
+      )
+    ).toBe("40%");
+    expect(
+      bar.querySelector<HTMLElement>(".tick-max")!.style.getPropertyValue(
+        "inset-inline-start"
+      )
+    ).toBe("75%");
+  });
+
+  it("a cutoff nobody set is not drawn", () => {
+    const bar = draw([{ ...rows[0], maxLimit: 75 }]).querySelector(".bar")!;
+    expect(bar.querySelector(".tick-min")).toBeNull();
+    expect(bar.querySelector(".tick-max")).not.toBeNull();
+    expect(draw().querySelector(".tick-max")).toBeNull();
+  });
+
+  it("a cutoff outside the bar is pulled back onto it", () => {
+    const bar = draw([
+      { ...rows[0], minLimit: -5, maxLimit: 140 },
+    ]).querySelector(".bar")!;
+    expect(
+      bar.querySelector<HTMLElement>(".tick-min")!.style.getPropertyValue(
+        "inset-inline-start"
+      )
+    ).toBe("0%");
+    expect(
+      bar.querySelector<HTMLElement>(".tick-max")!.style.getPropertyValue(
+        "inset-inline-start"
+      )
+    ).toBe("100%");
+  });
+
+  it("the tooltip explains the marks, and says nothing extra without them", () => {
+    expect(
+      draw([{ ...rows[0], minLimit: 40, limitsText: "charged from 40%" }])
+        .querySelector("button.level")!
+        .getAttribute("title")
+    ).toBe("Cyan: 50 % · charged from 40%");
+    expect(draw().querySelector("button.level")!.getAttribute("title")).toBe(
+      "Cyan: 50 %"
+    );
+  });
+
+  it("a charging span keeps being a span", () => {
+    const fill = draw([
+      { ...rows[0], from: 25, level: 75, charging: true },
+    ]).querySelector<HTMLElement>(".bar .fill")!;
+    expect(fill.classList.contains("span")).toBe(true);
+    expect(fill.classList.contains("charging")).toBe(true);
   });
 
   it("a span that ends before it starts draws nothing rather than backwards", () => {

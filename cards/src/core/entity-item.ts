@@ -10,6 +10,19 @@ export interface EntityItem {
   name?: string;
   icon?: string;
   color?: string;
+  /**
+   * What says the thing is charging: a binary_sensor, a charger type, a vendor
+   * enum — whatever the device happens to have. A role like any other, assigned
+   * by a human: the charging entity is never looked up by name.
+   */
+  charging?: string;
+  /**
+   * The charge cutoffs to mark on the bar: the level it is topped up from and
+   * the one it is stopped at. A number written by hand, or the entity holding
+   * it — a `number` of ha-smart-charging, an `input_number`, anything numeric.
+   */
+  min?: string | number;
+  max?: string | number;
 }
 
 /** Expands the short form into the full one. */

@@ -30,6 +30,61 @@ it is built only from objective facts — domain, `device_class`, entity attribu
 membership of one device. Never from names. A card suggests itself only when it would
 say more than the stock tile.
 
+## The sibling repository: `../ha-smart-charging`
+
+`ha-smart-charging` is the other Lovelace plugin of this household — a battery-preserving
+charging integration with two cards of its own — and those cards stand on the same
+dashboards as ours, often in the same section, one directly under the other. The two must
+read as one system, and most of its `cards/src/core/` **is this project's code**, copied
+across.
+
+**Before starting work here, read `../ha-smart-charging/AGENTS.md` and look at the matching
+code there.** Anything under `cards/src/core/` is effectively a shared library: change it
+in both repositories, or write down why the copies differ. That guide carries the mirror
+of this section, including the up-to-date table of divergences.
+
+```sh
+# What has drifted apart, at a glance
+diff -rq cards/src/core ../ha-smart-charging/cards/src/core
+```
+
+As of 2026-09-14, 21 of the 29 shared modules are byte-identical — `base-tile-card.ts`,
+`tile-styles.ts`, `state-color.ts`, `suggest.ts`, `actions.ts`, `ha-internals.ts`,
+`features.ts`, `weather.ts` and the rest of the small ones. What differs:
+
+- `i18n.ts` and `labels.ts` — permanently. That project is English-only by rule, so it
+  strips the Russian words out of the name patterns. Do not "fix" that, and do not let it
+  strip the Russian from ours.
+- `register.ts` and `types.ts` — that copy is ahead: `CardTexts` also accepts a plain
+  string (backwards compatible), and the HA types carry `last_changed` and `services`.
+  Worth taking.
+- `levels.ts` — reconciled here on 2026-09-14 and now the merged copy: their `minLimit`/
+  `maxLimit` ticks together with our shimmer and pill-rounded fill. Theirs is waiting to
+  be copied over byte for byte. The one thing the merge would not take from them is the
+  English tooltip on each tick: this module holds no words of its own, so the card
+  composes `limitsText` with `t()` and the row's own tooltip carries it.
+- `format.ts` and `entity-item.ts` — that copy is behind ours on the charging role and
+  `isCharging()`.
+
+Shared by design, not by accident:
+
+- **The charging animation.** `levels.ts` already says it in a comment: the shimmer came
+  from ha-smart-charging so that two plugins on one dashboard do not have two different
+  ways of saying "charging". It changes in both or in neither.
+- **Battery colour** (`labels.ts`), HA design tokens with fallbacks, and stock components
+  before our own markup.
+- **Grid arithmetic.** A sections-grid row is 56px with an 8px gap, so a card reporting a
+  numeric `rows` is handed exactly `R * (56 + 8) - 8` px and must fill all of it —
+  `:host` and `ha-card` at `height: 100%`, elements sharing the space with
+  `flex: 1 1 0`. A card that lays out `R * 56` leaves a hole inside its own slot and
+  reads as a wrong gap underneath. That was found and fixed over there; the same rule
+  applies to any card here that returns a fixed row count.
+- **`script/publish.py`**, the committed `dist/`, the versioned `?v=<hash>` resource, the
+  `NODE_ENV=production` build and the F5-only reload — the same in both.
+
+We have what they do not: the vitest suite and the `frontend/` reference clone. Logic
+added to a shared core module belongs in our tests, whichever repository needed it.
+
 ## Commands
 
 ```sh

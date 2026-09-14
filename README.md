@@ -383,8 +383,25 @@ location: sensor.alice_phone_geocoded_location
 devices:
   - entity: sensor.alice_watch_battery
     name: Watch
+    charging: sensor.alice_watch_charger_type
+    min: number.cradle_watch_min_charge
+    max: number.cradle_watch_max_charge
   - sensor.alice_tablet_battery
 ```
+
+A device with a `charging` entity gets a light slowly running along its bar while
+the charge goes in. Anything the device happens to have will do — a
+`binary_sensor`, the companion app's charger type, a vendor's own enum, the
+socket sensor of [ha-smart-charging](https://github.com/grigorii-horos/ha-smart-charging):
+every state counts as charging except the ones that plainly deny it (`off`,
+`none`, `not charging`, `fully charged`, and that plugin's `idle`, `cooldown`,
+`sleep`, `generic`).
+
+`min` and `max` mark the charge cutoffs on the bar: the level the device is
+topped up from and the one it is stopped at. Either a number written by hand or
+an entity holding one — ha-smart-charging publishes a `number` per device and
+socket, an `input_number` does just as well. The marks do not come and go with
+the cable: they say what the limits are, not whether the charger is on.
 
 ### Presence — `horos-presence-tile`
 

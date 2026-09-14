@@ -6,6 +6,8 @@ import { renderLevels, levelStyles } from "../core/levels";
 import { tileColor } from "../core/state-color";
 import {
   composeSegments,
+  isCharging,
+  limitValue,
   numericState,
   resolveRole,
   roleSegment,
@@ -17,7 +19,7 @@ import {
   stripDeviceName,
 } from "../core/labels";
 import { normalizeItem, type EntityItem } from "../core/entity-item";
-import type { LovelaceCardEditor } from "../core/types";
+import type { HomeAssistant, LovelaceCardEditor } from "../core/types";
 import { registerCard } from "../core/register";
 import { byClass, devicePool, suggestion } from "../core/suggest";
 import { computeDomain } from "../core/state-color";
@@ -31,8 +33,30 @@ export interface PersonTileConfig extends TileBaseConfig {
   battery?: string;
   /** Where exactly: a geocoded address or a zone. */
   location?: string;
-  /** The battery of the other devices: watch, tablet, e-reader. */
+  /**
+   * The battery of the other devices: watch, tablet, e-reader. Each may name a
+   * `charging` entity of its own, and then its bar shows the charge going in,
+   * and `min`/`max` cutoffs to mark on the bar.
+   */
   devices?: (EntityItem | string)[];
+}
+
+/**
+ * The words behind the cutoff marks. Two thin ticks on a bar are a riddle
+ * until something spells them out, and the row's tooltip is the only place a
+ * level row has for that.
+ */
+function limitsText(
+  hass: HomeAssistant | undefined,
+  min: number | undefined,
+  max: number | undefined
+): string | undefined {
+  if (min !== undefined && max !== undefined) {
+    return t(hass, "person.limits", { min, max });
+  }
+  if (min !== undefined) return t(hass, "person.limits.min", { min });
+  if (max !== undefined) return t(hass, "person.limits.max", { max });
+  return undefined;
 }
 
 /**
@@ -97,6 +121,9 @@ export class HorosPersonTile extends BaseTileCard {
             )
           ) ??
           item.entity;
+        const charging = isCharging(resolveRole(this.hass, item.charging));
+        const minLimit = limitValue(this.hass, item.min);
+        const maxLimit = limitValue(this.hass, item.max);
         return {
           entityId: item.entity,
           name,
@@ -105,6 +132,10 @@ export class HorosPersonTile extends BaseTileCard {
           level: level ?? 0,
           alarm: level !== undefined && level < 20,
           alarmIcon: "mdi:battery-alert-variant-outline",
+          charging,
+          minLimit,
+          maxLimit,
+          limitsText: limitsText(this.hass, minLimit, maxLimit),
         };
       });
 
