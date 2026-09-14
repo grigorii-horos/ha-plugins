@@ -7,6 +7,8 @@
 export interface HassEntity {
   entity_id: string;
   state: string;
+  /** When the state itself last changed, as an ISO timestamp. */
+  last_changed?: string;
   attributes: {
     friendly_name?: string;
     device_class?: string;
@@ -44,6 +46,7 @@ export interface HomeAssistant {
   /** The user's interface language. */
   language?: string;
   locale?: { language?: string };
+  services?: Record<string, Record<string, unknown>>;
   callService: (
     domain: string,
     service: string,

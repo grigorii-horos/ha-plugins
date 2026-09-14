@@ -1721,10 +1721,10 @@ function x(s, e, t) {
     type: t.type,
     preview: t.preview,
     get name() {
-      return t.name[Kt() === "ru" ? "ru" : "en"];
+      return typeof t.name == "string" ? t.name : t.name[Kt() === "ru" ? "ru" : "en"] ?? t.name.en;
     },
     get description() {
-      return t.description[Kt() === "ru" ? "ru" : "en"];
+      return typeof t.description == "string" ? t.description : t.description[Kt() === "ru" ? "ru" : "en"] ?? t.description.en;
     },
     getEntitySuggestion: t.suggest
   });
@@ -4912,7 +4912,7 @@ x("horos-weather-tile", kt, {
   suggest: (s, e) => j(e) !== "weather" ? null : L("custom:horos-weather-tile", { weather: e })
 });
 console.info(
-  "%c HOROS-CARDS %c 0.6.8 ",
+  "%c HOROS-CARDS %c 0.6.9 ",
   "background:#03a9f4;color:#fff;border-radius:3px 0 0 3px;padding:2px 4px",
   "background:#555;color:#fff;border-radius:0 3px 3px 0;padding:2px 4px"
 );

@@ -48,16 +48,13 @@ of this section, including the up-to-date table of divergences.
 diff -rq cards/src/core ../ha-smart-charging/cards/src/core
 ```
 
-As of 2026-09-14, 21 of the 29 shared modules are byte-identical — `base-tile-card.ts`,
+As of 2026-09-14, 23 of the 29 shared modules are byte-identical — `base-tile-card.ts`,
 `tile-styles.ts`, `state-color.ts`, `suggest.ts`, `actions.ts`, `ha-internals.ts`,
 `features.ts`, `weather.ts` and the rest of the small ones. What differs:
 
 - `i18n.ts` and `labels.ts` — permanently. That project is English-only by rule, so it
   strips the Russian words out of the name patterns. Do not "fix" that, and do not let it
   strip the Russian from ours.
-- `register.ts` and `types.ts` — that copy is ahead: `CardTexts` also accepts a plain
-  string (backwards compatible), and the HA types carry `last_changed` and `services`.
-  Worth taking.
 - `levels.ts` — reconciled here on 2026-09-14 and now the merged copy: their `minLimit`/
   `maxLimit` ticks together with our shimmer and pill-rounded fill. Theirs is waiting to
   be copied over byte for byte. The one thing the merge would not take from them is the
