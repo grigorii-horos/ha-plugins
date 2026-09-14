@@ -149,7 +149,12 @@ export const levelStyles = css`
     position: relative;
     height: 8px;
     border-radius: var(--ha-border-radius-pill, 9999px);
-    overflow: hidden;
+    /*
+     * Not hidden: the marks stand a couple of pixels proud of the track and
+     * carry a caret outside it. Nothing needs the clip any more — the fill has
+     * been a pill in its own right since it stopped being a clipped rectangle.
+     */
+    overflow: visible;
   }
 
   .level .bar .track {
@@ -218,20 +223,37 @@ export const levelStyles = css`
   /*
    * The cutoffs: where a charge is topped up from and where it is stopped.
    *
-   * Taken from ha-smart-charging, whose socket rows draw the same two marks —
-   * a level row and a socket row show the same battery on one dashboard, so a
-   * limit must look the same in both. Two thin marks and no band between them:
-   * at eight pixels of height a translucent band only muddies the fill colour,
-   * which is the thing actually being read.
+   * The whole treatment comes from ha-smart-charging's socket row — the band
+   * between the limits, a mark standing proud of the track at each end, and a
+   * caret outside pointing at it. A level row and a socket row show the same
+   * battery on one dashboard, so a limit has to look the same in both, and
+   * three marks are read at a glance where two bare hairlines were not.
+   *
+   * The literal rgba of the original is the one thing not carried over: the
+   * band is the info colour thinned with color-mix, so a theme that repaints
+   * that colour is followed here too.
    */
-  .level .bar .tick-min,
-  .level .bar .tick-max {
+  .level .bar .limit-band {
     position: absolute;
     top: 0;
     bottom: 0;
+    box-sizing: border-box;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--info-color, #0288d1) 18%, transparent);
+    border-inline: 1px dashed
+      color-mix(in srgb, var(--info-color, #0288d1) 60%, transparent);
+    pointer-events: none;
+  }
+
+  .level .bar .tick-min,
+  .level .bar .tick-max {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
     width: 2px;
     border-radius: 1px;
     z-index: 2;
+    pointer-events: none;
     transform: translateX(-50%);
   }
 
@@ -241,6 +263,29 @@ export const levelStyles = css`
 
   .level .bar .tick-max {
     background: var(--primary-text-color);
+    opacity: 0.85;
+  }
+
+  .level .bar .caret-min,
+  .level .bar .caret-max {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    z-index: 2;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .level .bar .caret-min {
+    top: calc(100% + 1px);
+    border-bottom: 3.5px solid var(--info-color, #0288d1);
+  }
+
+  .level .bar .caret-max {
+    bottom: calc(100% + 1px);
+    border-top: 3.5px solid var(--primary-text-color);
     opacity: 0.85;
   }
 
@@ -305,6 +350,16 @@ export function renderLevels(
             </span>
             <span class="bar">
               <span class="track"></span>
+              ${row.minLimit === undefined ||
+              row.maxLimit === undefined ||
+              clamp(row.maxLimit) <= clamp(row.minLimit)
+                ? nothing
+                : html`<span
+                    class="limit-band"
+                    style="inset-inline-start: ${clamp(
+                      row.minLimit
+                    )}%; width: ${clamp(row.maxLimit) - clamp(row.minLimit)}%"
+                  ></span>`}
               <span
                 class="fill ${row.from === undefined ? "" : "span"} ${row.charging
                   ? "charging"
@@ -319,15 +374,23 @@ export function renderLevels(
               ${row.minLimit === undefined
                 ? nothing
                 : html`<span
-                    class="tick-min"
-                    style="inset-inline-start: ${clamp(row.minLimit)}%"
-                  ></span>`}
+                      class="tick-min"
+                      style="inset-inline-start: ${clamp(row.minLimit)}%"
+                    ></span>
+                    <span
+                      class="caret-min"
+                      style="inset-inline-start: ${clamp(row.minLimit)}%"
+                    ></span>`}
               ${row.maxLimit === undefined
                 ? nothing
                 : html`<span
-                    class="tick-max"
-                    style="inset-inline-start: ${clamp(row.maxLimit)}%"
-                  ></span>`}
+                      class="tick-max"
+                      style="inset-inline-start: ${clamp(row.maxLimit)}%"
+                    ></span>
+                    <span
+                      class="caret-max"
+                      style="inset-inline-start: ${clamp(row.maxLimit)}%"
+                    ></span>`}
             </span>
             <span class="value">${row.text}</span>
           </button>

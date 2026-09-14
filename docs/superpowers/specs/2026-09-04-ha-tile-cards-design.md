@@ -897,12 +897,22 @@ a nameless per cent.
 
 Two things on a row come from the sibling plugin, `ha-smart-charging`, whose socket rows
 draw the same battery on the same dashboards: **the shimmer** that runs along a fill while
-the charge goes in, and **the two cutoff marks** — where a device is topped up from and
-where it is stopped. Both were taken as they are rather than invented again, because two
-plugins side by side must not have two ways of saying the same thing. What was left behind
-is that card's pulsing thumb at the end of the fill: a level row is a scale to be read, not
-a slider to be dragged. There is no translucent band between the marks either — at eight
-pixels of height it only muddies the fill colour, which is the thing being read.
+the charge goes in, and **the cutoffs** — where a device is topped up from and where it is
+stopped. Both were taken as they are rather than invented again, because two plugins side
+by side must not have two ways of saying the same thing.
+
+The cutoffs came over whole: a band between the limits, a mark standing two pixels proud
+of the track at each end of it, and a caret outside pointing at each mark. The first cut of
+this took only the two bare hairlines, on the argument that a band at eight pixels of
+height would muddy the fill colour. Seen on the dashboard next to their card, the bare
+version simply lost: three marks are read at a glance, and the band shows itself exactly
+where it is wanted — in the empty part of the track, ahead of the fill. The one thing left
+behind is that card's pulsing thumb at the end of the fill: a level row is a scale to be
+read, not a slider to be dragged. Because the marks stand outside the track, `.bar` no
+longer clips its contents — nothing needs the clip since the fill became a pill of its own.
+
+The band's literal `rgba` is the one thing not carried over: here it is the info colour
+thinned with `color-mix`, so a theme that repaints that colour is followed.
 
 The marks do not come and go with the cable: they say what the limits are, not whether the
 charger is on. And the module holds no words of its own — the card composes `limitsText`
