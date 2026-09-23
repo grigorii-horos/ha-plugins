@@ -16,13 +16,6 @@ export interface EntityItem {
    * by a human: the charging entity is never looked up by name.
    */
   charging?: string;
-  /**
-   * The charge cutoffs to mark on the bar: the level it is topped up from and
-   * the one it is stopped at. A number written by hand, or the entity holding
-   * it — a `number` of ha-smart-charging, an `input_number`, anything numeric.
-   */
-  min?: string | number;
-  max?: string | number;
 }
 
 /** Expands the short form into the full one. */

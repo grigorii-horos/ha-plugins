@@ -38,16 +38,6 @@ export interface LevelRow {
   alarmIcon?: string;
   /** On the charger: the bar has a light running along it. */
   charging?: boolean;
-  /** The lower cutoff to mark on the track, 0..100. */
-  minLimit?: number;
-  /** The upper cutoff to mark on the track, 0..100. */
-  maxLimit?: number;
-  /**
-   * What the marks mean, in the interface language. The words are composed by
-   * the card because `hass` lives there; this module holds none of its own, so
-   * the two plugins that share it can keep different dictionaries.
-   */
-  limitsText?: string;
 }
 
 export interface LevelsOptions {
@@ -68,12 +58,25 @@ export const levelStyles = css`
    * The rows fill whatever height they are given and spread evenly in it —
    * the same thing hui-card-features does with its own spare room, so a list
    * of rows and a stack of features behave alike on a card of a fixed height.
+   *
+   * Three columns for the whole list, not three parts of each row: the value
+   * column is then as wide as the widest value there is, and every bar ends at
+   * the same place. Rows that sized their own value drew a ragged right edge —
+   * a week of weather whose "11 / 23.7 °C" is a character shorter than its
+   * neighbours pushed that day's bar further right than the rest, and six bars
+   * meant to be read as one scale no longer shared an end.
+   *
+   * The value itself is one string against the right edge. Splitting it round
+   * its sign to stand the arrows in a line was tried: it left a hole after the
+   * sign wherever the halves differed in width, and read worse than arrows a
+   * digit apart.
    */
   .levels {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    gap: var(--ha-space-1, 4px);
+    display: grid;
+    grid-template-columns: var(--level-name, 34%) minmax(0, 1fr) auto;
+    align-content: space-evenly;
+    row-gap: var(--ha-space-1, 4px);
+    column-gap: var(--ha-space-2, 8px);
     height: 100%;
     min-height: 0;
   }
@@ -91,9 +94,11 @@ export const levelStyles = css`
    * own 1px 6px and the bars stop lining up with the texts above.
    */
   .level {
-    display: flex;
+    display: grid;
+    grid-column: 1 / -1;
+    /* The row borrows the list's columns, so they line up across rows. */
+    grid-template-columns: subgrid;
     align-items: center;
-    gap: var(--ha-space-2, 8px);
     width: 100%;
     padding: 0;
     border: none;
@@ -115,7 +120,6 @@ export const levelStyles = css`
    * card with short labels sets --level-name to a length of its own.
    */
   .level .name {
-    flex: 0 0 var(--level-name, 34%);
     min-width: 0;
     display: flex;
     align-items: center;
@@ -141,25 +145,26 @@ export const levelStyles = css`
   /*
    * The bar as in the stock hui-bar-gauge-card-feature, only thinner.
    *
-   * The fill is placed on the track rather than flowing before it: a span has
-   * to start away from the left edge, and a flex row can only grow from it.
+   * The fill is placed on the track rather than sitting before it in the row:
+   * a span has to start away from the left edge, and a bar laid out as a box in
+   * the line could only grow from it.
    */
   .level .bar {
-    flex: 1 1 auto;
     position: relative;
+    min-width: 0;
     height: 8px;
     border-radius: var(--ha-border-radius-pill, 9999px);
-    /*
-     * Not hidden: the marks stand a couple of pixels proud of the track and
-     * carry a caret outside it. Nothing needs the clip any more — the fill has
-     * been a pill in its own right since it stopped being a clipped rectangle.
-     */
-    overflow: visible;
   }
 
+  /*
+   * The track is a pill in its own right, for the same reason the fill is: the
+   * bar does not clip its children, and a track relying on a clip came out a
+   * rectangle with knife-cut ends under rounded fills.
+   */
   .level .bar .track {
     position: absolute;
     inset: 0;
+    border-radius: var(--ha-border-radius-pill, 9999px);
     background-color: var(--ink);
     opacity: 0.2;
   }
@@ -220,82 +225,13 @@ export const levelStyles = css`
     }
   }
 
-  /*
-   * The cutoffs: where a charge is topped up from and where it is stopped.
-   *
-   * The whole treatment comes from ha-smart-charging's socket row — the band
-   * between the limits, a mark standing proud of the track at each end, and a
-   * caret outside pointing at it. A level row and a socket row show the same
-   * battery on one dashboard, so a limit has to look the same in both, and
-   * three marks are read at a glance where two bare hairlines were not.
-   *
-   * The literal rgba of the original is the one thing not carried over: the
-   * band is the info colour thinned with color-mix, so a theme that repaints
-   * that colour is followed here too.
-   */
-  .level .bar .limit-band {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    box-sizing: border-box;
-    border-radius: 2px;
-    background: color-mix(in srgb, var(--info-color, #0288d1) 18%, transparent);
-    border-inline: 1px dashed
-      color-mix(in srgb, var(--info-color, #0288d1) 60%, transparent);
-    pointer-events: none;
-  }
-
-  .level .bar .tick-min,
-  .level .bar .tick-max {
-    position: absolute;
-    top: -2px;
-    bottom: -2px;
-    width: 2px;
-    border-radius: 1px;
-    z-index: 2;
-    pointer-events: none;
-    transform: translateX(-50%);
-  }
-
-  .level .bar .tick-min {
-    background: var(--info-color, #0288d1);
-  }
-
-  .level .bar .tick-max {
-    background: var(--primary-text-color);
-    opacity: 0.85;
-  }
-
-  .level .bar .caret-min,
-  .level .bar .caret-max {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 3px solid transparent;
-    border-right: 3px solid transparent;
-    z-index: 2;
-    pointer-events: none;
-    transform: translateX(-50%);
-  }
-
-  .level .bar .caret-min {
-    top: calc(100% + 1px);
-    border-bottom: 3.5px solid var(--info-color, #0288d1);
-  }
-
-  .level .bar .caret-max {
-    bottom: calc(100% + 1px);
-    border-top: 3.5px solid var(--primary-text-color);
-    opacity: 0.85;
-  }
-
   .level .value {
-    flex: none;
     min-width: 3.2em;
     text-align: end;
     font-size: var(--ha-font-size-s, 12px);
     color: var(--primary-text-color);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .level.low .value {
@@ -331,9 +267,7 @@ export function renderLevels(
           <button
             class="level ${row.alarm ? "low" : ""}"
             style="--ink: ${row.ink};"
-            title="${row.name}: ${row.text}${row.limitsText
-              ? ` · ${row.limitsText}`
-              : ""}"
+            title="${row.name}: ${row.text}"
             @click=${(ev: Event) => {
               ev.stopPropagation();
               onTap(row.entityId);
@@ -350,16 +284,6 @@ export function renderLevels(
             </span>
             <span class="bar">
               <span class="track"></span>
-              ${row.minLimit === undefined ||
-              row.maxLimit === undefined ||
-              clamp(row.maxLimit) <= clamp(row.minLimit)
-                ? nothing
-                : html`<span
-                    class="limit-band"
-                    style="inset-inline-start: ${clamp(
-                      row.minLimit
-                    )}%; width: ${clamp(row.maxLimit) - clamp(row.minLimit)}%"
-                  ></span>`}
               <span
                 class="fill ${row.from === undefined ? "" : "span"} ${row.charging
                   ? "charging"
@@ -371,26 +295,6 @@ export function renderLevels(
                   clamp(row.level) - clamp(row.from ?? 0)
                 )}%"
               ></span>
-              ${row.minLimit === undefined
-                ? nothing
-                : html`<span
-                      class="tick-min"
-                      style="inset-inline-start: ${clamp(row.minLimit)}%"
-                    ></span>
-                    <span
-                      class="caret-min"
-                      style="inset-inline-start: ${clamp(row.minLimit)}%"
-                    ></span>`}
-              ${row.maxLimit === undefined
-                ? nothing
-                : html`<span
-                      class="tick-max"
-                      style="inset-inline-start: ${clamp(row.maxLimit)}%"
-                    ></span>
-                    <span
-                      class="caret-max"
-                      style="inset-inline-start: ${clamp(row.maxLimit)}%"
-                    ></span>`}
             </span>
             <span class="value">${row.text}</span>
           </button>

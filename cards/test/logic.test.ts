@@ -4,7 +4,6 @@ import {
   composeSegments,
   formatRole,
   isCharging,
-  limitValue,
   numericState,
   formatUnavailable,
   resolveRole,
@@ -255,33 +254,6 @@ describe("on the charger", () => {
     expect(charging(undefined)).toBe(false);
     expect(charging("sensor.missing")).toBe(false);
     expect(charging("sensor.dead")).toBe(false);
-  });
-});
-
-describe("the charge cutoffs", () => {
-  const hass = fakeHass([
-    entity("number.watch_min_charge", "40", { unit_of_measurement: "%" }),
-    entity("number.watch_max_charge", "75", { unit_of_measurement: "%" }),
-    entity("number.gone", "unavailable"),
-    entity("sensor.words", "seventy"),
-  ]);
-
-  it("a number written by hand is taken as it is", () => {
-    expect(limitValue(hass, 80)).toBe(80);
-    expect(limitValue(hass, 0)).toBe(0);
-  });
-
-  it("an entity is asked for its number", () => {
-    expect(limitValue(hass, "number.watch_min_charge")).toBe(40);
-    expect(limitValue(hass, "number.watch_max_charge")).toBe(75);
-  });
-
-  it("nothing to mark is not a mark at zero", () => {
-    expect(limitValue(hass, undefined)).toBeUndefined();
-    expect(limitValue(hass, "number.missing")).toBeUndefined();
-    expect(limitValue(hass, "number.gone")).toBeUndefined();
-    expect(limitValue(hass, "sensor.words")).toBeUndefined();
-    expect(limitValue(hass, Number.NaN)).toBeUndefined();
   });
 });
 

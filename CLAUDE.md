@@ -48,20 +48,22 @@ of this section, including the up-to-date table of divergences.
 diff -rq cards/src/core ../ha-smart-charging/cards/src/core
 ```
 
-As of 2026-09-14, 23 of the 29 shared modules are byte-identical — `base-tile-card.ts`,
-`tile-styles.ts`, `state-color.ts`, `suggest.ts`, `actions.ts`, `ha-internals.ts`,
-`features.ts`, `weather.ts` and the rest of the small ones. What differs:
+As of 2026-09-23, 23 of the 28 shared modules are byte-identical — `base-tile-card.ts`,
+`tile-styles.ts`, `state-color.ts`, `suggest.ts`, `actions.ts`,
+`ha-internals.ts`, `features.ts`, `weather.ts` and the rest of the small ones. What
+differs:
 
 - `i18n.ts` and `labels.ts` — permanently. That project is English-only by rule, so it
   strips the Russian words out of the name patterns. Do not "fix" that, and do not let it
   strip the Russian from ours.
-- `levels.ts` — reconciled here on 2026-09-14 and now the merged copy: their `minLimit`/
-  `maxLimit` ticks together with our shimmer and pill-rounded fill. Theirs is waiting to
-  be copied over byte for byte. The one thing the merge would not take from them is the
-  English tooltip on each tick: this module holds no words of its own, so the card
-  composes `limitsText` with `t()` and the row's own tooltip carries it.
 - `format.ts` and `entity-item.ts` — that copy is behind ours on the charging role and
   `isCharging()`.
+- `levels.ts` — ours has no cutoffs. On 2026-09-23 ha-smart-charging was taken off the
+  HA host (the phone and the watch reported their battery too unreliably for it to work)
+  and its watch cradle became a plain automation. With it went the `number` entities the
+  `minLimit`/`maxLimit` ticks were drawn from, so the ticks, the band, the carets, the
+  `min`/`max` of a device item and `limitValue()` were removed here. Their copy still
+  carries them; do not copy it back over ours.
 
 Shared by design, not by accident:
 

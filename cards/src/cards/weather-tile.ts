@@ -54,8 +54,15 @@ const DEFAULT_LINE = ["humidity", "wind_speed"];
  */
 const DEFAULT_BIG = ["temperature", "humidity"];
 
-/** Weekday abbreviations are a few letters everywhere; the bars get the rest. */
-const NAME_WIDTH = "4.5em";
+/**
+ * Weekday abbreviations are a few letters everywhere; the bars get the rest.
+ *
+ * Measured, not guessed: with its 14px glyph the widest short weekday needs
+ * 41px in English, 31px in Russian and 49px in the longest locale found
+ * (Polish "niedz."). 3.75em is 52.5px on HA's 14px root — room for that one,
+ * and ten pixels more bar than the 4.5em the column started with.
+ */
+const NAME_WIDTH = "3.75em";
 
 export interface WeatherTileConfig extends TileBaseConfig {
   type: string;

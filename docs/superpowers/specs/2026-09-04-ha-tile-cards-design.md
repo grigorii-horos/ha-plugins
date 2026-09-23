@@ -895,6 +895,9 @@ a nameless per cent.
 
 ### Charging, and the marks on the track
 
+> **Removed 2026-09-23.** The cutoffs below are gone: ha-smart-charging, which published
+> the limits they were drawn from, was taken off the host. The shimmer stays.
+
 Two things on a row come from the sibling plugin, `ha-smart-charging`, whose socket rows
 draw the same battery on the same dashboards: **the shimmer** that runs along a fill while
 the charge goes in, and **the cutoffs** — where a device is topped up from and where it is

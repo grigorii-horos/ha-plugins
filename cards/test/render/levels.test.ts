@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { render } from "lit";
 import {
+  levelStyles,
   renderLevels,
   type LevelRow,
   type LevelsOptions,
@@ -118,96 +119,6 @@ describe("level rows", () => {
     expect(fills[1].classList.contains("charging")).toBe(false);
   });
 
-  it("the cutoffs are marked where they were told", () => {
-    const bar = draw([
-      { ...rows[0], minLimit: 40, maxLimit: 75 },
-    ]).querySelector(".bar")!;
-    expect(
-      bar.querySelector<HTMLElement>(".tick-min")!.style.getPropertyValue(
-        "inset-inline-start"
-      )
-    ).toBe("40%");
-    expect(
-      bar.querySelector<HTMLElement>(".tick-max")!.style.getPropertyValue(
-        "inset-inline-start"
-      )
-    ).toBe("75%");
-  });
-
-  it("each mark carries its caret, and the band spans between them", () => {
-    const bar = draw([
-      { ...rows[0], minLimit: 40, maxLimit: 75 },
-    ]).querySelector(".bar")!;
-    const band = bar.querySelector<HTMLElement>(".limit-band")!;
-    expect(band.style.getPropertyValue("inset-inline-start")).toBe("40%");
-    expect(band.style.width).toBe("35%");
-    expect(
-      bar.querySelector<HTMLElement>(".caret-min")!.style.getPropertyValue(
-        "inset-inline-start"
-      )
-    ).toBe("40%");
-    expect(
-      bar.querySelector<HTMLElement>(".caret-max")!.style.getPropertyValue(
-        "inset-inline-start"
-      )
-    ).toBe("75%");
-  });
-
-  it("a band needs both ends, and a top above a bottom", () => {
-    expect(
-      draw([{ ...rows[0], minLimit: 40 }]).querySelector(".limit-band")
-    ).toBeNull();
-    expect(
-      draw([{ ...rows[0], maxLimit: 75 }]).querySelector(".limit-band")
-    ).toBeNull();
-    expect(
-      draw([{ ...rows[0], minLimit: 75, maxLimit: 40 }]).querySelector(
-        ".limit-band"
-      )
-    ).toBeNull();
-    expect(
-      draw([{ ...rows[0], minLimit: 40, maxLimit: 40 }]).querySelector(
-        ".limit-band"
-      )
-    ).toBeNull();
-  });
-
-  it("a cutoff nobody set is not drawn", () => {
-    const bar = draw([{ ...rows[0], maxLimit: 75 }]).querySelector(".bar")!;
-    expect(bar.querySelector(".tick-min")).toBeNull();
-    expect(bar.querySelector(".caret-min")).toBeNull();
-    expect(bar.querySelector(".tick-max")).not.toBeNull();
-    expect(draw().querySelector(".tick-max")).toBeNull();
-    expect(draw().querySelector(".caret-max")).toBeNull();
-  });
-
-  it("a cutoff outside the bar is pulled back onto it", () => {
-    const bar = draw([
-      { ...rows[0], minLimit: -5, maxLimit: 140 },
-    ]).querySelector(".bar")!;
-    expect(
-      bar.querySelector<HTMLElement>(".tick-min")!.style.getPropertyValue(
-        "inset-inline-start"
-      )
-    ).toBe("0%");
-    expect(
-      bar.querySelector<HTMLElement>(".tick-max")!.style.getPropertyValue(
-        "inset-inline-start"
-      )
-    ).toBe("100%");
-  });
-
-  it("the tooltip explains the marks, and says nothing extra without them", () => {
-    expect(
-      draw([{ ...rows[0], minLimit: 40, limitsText: "charged from 40%" }])
-        .querySelector("button.level")!
-        .getAttribute("title")
-    ).toBe("Cyan: 50 % · charged from 40%");
-    expect(draw().querySelector("button.level")!.getAttribute("title")).toBe(
-      "Cyan: 50 %"
-    );
-  });
-
   it("a charging span keeps being a span", () => {
     const fill = draw([
       { ...rows[0], from: 25, level: 75, charging: true },
@@ -251,5 +162,23 @@ describe("level rows", () => {
 
   it("an empty list draws an empty row instead of crashing", () => {
     expect(draw([]).querySelectorAll("button.level")).toHaveLength(0);
+  });
+
+  /*
+   * The stylesheet, read as text: happy-dom renders the markup but adopts none
+   * of the styles, and these two shapes are exactly what a screenshot caught.
+   */
+  describe("the stylesheet", () => {
+    const css = levelStyles.cssText;
+
+    it("the list owns the columns, so every bar ends where the others do", () => {
+      expect(css).toContain("grid-template-columns: subgrid");
+      expect(css).toMatch(/\.levels \{[^}]*display: grid/);
+    });
+
+    it("the track is a pill, like the fill lying on it", () => {
+      const track = css.match(/\.level \.bar \.track \{[^}]*\}/)![0];
+      expect(track).toContain("border-radius: var(--ha-border-radius-pill");
+    });
   });
 });

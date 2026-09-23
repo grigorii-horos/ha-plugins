@@ -211,22 +211,6 @@ export function isCharging(role: ResolvedRole | undefined): boolean {
   return !NOT_CHARGING.has(state);
 }
 
-/**
- * A limit to mark on a bar: either written in the config as a number, or the
- * entity that holds it — ha-smart-charging publishes a `number` per device and
- * socket, so the mark follows the cutoff the charger is actually obeying.
- */
-export function limitValue(
-  hass: HomeAssistant | undefined,
-  limit: string | number | undefined
-): number | undefined {
-  if (limit === undefined) return undefined;
-  if (typeof limit === "number") {
-    return Number.isFinite(limit) ? limit : undefined;
-  }
-  return numericState(resolveRole(hass, limit));
-}
-
 /** The card name: from the config, otherwise the main entity's name. */
 export function cardName(
   configName: string | undefined,
