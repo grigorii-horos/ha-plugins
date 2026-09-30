@@ -332,7 +332,9 @@ export abstract class BaseTileCard extends LitElement {
     if (!entityId) return html`<span>${content}</span>`;
     const name =
       this.hass?.states[entityId]?.attributes.friendly_name ?? entityId;
-    return html`<button
+    return html`<span
+      role="button"
+      tabindex="0"
       class="clickable"
       title=${name}
       aria-label=${name}
@@ -340,7 +342,14 @@ export abstract class BaseTileCard extends LitElement {
         ev.stopPropagation();
         this.fireMoreInfo(entityId);
       }}
-      >${content}</button
+      @keydown=${(ev: KeyboardEvent) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          ev.stopPropagation();
+          this.fireMoreInfo(entityId);
+        }
+      }}
+      >${content}</span
     >`;
   }
 

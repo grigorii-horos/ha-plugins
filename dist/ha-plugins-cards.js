@@ -1504,14 +1504,19 @@ class E extends le {
   renderClickable(e, t) {
     if (!t) return y`<span>${e}</span>`;
     const r = this.hass?.states[t]?.attributes.friendly_name ?? t;
-    return y`<button
+    return y`<span
+      role="button"
+      tabindex="0"
       class="clickable"
       title=${r}
       aria-label=${r}
       @click=${(n) => {
       n.stopPropagation(), this.fireMoreInfo(t);
     }}
-      >${e}</button
+      @keydown=${(n) => {
+      (n.key === "Enter" || n.key === " ") && (n.preventDefault(), n.stopPropagation(), this.fireMoreInfo(t));
+    }}
+      >${e}</span
     >`;
   }
   renderTile(e) {
