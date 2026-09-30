@@ -2908,6 +2908,10 @@ class js extends E {
       fe`
       span[slot="secondary"] {
         white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
       
       span[slot="secondary"] .clickable {
