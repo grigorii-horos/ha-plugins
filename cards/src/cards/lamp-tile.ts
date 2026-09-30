@@ -112,30 +112,6 @@ export class HorosLampTile extends BaseTileCard {
         pointer-events: auto;
       }
 
-      ha-control-button-group {
-        --control-button-group-spacing: var(--feature-button-spacing, 12px);
-        --control-button-group-thickness: var(--feature-height, 42px);
-      }
-
-      ha-control-button-group > ha-control-button {
-        flex-basis: 20px;
-        --control-button-padding: 0px;
-      }
-
-      ha-control-button {
-        --control-button-border-radius: 12px;
-        --control-button-focus-color: var(--tile-color);
-        position: relative;
-        z-index: 0;
-      }
-      
-      ha-control-button::after {
-        content: "";
-        position: absolute;
-        inset: -6px;
-        z-index: -1;
-      }
-
       ha-control-select {
         --control-select-color: var(--tile-color);
         --control-select-padding: 0;
@@ -151,8 +127,7 @@ export class HorosLampTile extends BaseTileCard {
        * both are taken down a notch. Size and font are inherited properties,
        * which is why they reach into the selector's shadow from out here.
        */
-      .lamp-controls.labelled ha-control-select,
-      .lamp-controls.labelled .presets-group ha-control-button {
+      .lamp-controls.labelled ha-control-select {
         --mdc-icon-size: 16px;
         font-size: var(--ha-font-size-xs, 11px);
         line-height: 1.1;
@@ -237,18 +212,19 @@ export class HorosLampTile extends BaseTileCard {
     const steps = STEPS.filter(({ key }) => config[key]);
     if (!steps.length) return nothing;
     return html`
-      <ha-control-button-group>
-        ${steps.map(
-          ({ key, icon }) => html`
-            <ha-control-button
-              .label=${this._stepLabel(key)}
-              @click=${() => this._run(config[key]!)}
-            >
-              <ha-icon .icon=${icon}></ha-icon>
-            </ha-control-button>
-          `
-        )}
-      </ha-control-button-group>
+      <ha-control-select
+        .options=${steps.map(({ key, icon }) => ({
+          value: config[key]!,
+          ariaLabel: this._stepLabel(key),
+          icon: html`<ha-icon .icon=${icon}></ha-icon>`,
+        }))}
+        .value=${undefined}
+        hide-option-label
+        @value-changed=${(event: CustomEvent<{ value: string }>) => {
+          this._run(event.detail.value);
+          (event.target as any).value = undefined;
+        }}
+      ></ha-control-select>
     `;
   }
 
@@ -261,37 +237,13 @@ export class HorosLampTile extends BaseTileCard {
       typeof raw === "string" ? { entity: raw } : raw
     );
 
-    if (!config.preset_state) {
-      return html`
-        <ha-control-button-group class="presets-group">
-          ${presets.map((preset) => {
-            const stateObj = this.hass?.states[preset.entity];
-            const label =
-              preset.name ??
-              buttonLabel(stateObj?.attributes.friendly_name) ??
-              preset.entity;
-            const icon =
-              preset.icon ?? (stateObj?.attributes.icon as string | undefined);
-            return html`
-              <ha-control-button
-                .label=${label}
-                @click=${() => this._run(preset.entity)}
-              >
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
-                  ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : nothing}
-                  ${config.preset_labels === false ? nothing : html`<span style="margin-top: 4px;">${label}</span>`}
-                </div>
-              </ha-control-button>
-            `;
-          })}
-        </ha-control-button-group>
-      `;
-    }
-
-    const current = this.hass?.states[config.preset_state]?.state;
+    const current = config.preset_state 
+      ? this.hass?.states[config.preset_state]?.state 
+      : undefined;
 
     return html`
       <ha-control-select
+        class="presets-group"
         .options=${presets.map((preset) => {
           const stateObj = this.hass?.states[preset.entity];
           const label =
@@ -307,11 +259,16 @@ export class HorosLampTile extends BaseTileCard {
             icon: icon ? html`<ha-icon .icon=${icon}></ha-icon>` : undefined,
           };
         })}
-        .value=${presets.find((preset) => preset.name === current)?.entity ??
-        current}
+        .value=${current 
+          ? (presets.find((preset) => preset.name === current)?.entity ?? current)
+          : undefined}
         ?hide-option-label=${config.preset_labels === false}
-        @value-changed=${(event: CustomEvent<{ value: string }>) =>
-          this._run(event.detail.value)}
+        @value-changed=${(event: CustomEvent<{ value: string }>) => {
+          this._run(event.detail.value);
+          if (!config.preset_state) {
+            (event.target as any).value = undefined;
+          }
+        }}
       >
       </ha-control-select>
     `;
