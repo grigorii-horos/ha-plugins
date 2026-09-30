@@ -126,12 +126,14 @@ export class HorosLampTile extends BaseTileCard {
         --control-button-border-radius: 12px;
         --control-button-focus-color: var(--tile-color);
         position: relative;
+        z-index: 0;
       }
       
       ha-control-button::after {
         content: "";
         position: absolute;
         inset: -6px;
+        z-index: -1;
       }
 
       ha-control-select {
