@@ -1,4 +1,4 @@
-import { nothing } from "lit";
+import { nothing, css } from "lit";
 import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
@@ -46,7 +46,20 @@ export interface PersonTileConfig extends TileBaseConfig {
  * several homogeneous levels that have to be seen together.
  */
 export class HorosPersonTile extends BaseTileCard {
-  static styles = [tileStyles, levelStyles];
+  static styles = [
+    tileStyles,
+    levelStyles,
+    css`
+      span[slot="secondary"] {
+        white-space: normal;
+      }
+      
+      span[slot="secondary"] .clickable {
+        text-align: left;
+        display: inline;
+      }
+    `,
+  ];
 
   @state() private _config?: PersonTileConfig;
 

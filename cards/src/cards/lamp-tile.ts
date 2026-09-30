@@ -125,6 +125,13 @@ export class HorosLampTile extends BaseTileCard {
       ha-control-button {
         --control-button-border-radius: 12px;
         --control-button-focus-color: var(--tile-color);
+        position: relative;
+      }
+      
+      ha-control-button::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
       }
 
       ha-control-select {
@@ -142,7 +149,8 @@ export class HorosLampTile extends BaseTileCard {
        * both are taken down a notch. Size and font are inherited properties,
        * which is why they reach into the selector's shadow from out here.
        */
-      .lamp-controls.labelled ha-control-select {
+      .lamp-controls.labelled ha-control-select,
+      .lamp-controls.labelled .presets-group ha-control-button {
         --mdc-icon-size: 16px;
         font-size: var(--ha-font-size-xs, 11px);
         line-height: 1.1;
@@ -250,7 +258,35 @@ export class HorosLampTile extends BaseTileCard {
     const presets = config.presets.map((raw) =>
       typeof raw === "string" ? { entity: raw } : raw
     );
-    const current = this.hass?.states[config.preset_state ?? ""]?.state;
+
+    if (!config.preset_state) {
+      return html`
+        <ha-control-button-group class="presets-group">
+          ${presets.map((preset) => {
+            const stateObj = this.hass?.states[preset.entity];
+            const label =
+              preset.name ??
+              buttonLabel(stateObj?.attributes.friendly_name) ??
+              preset.entity;
+            const icon =
+              preset.icon ?? (stateObj?.attributes.icon as string | undefined);
+            return html`
+              <ha-control-button
+                .label=${label}
+                @click=${() => this._run(preset.entity)}
+              >
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                  ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : nothing}
+                  ${config.preset_labels === false ? nothing : html`<span style="margin-top: 4px;">${label}</span>`}
+                </div>
+              </ha-control-button>
+            `;
+          })}
+        </ha-control-button-group>
+      `;
+    }
+
+    const current = this.hass?.states[config.preset_state]?.state;
 
     return html`
       <ha-control-select
