@@ -160,3 +160,18 @@ export function lastReportedTemplate(ids: string[]): string {
     "| map(attribute='last_reported') | map('as_timestamp') | max | default('') }}"
   );
 }
+
+/**
+ * The pulse period after one tap: a step up, and round to the minimum past the
+ * maximum — a single button has to reach every value without a second one.
+ */
+export function nextPeriod(
+  value: number | undefined,
+  step: number,
+  lo: number,
+  hi: number
+): number {
+  if (value === undefined) return lo;
+  const next = value + (step > 0 ? step : 1);
+  return next > hi ? lo : Number(next.toFixed(6));
+}

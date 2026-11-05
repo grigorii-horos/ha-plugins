@@ -20,6 +20,7 @@ import {
   lastReport,
   lastReportedTemplate,
   minutesLeft,
+  nextPeriod,
   pickLevel,
 } from "../charge/charge";
 import "../charge/range-bar";
@@ -35,6 +36,11 @@ export interface ChargeTileConfig extends TileBaseConfig {
   max: string;
   /** A timer: while it runs the automation charges regardless of max. */
   force?: string;
+  /**
+   * An `input_number` of hours: how often the automation powers the port for a
+   * short pulse while there is no battery data. Optional; no button without it.
+   */
+  pulse_every?: string;
   /** Seconds after which an unchanged report counts as no data. */
   stale_after?: number;
 }
@@ -222,6 +228,44 @@ export class HorosChargeTile extends BaseTileCard {
     });
   }
 
+  /** Set by a long press so the click that follows it is not taken as a tap. */
+  private _held = false;
+
+  private _holdTimer?: ReturnType<typeof setTimeout>;
+
+  private _periodDown(): void {
+    this._held = false;
+    clearTimeout(this._holdTimer);
+    // The same 500 ms the stock tile waits before calling a press a hold.
+    this._holdTimer = setTimeout(() => {
+      this._held = true;
+      if (this._config?.pulse_every) this.fireMoreInfo(this._config.pulse_every);
+    }, 500);
+  }
+
+  private _periodUp(): void {
+    clearTimeout(this._holdTimer);
+  }
+
+  private _periodTap(event: Event): void {
+    event.stopPropagation();
+    if (this._held) {
+      this._held = false;
+      return;
+    }
+    const entityId = this._config?.pulse_every;
+    if (!entityId || !this.hass) return;
+    const value = nextPeriod(
+      this._number(entityId),
+      this._number(entityId, "step") ?? 1,
+      this._number(entityId, "min") ?? 1,
+      this._number(entityId, "max") ?? 48
+    );
+    void this.hass
+      .callService(entityId.split(".")[0], "set_value", { entity_id: entityId, value })
+      .catch(() => undefined);
+  }
+
   private _toggleForce(event: Event): void {
     event.stopPropagation();
     const force = this._config?.force;
@@ -243,6 +287,7 @@ export class HorosChargeTile extends BaseTileCard {
       resolveRole(hass, config.min),
       resolveRole(hass, config.max),
       resolveRole(hass, config.force),
+      resolveRole(hass, config.pulse_every),
       // A battery list is fine with one of its sensors gone, not with all.
       ids.every((id) => !hass.states[id]) ? resolveRole(hass, ids[0]) : undefined,
     ]);
@@ -295,6 +340,24 @@ export class HorosChargeTile extends BaseTileCard {
           .charging=${on}
           @limit-change=${this._setLimit}
         ></horos-charge-range>
+        ${config.pulse_every && this._controlsReady
+          ? html`<ha-control-button
+              .label=${t(hass, "charge.everyLabel")}
+              title=${t(hass, "charge.everyLabel")}
+              @pointerdown=${this._periodDown}
+              @pointerup=${this._periodUp}
+              @pointercancel=${this._periodUp}
+              @pointerleave=${this._periodUp}
+              @click=${this._periodTap}
+            >
+              <span class="force">
+                <ha-icon icon="mdi:timer-sync-outline"></ha-icon>
+                ${t(hass, "charge.every", {
+                  hours: this._number(config.pulse_every) ?? "—",
+                })}
+              </span>
+            </ha-control-button>`
+          : nothing}
         ${config.force && this._controlsReady
           ? html`<ha-control-button
               class=${forced ? "active" : ""}

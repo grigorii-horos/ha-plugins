@@ -41,6 +41,7 @@ export class HorosChargeTileEditor extends BaseCardEditor {
       { name: "min", required: true, selector: limit },
       { name: "max", required: true, selector: limit },
       { name: "force", selector: entitySelector("timer") },
+      { name: "pulse_every", selector: entitySelector("input_number") },
       { name: "stale_after", selector: numberSelector(0, 86400, "s") },
       contentSection(undefined, lang),
       interactionsSection(undefined, "more-info"),
@@ -66,6 +67,7 @@ export class HorosChargeTileEditor extends BaseCardEditor {
         min: "Нижний предел",
         max: "Верхний предел",
         force: "Таймер принудительной зарядки",
+        pulse_every: "Период импульса без данных, ч",
         stale_after: "Нет данных через, секунд",
       },
       en: {
@@ -76,6 +78,7 @@ export class HorosChargeTileEditor extends BaseCardEditor {
         min: "Lower limit",
         max: "Upper limit",
         force: "Forced charge timer",
+        pulse_every: "Blind pulse period, h",
         stale_after: "No data after, seconds",
       },
     });

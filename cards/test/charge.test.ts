@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   chargeStatus,
   clampLimit,
+  nextPeriod,
   isFresh,
   lastReport,
   minutesLeft,
@@ -146,5 +147,19 @@ describe("moving a limit", () => {
     expect(clampLimit("min", 47, 80, 5, 10, 100)).toBe(45);
     expect(clampLimit("max", 120, 50, 5, 10, 100)).toBe(100);
     expect(clampLimit("min", 2, undefined, 5, 10, 100)).toBe(10);
+  });
+});
+
+describe("the pulse period button", () => {
+  it("adds one step per tap", () => {
+    expect(nextPeriod(3, 1, 1, 48)).toBe(4);
+  });
+
+  it("goes round to the minimum after the maximum", () => {
+    expect(nextPeriod(48, 1, 1, 48)).toBe(1);
+  });
+
+  it("starts from the minimum when the value is unknown", () => {
+    expect(nextPeriod(undefined, 1, 1, 48)).toBe(1);
   });
 });

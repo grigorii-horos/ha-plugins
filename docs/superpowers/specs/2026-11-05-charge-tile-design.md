@@ -79,6 +79,14 @@ The force button calls `timer.start` on `force` (the timer's own duration, 30 mi
 configured in HA, the card does not pass one) and `timer.cancel` when active. Time
 left: from the timer's `finishes_at` attribute, re-rendered once a minute.
 
+## Pulse period (added 2026-11-05, owner's request)
+
+Optional `pulse_every`: an `input_number` of hours (Pixel Watch 3, Amazfit 18). A button
+between the bar and the force button shows «⏱ N ч»; a tap adds one step and goes round
+to the minimum past the maximum; a 500 ms hold opens the helper's more-info. The
+automation pulses a device without data once the port has been off for its period minus
+the 10 minutes of the pulse (checked every 10 minutes); any charge resets the count.
+
 ## Editor
 
 `FormCardEditor` with `ha-form` entity selectors: battery (sensor, device_class battery),

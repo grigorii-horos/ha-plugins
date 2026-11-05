@@ -444,7 +444,10 @@ upper limit, waiting for the lower one, a forced charge with the minutes left, o
 since when. Under it the battery level is a fill with the two limits as handles: drag one
 (or focus it and use the arrow keys) to write the `input_number`/`number`. The button on
 the right starts the `force` timer — the automation charges regardless of the upper limit
-while it runs — and cancels it on a second tap.
+while it runs — and cancels it on a second tap. With `pulse_every` (an `input_number` of
+hours) a second button shows how often the automation powers the port for a short pulse
+while there is no battery data: a tap adds one step, going round to the minimum past the
+maximum; a long press opens the helper.
 
 The card decides nothing: the charging logic is the automation's. `stale_after` should be
 the same number of seconds the automation uses to call the data stale. `battery` takes
@@ -460,6 +463,7 @@ switch: switch.usb_hub_port_2
 min: input_number.watch_charge_min
 max: input_number.watch_charge_max
 force: timer.watch_force_charge
+pulse_every: input_number.watch_pulse_every
 ```
 
 ### Safety — `horos-safety-tile`

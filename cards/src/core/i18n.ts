@@ -66,6 +66,8 @@ const RU: Dict = {
   "charge.waiting": "Включится ниже {min}%",
   "charge.force": "30 мин",
   "charge.forceLeft": "{minutes} мин",
+  "charge.every": "{hours} ч",
+  "charge.everyLabel": "Импульс без данных раз в N часов; удерживать — настроить",
   "charge.min": "Мин.",
   "charge.max": "Макс.",
 
@@ -175,6 +177,8 @@ const EN: Dict = {
   "charge.waiting": "Starts below {min}%",
   "charge.force": "30 min",
   "charge.forceLeft": "{minutes} min",
+  "charge.every": "{hours} h",
+  "charge.everyLabel": "Blind pulse every N hours; hold to adjust",
   "charge.min": "Min",
   "charge.max": "Max",
 
