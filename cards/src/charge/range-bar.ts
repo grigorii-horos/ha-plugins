@@ -135,12 +135,13 @@ export class HorosChargeRange extends LitElement {
       white-space: nowrap;
     }
 
+    /* Inside the band: outside it the ends of the scale would cut them off. */
     .label.min {
-      transform: translate(calc(-100% - 10px), -50%);
+      transform: translate(10px, -50%);
     }
 
     .label.max {
-      transform: translate(10px, -50%);
+      transform: translate(calc(-100% - 10px), -50%);
     }
 
     @media (prefers-reduced-motion: reduce) {

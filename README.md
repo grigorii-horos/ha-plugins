@@ -434,6 +434,34 @@ batteries: [sensor.motion_kitchen_battery, sensor.door_battery]
 low_below: 30
 ```
 
+### Charge — `horos-charge-tile`
+
+![Charge](docs/images/charge.png)
+
+One device kept between two charge limits by a Home Assistant automation: a watch on a
+switched USB port, say. The line says what the automation is doing — charging to the
+upper limit, waiting for the lower one, a forced charge with the minutes left, or no data
+since when. Under it the battery level is a fill with the two limits as handles: drag one
+(or focus it and use the arrow keys) to write the `input_number`/`number`. The button on
+the right starts the `force` timer — the automation charges regardless of the upper limit
+while it runs — and cancels it on a second tap.
+
+The card decides nothing: the charging logic is the automation's. `stale_after` should be
+the same number of seconds the automation uses to call the data stale. `battery` takes
+one sensor or several for the same battery; the first numeric one counts. Always two rows
+high and full width by default; `features` and `levels` do not apply.
+
+```yaml
+type: custom:horos-charge-tile
+name: Pixel Watch
+battery: sensor.pixel_watch_battery_level
+stale_after: 3600
+switch: switch.usb_hub_port_2
+min: input_number.watch_charge_min
+max: input_number.watch_charge_max
+force: timer.watch_force_charge
+```
+
 ### Safety — `horos-safety-tile`
 
 ![Safety](docs/images/safety.png)

@@ -18,7 +18,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 BUNDLE = ROOT / "dist" / "ha-plugins-cards.js"
 SSH_HOST = os.environ.get("HA_SSH_HOST", "grigorii@192.168.100.200")
 REMOTE_WWW = os.environ.get(
-    "HA_WWW", "/home/grigorii/.local/state/podman/homeassistant/config/www"
+    "HA_WWW", "/home/grigorii/Services/podman/homeassistant/config/www"
 )
 
 
