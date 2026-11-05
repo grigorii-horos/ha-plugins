@@ -40,9 +40,11 @@ export function lastReport(hass: HomeAssistant, ids: string[]): Date | undefined
   let newest: number | undefined;
   for (const entityId of ids) {
     const stateObj = hass.states[entityId] as
-      | { last_reported?: string; last_changed?: string }
+      | { last_reported?: string; last_updated?: string; last_changed?: string }
       | undefined;
-    const stamp = stateObj?.last_reported ?? stateObj?.last_changed;
+    // last_updated also moves on an attribute change, which is still a report.
+    const stamp =
+      stateObj?.last_reported ?? stateObj?.last_updated ?? stateObj?.last_changed;
     if (!stamp) continue;
     const time = Date.parse(stamp);
     if (Number.isFinite(time) && (newest === undefined || time > newest)) {
@@ -58,16 +60,22 @@ export function lastReport(hass: HomeAssistant, ids: string[]): Date | undefined
  * Without `staleAfter` a numeric level is enough: MQTT sensors do not re-report
  * an unchanged value, so their age says nothing, and they go unavailable when
  * the watch disconnects. With it, the newest report must be younger than that.
+ *
+ * `reported` is that newest report as Home Assistant knows it. The browser's
+ * state stream carries no `last_reported` at all — an unchanged report is not
+ * a state change and never reaches the frontend — so the card asks HA for it
+ * through a template; the state's own stamps are only the fallback.
  */
 export function isFresh(
   hass: HomeAssistant,
   ids: string[],
   staleAfter: number | undefined,
-  now: Date
+  now: Date,
+  reported?: Date
 ): boolean {
   if (pickLevel(hass, ids).level === undefined) return false;
   if (staleAfter === undefined) return true;
-  const last = lastReport(hass, ids);
+  const last = reported ?? lastReport(hass, ids);
   return !!last && (now.getTime() - last.getTime()) / 1000 < staleAfter;
 }
 
@@ -139,4 +147,16 @@ export function clampLimit(
   result = Math.min(hi, Math.max(lo, result));
   // Float steps (0.5) leave noise like 45.00000001 behind.
   return Number(result.toFixed(6));
+}
+
+/**
+ * A template HA renders to the newest `last_reported` of the list, as epoch
+ * seconds. `now()` is there only to make HA re-render it every minute: a
+ * same-value report changes no state and would not wake the template.
+ */
+export function lastReportedTemplate(ids: string[]): string {
+  return (
+    `{% set _ = now() %}{{ expand(${JSON.stringify(ids)}) ` +
+    "| map(attribute='last_reported') | map('as_timestamp') | max | default('') }}"
+  );
 }

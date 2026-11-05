@@ -46,7 +46,9 @@ Computed by the card, first match wins:
 "Fresh" mirrors the automation exactly *(builder's call — otherwise the card would say
 "Charging to 80%" during a blind pulse)*: a numeric level among `battery`, and, when
 `stale_after` (seconds) is set, the newest `last_reported` of `battery` entities is
-younger than that. HH:MM = that newest `last_reported` (or `last_changed` if the entity
+younger than that. The browser's state stream carries no `last_reported`, so the card
+subscribes to a `render_template` on HA for it (re-rendered every minute through
+`now()`). HH:MM = that newest `last_reported` (or `last_changed` if the entity
 is unavailable).
 
 Unavailable port → the shared `unavailableSegment` wins over all of these.

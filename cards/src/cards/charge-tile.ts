@@ -18,6 +18,7 @@ import {
   chargeStatus,
   isFresh,
   lastReport,
+  lastReportedTemplate,
   minutesLeft,
   pickLevel,
 } from "../charge/charge";
@@ -110,6 +111,46 @@ export class HorosChargeTile extends BaseTileCard {
   /** Re-renders the minutes left while a forced charge runs. */
   private _tick?: ReturnType<typeof setInterval>;
 
+  /** The newest report as HA knows it; see isFresh for why it is asked for. */
+  @state() private _reported?: Date;
+
+  private _unsubscribe?: Promise<() => Promise<void>>;
+
+  private _subscribeReported(): void {
+    const config = this._config;
+    const connection = this.hass?.connection;
+    if (this._unsubscribe || !config?.stale_after || !connection || !this.isConnected) {
+      return;
+    }
+    this._unsubscribe = connection
+      .subscribeMessage<{ result?: unknown }>(
+        (message) => {
+          const seconds = Number(message.result);
+          this._reported =
+            message.result !== "" && Number.isFinite(seconds)
+              ? new Date(seconds * 1000)
+              : undefined;
+        },
+        { type: "render_template", template: lastReportedTemplate(batteryIds(config)) }
+      )
+      .catch(() => {
+        // Without it the card falls back to the state's own stamps.
+        this._unsubscribe = undefined;
+        return async () => undefined;
+      });
+  }
+
+  private _unsubscribeReported(): void {
+    void this._unsubscribe?.then((unsubscribe) => unsubscribe()).catch(() => undefined);
+    this._unsubscribe = undefined;
+    this._reported = undefined;
+  }
+
+  protected override updated(changed: Map<string, unknown>): void {
+    super.updated?.(changed);
+    this._subscribeReported();
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
     void ensureControls().then((ready) => {
@@ -123,6 +164,7 @@ export class HorosChargeTile extends BaseTileCard {
     super.disconnectedCallback();
     if (this._tick) clearInterval(this._tick);
     this._tick = undefined;
+    this._unsubscribeReported();
   }
 
   protected override contentRows(): number {
@@ -154,6 +196,8 @@ export class HorosChargeTile extends BaseTileCard {
     // The control line is the card itself; see the class comment.
     const { features: _features, levels: _levels, ...base } = config;
     this.base = base;
+    // A new battery list or stale_after needs a template of its own.
+    this._unsubscribeReported();
     this._config = config;
   }
 
@@ -215,11 +259,11 @@ export class HorosChargeTile extends BaseTileCard {
     const status = chargeStatus({
       forced,
       minutesLeft: left,
-      fresh: isFresh(hass, ids, config.stale_after, now),
+      fresh: isFresh(hass, ids, config.stale_after, now, this._reported),
       on,
       min,
       max,
-      since: lastReport(hass, ids),
+      since: this._reported ?? lastReport(hass, ids),
     });
 
     const levelObj = hass.states[mainId];

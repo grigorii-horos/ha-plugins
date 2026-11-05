@@ -66,6 +66,15 @@ describe("freshness, the way the automation counts it", () => {
     expect(isFresh(hass, ["sensor.a"], 3600, NOW)).toBe(false);
   });
 
+  it("a report time from HA beats what the browser state carries", () => {
+    // The frontend's state stream has no last_reported: an unchanged report
+    // reaches the card only through a template rendered on the HA side.
+    const hass = fakeHass([entity("sensor.a", "50", "2026-11-05T10:00:00Z")]);
+    const reported = new Date("2026-11-05T14:30:00Z");
+    expect(isFresh(hass, ["sensor.a"], 3600, NOW, reported)).toBe(true);
+    expect(isFresh(hass, ["sensor.a"], 3600, NOW)).toBe(false);
+  });
+
   it("is never fresh without a numeric level", () => {
     const hass = fakeHass([entity("sensor.a", "unavailable", NOW.toISOString())]);
     expect(isFresh(hass, ["sensor.a"], undefined, NOW)).toBe(false);

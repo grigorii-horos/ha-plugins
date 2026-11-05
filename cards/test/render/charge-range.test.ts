@@ -50,6 +50,25 @@ describe("the charge range bar", () => {
     expect(events).toEqual([]);
   });
 
+  it("a drag writes once, on release, clamped short of the other handle", async () => {
+    const { el, events } = await make();
+    const track = q(el, ".track")!;
+    track.getBoundingClientRect = () =>
+      ({ left: 0, width: 200, top: 0, height: 42, right: 200, bottom: 42 }) as DOMRect;
+    const handle = q(el, ".handle.min")!;
+    handle.setPointerCapture = () => undefined;
+    const pointer = (type: string, clientX: number) =>
+      handle.dispatchEvent(
+        new PointerEvent(type, { clientX, pointerId: 1, bubbles: true })
+      );
+    pointer("pointerdown", 100);
+    pointer("pointermove", 130);
+    pointer("pointermove", 190);
+    expect(events).toEqual([]);
+    pointer("pointerup", 190);
+    expect(events).toEqual([{ which: "min", value: 75 }]);
+  });
+
   it("a limit that cannot be read has no handle", async () => {
     const { el } = await make({ max: undefined });
     expect(q(el, ".handle.max")).toBeNull();
