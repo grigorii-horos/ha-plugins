@@ -449,6 +449,13 @@ hours) a second button shows how often the automation powers the port for a shor
 while there is no battery data: a tap adds one step, going round to the minimum past the
 maximum; a long press opens the helper.
 
+Every role but `battery` is optional, and the card shows only what it was given: a battery
+alone is a level bar; add `switch` and the line says whether it charges, and a tap on the
+icon switches the port by hand — no automation needed; add `min`/`max` and the bar grows
+its handles; `force`, `pulse_every` and `stale_after` are for when an automation drives
+the port. The screenshot shows, top to bottom: two watches under an automation, a battery
+alone, and a battery with a port and nothing else.
+
 The card decides nothing: the charging logic is the automation's. `stale_after` should be
 the same number of seconds the automation uses to call the data stale. `battery` takes
 one sensor or several for the same battery; the first numeric one counts. Always two rows

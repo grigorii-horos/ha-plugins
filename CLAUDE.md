@@ -100,6 +100,8 @@ npm run build   # tsc --noEmit && vite build → ../dist/ha-plugins-cards.js
   declares its own `*Config` and ends with a `registerCard` call.
 - `cards/src/editors/*-tile-editor.ts` — the visual editors, all built on
   `FormCardEditor`/`BaseCardEditor` from `base-editor.ts`.
+- `cards/src/charge/` — private to the charge tile (pure logic, the two-handle range bar); not
+  in `core/`, so nothing to mirror into ha-smart-charging.
 - `cards/src/core/` — the shared parts: tile assembly (`base-tile-card.ts`), level rows
   (`levels.ts`), role formatting (`format.ts`), state colours (`state-color.ts`), actions
   (`actions.ts`), dictionaries (`i18n.ts`), registration (`register.ts`).

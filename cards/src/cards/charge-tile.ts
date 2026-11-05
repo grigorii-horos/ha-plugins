@@ -3,6 +3,7 @@ import { state } from "lit/decorators.js";
 import { BaseTileCard, type TileBaseConfig } from "../core/base-tile-card";
 import { tileStyles } from "../core/tile-styles";
 import { tileColor } from "../core/state-color";
+import { levelColor } from "../core/labels";
 import {
   composeSegments,
   resolveRole,
@@ -29,11 +30,11 @@ export interface ChargeTileConfig extends TileBaseConfig {
   type: string;
   /** One battery sensor, or several for the same battery: the first numeric wins. */
   battery: string | string[];
-  /** The port that powers the charger. */
-  switch: string;
+  /** The port that powers the charger. Optional, like every role but battery. */
+  switch?: string;
   /** The charging limits: `input_number` or `number` entities. */
-  min: string;
-  max: string;
+  min?: string;
+  max?: string;
   /** A timer: while it runs the automation charges regardless of max. */
   force?: string;
   /**
@@ -197,8 +198,6 @@ export class HorosChargeTile extends BaseTileCard {
 
   public setConfig(config: ChargeTileConfig): void {
     if (!batteryIds(config).length) throw new Error("A battery sensor is required (battery)");
-    if (!config.switch) throw new Error("A switch is required (switch)");
-    if (!config.min || !config.max) throw new Error("Both limits are required (min, max)");
     // The control line is the card itself; see the class comment.
     const { features: _features, levels: _levels, ...base } = config;
     this.base = base;
@@ -222,10 +221,13 @@ export class HorosChargeTile extends BaseTileCard {
     const config = this._config;
     if (!config || !this.hass) return;
     const entityId = config[event.detail.which];
-    this.hass.callService(entityId.split(".")[0], "set_value", {
-      entity_id: entityId,
-      value: event.detail.value,
-    });
+    if (!entityId) return;
+    void this.hass
+      .callService(entityId.split(".")[0], "set_value", {
+        entity_id: entityId,
+        value: event.detail.value,
+      })
+      .catch(() => undefined);
   }
 
   /** Set by a long press so the click that follows it is not taken as a tap. */
@@ -295,7 +297,8 @@ export class HorosChargeTile extends BaseTileCard {
 
     const { entityId: levelId, level } = pickLevel(hass, ids);
     const mainId = levelId ?? ids[0];
-    const on = sw?.stateObj?.state === "on";
+    // undefined, not false, when there is no port: "not charging" would be a guess.
+    const on = sw ? sw.stateObj?.state === "on" : undefined;
     const forceObj = config.force ? hass.states[config.force] : undefined;
     const forced = forceObj?.state === "active";
     const left = minutesLeft(forceObj?.attributes.finishes_at as string | undefined, now);
@@ -306,6 +309,7 @@ export class HorosChargeTile extends BaseTileCard {
       minutesLeft: left,
       fresh: isFresh(hass, ids, config.stale_after, now, this._reported),
       on,
+      pulse: Boolean(config.pulse_every),
       min,
       max,
       since: this._reported ?? lastReport(hass, ids),
@@ -314,17 +318,30 @@ export class HorosChargeTile extends BaseTileCard {
     const levelObj = hass.states[mainId];
     const tile = this.renderTile({
       icon: "mdi:watch",
-      // Lit while the port is on; the battery itself is always "active".
-      color: on ? tileColor(sw?.stateObj) : "var(--state-inactive-color)",
+      // Lit while the port is on; the battery itself is always "active". With
+      // no port there is nothing to be on, and the icon takes the battery colour.
+      color: sw
+        ? on
+          ? tileColor(sw.stateObj)
+          : "var(--state-inactive-color)"
+        : levelColor(level),
       primary: config.name ?? levelObj?.attributes.friendly_name ?? t(hass, "charge.title"),
       secondary: composeSegments([
-        unavailableSegment(hass, sw) ?? {
-          text: t(hass, status.key, status.params),
-          entityId: forced ? config.force : config.switch,
-        },
+        unavailableSegment(hass, sw) ??
+          (status
+            ? {
+                text: t(hass, status.key, status.params),
+                entityId: forced ? config.force : (config.switch ?? mainId),
+              }
+            : undefined),
       ]),
       mainEntityId: mainId,
-      defaultIconAction: defaultIconAction(mainId),
+      // With a port the icon switches it by hand — the card works without the
+      // automation too. The action names the port itself: the card's main
+      // entity is the battery, and a toggle aimed at a sensor does nothing.
+      defaultIconAction: config.switch
+        ? { action: "toggle", entity: config.switch }
+        : defaultIconAction(mainId),
       values:
         level === undefined
           ? []
@@ -337,7 +354,7 @@ export class HorosChargeTile extends BaseTileCard {
           .step=${this._number(config.min, "step") ?? 1}
           .lo=${this._number(config.min, "min") ?? 0}
           .hi=${this._number(config.max, "max") ?? 100}
-          .charging=${on}
+          .charging=${on ?? false}
           @limit-change=${this._setLimit}
         ></horos-charge-range>
         ${config.pulse_every && this._controlsReady

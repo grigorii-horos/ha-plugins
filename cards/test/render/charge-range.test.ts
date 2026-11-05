@@ -75,6 +75,18 @@ describe("the charge range bar", () => {
     expect(q(el, ".handle.min")).not.toBeNull();
   });
 
+  it("labels sit inside the band when it is wide enough", async () => {
+    const { el } = await make({ trackWidth: 400 });
+    expect(q(el, ".label.min")!.classList.contains("outside")).toBe(false);
+  });
+
+  it("labels move outside the handles when the band is too narrow for both", async () => {
+    // 50..80 on a 150px track is a 45px band: two numbers do not fit in it.
+    const { el } = await make({ trackWidth: 150 });
+    expect(q(el, ".label.min")!.classList.contains("outside")).toBe(true);
+    expect(q(el, ".label.max")!.classList.contains("outside")).toBe(true);
+  });
+
   it("the fill shimmers while charging", async () => {
     const { el } = await make({ charging: true });
     expect(q(el, ".fill")!.classList.contains("charging")).toBe(true);

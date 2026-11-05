@@ -87,6 +87,15 @@ to the minimum past the maximum; a 500 ms hold opens the helper's more-info. The
 automation pulses a device without data once the port has been off for its period minus
 the 10 minutes of the pulse (checked every 10 minutes); any charge resets the count.
 
+## Optional roles (added 2026-11-05, owner's request)
+
+Only `battery` is required; the card works with or without an automation. No `switch`:
+status speaks of data only (nothing when fresh), the icon takes the battery colour and
+opens more-info. A `switch`: «Заряжается» / «Не заряжается» when there are no limits,
+and the icon toggles the port (`{action: toggle, entity: switch}` — the main entity is
+the battery). No `min`/`max`: the bar is a plain level fill. «Нет данных · импульс» only
+with `pulse_every`; otherwise a port on without data reads «Нет данных с HH:MM».
+
 ## Editor
 
 `FormCardEditor` with `ha-form` entity selectors: battery (sensor, device_class battery),

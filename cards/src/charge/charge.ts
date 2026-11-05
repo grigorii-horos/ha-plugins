@@ -90,7 +90,10 @@ export interface StatusInput {
   forced: boolean;
   minutesLeft: number;
   fresh: boolean;
-  on: boolean;
+  /** The port's state; undefined when the card has no port. */
+  on: boolean | undefined;
+  /** Whether a blind pulse is configured, i.e. a port on without data is one. */
+  pulse: boolean;
   min?: number;
   max?: number;
   since?: Date;
@@ -103,13 +106,18 @@ export interface Status {
 
 const pad = (value: number): string => String(value).padStart(2, "0");
 
-/** The secondary line: the first rule that holds wins. */
-export function chargeStatus(input: StatusInput): Status {
+/**
+ * The secondary line: the first rule that holds wins. Every role but the
+ * battery is optional, so each rule speaks only of what the card was given; a
+ * card with nothing but a battery and fresh data has nothing to add to the
+ * number on the right and returns undefined.
+ */
+export function chargeStatus(input: StatusInput): Status | undefined {
   if (input.forced) {
     return { key: "charge.forced", params: { minutes: input.minutesLeft } };
   }
   if (!input.fresh) {
-    if (input.on) return { key: "charge.pulse", params: {} };
+    if (input.on && input.pulse) return { key: "charge.pulse", params: {} };
     const since = input.since;
     return {
       key: "charge.noData",
@@ -118,9 +126,15 @@ export function chargeStatus(input: StatusInput): Status {
       },
     };
   }
-  return input.on
-    ? { key: "charge.charging", params: { max: input.max ?? "—" } }
-    : { key: "charge.waiting", params: { min: input.min ?? "—" } };
+  if (input.on === undefined) return undefined;
+  if (input.on) {
+    return input.max === undefined
+      ? { key: "charge.on", params: {} }
+      : { key: "charge.charging", params: { max: input.max } };
+  }
+  return input.min === undefined
+    ? { key: "charge.off", params: {} }
+    : { key: "charge.waiting", params: { min: input.min } };
 }
 
 /**

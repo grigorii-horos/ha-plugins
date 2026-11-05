@@ -105,7 +105,15 @@ describe("minutes left on the forced charge", () => {
 });
 
 describe("the status line", () => {
-  const base = { forced: false, minutesLeft: 0, fresh: true, on: false, min: 50, max: 80 };
+  const base = {
+    forced: false,
+    minutesLeft: 0,
+    fresh: true,
+    on: false as boolean | undefined,
+    pulse: true,
+    min: 50 as number | undefined,
+    max: 80 as number | undefined,
+  };
 
   it("a forced charge beats everything", () => {
     expect(
@@ -114,7 +122,7 @@ describe("the status line", () => {
   });
 
   it("no data with the port on is a blind pulse", () => {
-    expect(chargeStatus({ ...base, fresh: false, on: true }).key).toBe("charge.pulse");
+    expect(chargeStatus({ ...base, fresh: false, on: true })?.key).toBe("charge.pulse");
   });
 
   it("no data with the port off says since when", () => {
@@ -123,6 +131,24 @@ describe("the status line", () => {
       key: "charge.noData",
       params: { time: "12:05" },
     });
+  });
+
+  it("no data with the port on and no pulse configured is just no data", () => {
+    const since = new Date(2026, 10, 5, 12, 5);
+    expect(chargeStatus({ ...base, fresh: false, on: true, pulse: false, since })?.key).toBe(
+      "charge.noData"
+    );
+  });
+
+  it("without limits the port only says whether it charges", () => {
+    const plain = { ...base, min: undefined, max: undefined };
+    expect(chargeStatus({ ...plain, on: true })).toEqual({ key: "charge.on", params: {} });
+    expect(chargeStatus({ ...plain, on: false })).toEqual({ key: "charge.off", params: {} });
+  });
+
+  it("without a port fresh data needs no status at all", () => {
+    expect(chargeStatus({ ...base, on: undefined })).toBeUndefined();
+    expect(chargeStatus({ ...base, on: undefined, fresh: false })?.key).toBe("charge.noData");
   });
 
   it("port on is charging to max, port off waits for min", () => {

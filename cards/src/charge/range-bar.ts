@@ -29,6 +29,29 @@ export class HorosChargeRange extends LitElement {
   @property({ type: Number }) public hi = 100;
   @property({ type: Boolean }) public charging = false;
 
+  /**
+   * The track's width in px, kept by a ResizeObserver: whether both numbers fit
+   * inside the band depends on pixels, not on percentages.
+   */
+  @state() public trackWidth = 0;
+
+  private _resize?: ResizeObserver;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (typeof ResizeObserver === "undefined") return;
+    this._resize = new ResizeObserver((entries) => {
+      this.trackWidth = entries[0]?.contentRect.width ?? 0;
+    });
+    this._resize.observe(this);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._resize?.disconnect();
+    this._resize = undefined;
+  }
+
   /** The value of the handle being dragged, before it is written. */
   @state() private _drag?: { which: Which; value: number };
 
@@ -135,13 +158,24 @@ export class HorosChargeRange extends LitElement {
       white-space: nowrap;
     }
 
-    /* Inside the band: outside it the ends of the scale would cut them off. */
+    /*
+     * Inside the band, where the ends of the scale cannot cut them off; when the
+     * band is too narrow for two numbers they step outside the handles instead.
+     */
     .label.min {
       transform: translate(10px, -50%);
     }
 
     .label.max {
       transform: translate(calc(-100% - 10px), -50%);
+    }
+
+    .label.min.outside {
+      transform: translate(calc(-100% - 10px), -50%);
+    }
+
+    .label.max.outside {
+      transform: translate(10px, -50%);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -219,7 +253,18 @@ export class HorosChargeRange extends LitElement {
     this._emit(which, value);
   }
 
-  private _handle(which: Which) {
+  /**
+   * Whether the two numbers fit between the handles: each is about 2.5em of
+   * text plus the 10px gap to its handle. Unknown width counts as fitting.
+   */
+  private _labelsOutside(): boolean {
+    const min = this._value("min");
+    const max = this._value("max");
+    if (!this.trackWidth || min === undefined || max === undefined) return false;
+    return ((max - min) / 100) * this.trackWidth < 64;
+  }
+
+  private _handle(which: Which, outside: boolean) {
     const value = this._value(which);
     if (value === undefined) return nothing;
     const position = `${Math.min(100, Math.max(0, value))}%`;
@@ -240,7 +285,7 @@ export class HorosChargeRange extends LitElement {
         @pointercancel=${() => (this._drag = undefined)}
         @click=${(event: Event) => event.stopPropagation()}
       ></div>
-      <span class="label ${which}" style=${styleMap({ left: position })}
+      <span class="label ${which} ${outside ? "outside" : ""}" style=${styleMap({ left: position })}
         >${value}</span
       >
     `;
@@ -250,6 +295,7 @@ export class HorosChargeRange extends LitElement {
     const level = this.level;
     const min = this._value("min");
     const max = this._value("max");
+    const outside = this._labelsOutside();
     return html`
       <div class="track" style=${styleMap({ "--ink": levelColor(level) })}>
         <div
@@ -262,7 +308,7 @@ export class HorosChargeRange extends LitElement {
               style=${styleMap({ left: `${min}%`, width: `${max - min}%` })}
             ></div>`
           : nothing}
-        ${this._handle("min")} ${this._handle("max")}
+        ${this._handle("min", outside)} ${this._handle("max", outside)}
       </div>
     `;
   }
