@@ -43,7 +43,10 @@ export interface AcTileConfig extends TileBaseConfig {
   sensors?: (EntityItem | string)[];
   /** @deprecated Removed in the Features panel instead. */
   controls?: boolean;
-  /** What to show large on the right. The room temperature by default. */
+  /**
+   * What to show large on the right. The room temperature by default — unless
+   * the target temperature sits in the line, which then has no room for it.
+   */
   big_values?: AcRole[];
 }
 
@@ -53,6 +56,9 @@ export interface AcTileConfig extends TileBaseConfig {
  * Modes and a target temperature are stock features — the climate domain has
  * more shapes than a card should try to draw — and they are switched off the
  * way every other feature is: by removing them in the editor's Features panel.
+ *
+ * The target goes first because the card puts its first feature inline: a
+ * stepper fits half a line, six mode buttons do not.
  */
 export function acFeatures(
   config: AcTileConfig | undefined
@@ -60,7 +66,7 @@ export function acFeatures(
   // `controls: false` is how this used to be switched off; a config that still
   // says it keeps working.
   if (!config || config.controls === false) return [];
-  return [{ type: "climate-hvac-modes" }, { type: "target-temperature" }];
+  return [{ type: "target-temperature" }, { type: "climate-hvac-modes" }];
 }
 
 /**
@@ -92,8 +98,19 @@ export class HorosAcTile extends BaseTileCard {
     if (!config.climate) {
       throw new Error("A climate entity is required (climate)");
     }
-    this._bigKeys = resolveBigKeys(config.big_values, "temperature", AC_ROLES);
-    this.base = config;
+    // Inline unless the config says otherwise: the target then shares the line
+    // and the card is one row shorter than it would be with every control below.
+    // A vertical card has no line to share, as on the stock tile.
+    const position =
+      config.features_position ?? (config.vertical ? "bottom" : "inline");
+    this._bigKeys = resolveBigKeys(
+      config.big_values,
+      // A large value and an inline control both want the right of the line;
+      // the control wins, and the room temperature becomes a word among others.
+      position === "inline" ? [] : "temperature",
+      AC_ROLES
+    );
+    this.base = { ...config, features_position: position };
     this._config = config;
   }
 

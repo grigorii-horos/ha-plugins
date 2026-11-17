@@ -205,6 +205,11 @@ export abstract class BaseCardEditor extends FormCardEditor {
     return [];
   }
 
+  /** Where the card puts its features when the config says nothing. */
+  protected defaultFeaturesPosition(): "bottom" | "inline" {
+    return "bottom";
+  }
+
   private _featuresChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     // Unlike the stock tile, an emptied list is kept rather than deleted: here
@@ -326,7 +331,8 @@ export abstract class BaseCardEditor extends FormCardEditor {
       ...this._config,
       features_position: vertical
         ? "bottom"
-        : ((this._config?.features_position as string | undefined) ?? "bottom"),
+        : ((this._config?.features_position as string | undefined) ??
+          this.defaultFeaturesPosition()),
     };
 
     return html`

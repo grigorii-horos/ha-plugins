@@ -46,6 +46,10 @@ export class HorosAcTileEditor extends BaseCardEditor {
     return acFeatures(config);
   }
 
+  protected override defaultFeaturesPosition(): "bottom" | "inline" {
+    return "inline";
+  }
+
   protected get labels(): Record<string, string> {
     return this.pick({
       ru: {
