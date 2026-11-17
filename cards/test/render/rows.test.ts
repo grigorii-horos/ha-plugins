@@ -14,6 +14,8 @@ class TestCard extends BaseTileCard {
   public controls = 0;
   /** What the card would put under the line if the config said nothing. */
   public own: Record<string, unknown>[] = [];
+  /** Whether the card puts a control of its own into the tile's line. */
+  public inlineTaken = false;
 
   public setConfig(config: TileBaseConfig): void {
     this.base = config;
@@ -24,7 +26,7 @@ class TestCard extends BaseTileCard {
   }
 
   protected override fixedRows(): number {
-    return this.controls + this.featureRows(this.own);
+    return this.controls + this.featureRows(this.own, this.inlineTaken);
   }
 
   protected render() {
@@ -85,6 +87,17 @@ describe("how many rows a card asks for", () => {
       features: [{ type: "toggle" }, { type: "a" }, { type: "b" }],
     });
     expect(tile.getGridOptions().min_rows).toBe(2);
+  });
+
+  it("our own inline control sends every stock feature below the line", () => {
+    // The lamp's presets sit where the first feature would: with them there,
+    // `inline` cannot move a feature up, so each one takes a row of its own.
+    const tile = card({
+      features_position: "inline",
+      features: [{ type: "toggle" }, { type: "a" }, { type: "b" }],
+    });
+    tile.inlineTaken = true;
+    expect(tile.getGridOptions().min_rows).toBe(4);
   });
 
   it("with the card's own line off there is nothing left to count", () => {

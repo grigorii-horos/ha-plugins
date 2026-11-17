@@ -121,13 +121,13 @@ export class HorosLampTile extends BaseTileCard {
       }
 
       /*
-       * The row keeps the height a stock feature gives its selector; what
+       * The selector keeps the height a stock inline feature gets; what
        * shrinks is what goes inside it. At full size an icon over a line of
-       * text is 53px of content in a 42px row and the names get clipped, so
+       * text is 53px of content in a 36px place and the names get clipped, so
        * both are taken down a notch. Size and font are inherited properties,
        * which is why they reach into the selector's shadow from out here.
        */
-      .lamp-controls.labelled ha-control-select {
+      .presets.labelled {
         --mdc-icon-size: 16px;
         font-size: var(--ha-font-size-xs, 11px);
         line-height: 1.1;
@@ -148,17 +148,19 @@ export class HorosLampTile extends BaseTileCard {
   }
 
   /**
-   * A row of buttons and a row of presets are each one layout row, the same as
-   * a stock feature: they are 42px whatever happens, so the card must ask for
-   * the room and must not be squeezed under it.
+   * The row of steps is one layout row, the same as a stock feature: it is
+   * 42px whatever happens, so the card must ask for the room and must not be
+   * squeezed under it. The presets cost no row: they sit in the tile's own line,
+   * where a stock inline feature would, and push the stock features below.
    */
   protected override fixedRows(): number {
     const config = this._config;
     if (!config) return 0;
-    const controls =
-      (STEPS.some(({ key }) => config[key]) ? 1 : 0) +
-      (config.presets?.length ? 1 : 0);
-    return controls + this.featureRows(lampFeatures(config));
+    const steps = STEPS.some(({ key }) => config[key]) ? 1 : 0;
+    return (
+      steps +
+      this.featureRows(lampFeatures(config), Boolean(config.presets?.length))
+    );
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -243,7 +245,7 @@ export class HorosLampTile extends BaseTileCard {
 
     return html`
       <ha-control-select
-        class="presets-group"
+        class="presets ${config.preset_labels !== false ? "labelled" : ""}"
         .options=${presets.map((preset) => {
           const stateObj = this.hass?.states[preset.entity];
           const label =
@@ -308,16 +310,14 @@ export class HorosLampTile extends BaseTileCard {
         ...extras.map((extra) => roleSegment(this.hass, extra)),
       ]),
       ownFeatures: lampFeatures(config),
-      customFeatures: this._controlsReady
-        ? html`<div
-            class="lamp-controls ${config.presets?.length &&
-            config.preset_labels !== false
-              ? "labelled"
-              : ""}"
-          >
-            ${this._renderSteps(config)}${this._renderPresets(config)}
-          </div>`
-        : undefined,
+      customFeatures:
+        this._controlsReady && STEPS.some(({ key }) => config[key])
+          ? html`<div class="lamp-controls">${this._renderSteps(config)}</div>`
+          : undefined,
+      customInline:
+        this._controlsReady && config.presets?.length
+          ? (this._renderPresets(config) as TemplateResult)
+          : undefined,
     });
   }
 }

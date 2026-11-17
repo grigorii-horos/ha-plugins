@@ -189,6 +189,18 @@ export const tileStyles = css`
     min-height: 0;
   }
 
+  /*
+   * The inline place is sized by ha-tile-container — half the card on the grid
+   * track, --feature-height of 36px — so all this has to do is centre the
+   * control in it and take taps, which the tile's row does not.
+   */
+  .custom-inline {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    pointer-events: auto;
+  }
+
   .warning {
     display: block;
     padding: var(--ha-space-3, 12px);

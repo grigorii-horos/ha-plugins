@@ -109,6 +109,13 @@ export interface TileParts {
    * same place and the same height as the tile's features row.
    */
   customFeatures?: TemplateResult;
+  /**
+   * Our own control for the tile's row, next to the texts — where the stock
+   * tile puts its first feature with `features_position: inline`. It takes that
+   * place for itself: the stock features then all go under the line, and
+   * `featureRows(own, true)` has to be told so.
+   */
+  customInline?: TemplateResult;
 }
 
 /**
@@ -186,12 +193,13 @@ export abstract class BaseTileCard extends LitElement {
    * them. The user's list wins over the card's own, exactly as it does in
    * render, and the layout arithmetic is HA's own.
    */
-  protected featureRows(own: Feature[]): number {
+  protected featureRows(own: Feature[], inlineTaken = false): number {
     const features = this.base.features ?? own;
     if (!features.length) return 0;
-    return featureRowCount(
-      featureLayout(features, this.base.features_position ?? "bottom")
-    );
+    const position = inlineTaken
+      ? "bottom"
+      : (this.base.features_position ?? "bottom");
+    return featureRowCount(featureLayout(features, position));
   }
 
   public getCardSize(): number {
@@ -365,6 +373,7 @@ export abstract class BaseTileCard extends LitElement {
       values,
       ownFeatures,
       customFeatures,
+      customInline,
     } = parts;
 
     this._entityId = mainEntityId;
@@ -391,7 +400,12 @@ export abstract class BaseTileCard extends LitElement {
     const own = this.base.levels === false ? undefined : customFeatures;
     // The features are split the way the stock tile splits them: with `inline`
     // the first one moves up into the tile's row and the rest pair up below.
-    const layout = featureLayout(features, position);
+    // Our own inline control takes the one inline place, so nothing of the
+    // stock list may claim it too.
+    const layout = featureLayout(
+      features,
+      customInline ? "bottom" : position
+    );
 
     // A card fills its slot only when the height was fixed by hand and there is
     // something under the line to fill it with; see the note by :host([filled]).
@@ -404,7 +418,7 @@ export abstract class BaseTileCard extends LitElement {
     return html`
       <ha-card style="--tile-color: ${tileColor};">
         <ha-tile-container
-          .featurePosition=${position}
+          .featurePosition=${customInline ? "inline" : position}
           .vertical=${Boolean(this.base.vertical)}
           .fixedInfoHeight=${this.layout === "grid" && fixedHeight}
           .interactive=${true}
@@ -478,6 +492,11 @@ export abstract class BaseTileCard extends LitElement {
                 .features=${layout.inline}
                 .position=${position}
               ></hui-card-features>`
+            : nothing}
+          ${customInline
+            ? html`<div slot="features-inline" class="custom-inline">
+                ${customInline}
+              </div>`
             : nothing}
           ${own
             ? html`<div slot="features" class="custom-features">
